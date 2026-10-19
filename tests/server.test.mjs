@@ -1,0 +1,31 @@
+import test from 'node:test';import assert from 'node:assert/strict';import {spawn} from 'node:child_process';import {once} from 'node:events';
+test('mixed seats, lowercase codes, host settings, online privacy and turn rollback',async()=>{
+ const child=spawn(process.execPath,['server.mjs'],{cwd:new URL('..',import.meta.url),env:{...process.env,PORT:'3011'},stdio:['ignore','pipe','pipe']});
+ try{await Promise.race([once(child.stdout,'data'),new Promise((_,reject)=>setTimeout(()=>reject(Error('Server startup timeout')),7000).unref())]);
+ const api=async(endpoint,body,token)=>{const r=await fetch('http://127.0.0.1:3011/api/'+endpoint,{method:body?'POST':'GET',headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{})},...(body?{body:JSON.stringify(body)}:{})});return {status:r.status,value:await r.json()};};
+ const created=await api('create',{name:'Host'}),code=created.value.room.code,host=created.value.token;
+ assert.match(code,/^[a-f0-9]{8}$/);assert.equal(created.value.room.options.handSize,14);
+ assert.equal(created.value.room.completedGames,0);
+ const tinkering=await api('settings',{code,tinkering:true,opening:31,aceMode:'low',jokerEnds:false,handBonus:100,handDouble:false},host);assert.equal(tinkering.value.tinkering,true);assert.equal(tinkering.value.options.opening,31);assert.equal(tinkering.value.options.aceMode,'low');assert.equal((await api('start',{code},host)).status,400);
+ assert.equal((await api('settings',{code,opening:41},host)).status,400);
+ await api('settings',{code,tinkering:false},host);
+ assert.equal((await api('settings',{code,handSize:9,timer:60,undo:false},host)).status,200);assert.equal((await api('settings',{code,handSize:15},host)).status,400);
+ assert.equal((await api('settings',{code,handSize:6},host)).status,400);
+ assert.equal((await api('seat',{code,operation:'add',type:'bot'},host)).value.seatTypes[2],'bot');
+ const guest=await api('join',{code:code.toUpperCase(),name:'Guest'}),gt=guest.value.token;
+ assert.equal((await api('settings',{code,timer:30},gt)).status,400);assert.equal((await api('seat',{code,operation:'add',type:'bot'},gt)).status,400);
+ const started=await api('start',{code},host);assert.equal(started.value.state.hands[0].length,10);assert.equal(started.value.state.hands[1].length,9);assert.deepEqual(started.value.state.hands[1][0],{hidden:true});assert.deepEqual(started.value.state.hands[2][0],{hidden:true});
+ const first=started.value.state.hands[0].find(c=>!c.joker);await api('action',{code,action:{type:'discard',ids:[first.id]}},host);
+ const drawn=await api('action',{code,action:{type:'draw',source:'stock'}},gt);assert.equal(drawn.status,200);assert.equal(drawn.value.state.hands[1].length,10);
+ assert.equal((await api('cancel-draw',{code},gt)).status,400);
+ const guestCard=drawn.value.state.hands[1].find(c=>!c.joker);const afterGuest=await api('action',{code,action:{type:'discard',ids:[guestCard.id]}},gt);assert.equal(afterGuest.value.state.turn,0);
+ const required=await api('action',{code,action:{type:'draw',source:'discard'}},host);assert.equal(required.value.state.mustOpen,true);
+ const cancelled=await api('cancel-draw',{code},host);assert.equal(cancelled.value.state.hands[0].length,9);assert.equal(cancelled.value.state.stage,'draw');
+ assert.equal((await api('undo',{code},gt)).status,400);
+ await api('leave',{code},host);assert.equal((await api('state?code='+code,null,gt)).status,400);
+ const local=await api('create',{name:'Local'}),lc=local.value.room.code,lt=local.value.token;
+ await api('settings',{code:lc,mode:'hotseat'},lt);await api('seat',{code:lc,operation:'name',index:1,name:'Friend'},lt);await api('seat',{code:lc,operation:'add',type:'bot'},lt);
+ const game=await api('start',{code:lc,names:{1:'New friend'}},lt);assert.equal(game.value.state.names[1],'New friend');assert.ok(game.value.state.hands[1][0].id);assert.deepEqual(game.value.state.hands[2][0],{hidden:true});
+ const generated=await api('create',{name:''});assert.match(generated.value.room.players[0],/^[A-Za-z]+$/);assert.notEqual(generated.value.room.players[0],'Forest visitor');await api('leave',{code:generated.value.room.code},generated.value.token);
+ }finally{child.kill();}
+});

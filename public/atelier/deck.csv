@@ -1,0 +1,53 @@
+id,suit,rank,value,type,title,file
+fox-A,fox,A,1,picture,Fox kit,cards/fox-A.html
+fox-2,fox,2,2,number,2 berries,cards/fox-2.html
+fox-3,fox,3,3,number,3 berries,cards/fox-3.html
+fox-4,fox,4,4,number,4 berries,cards/fox-4.html
+fox-5,fox,5,5,number,5 berries,cards/fox-5.html
+fox-6,fox,6,6,number,6 berries,cards/fox-6.html
+fox-7,fox,7,7,number,7 berries,cards/fox-7.html
+fox-8,fox,8,8,number,8 berries,cards/fox-8.html
+fox-9,fox,9,9,number,9 berries,cards/fox-9.html
+fox-H,fox,H,10,number,10 berries,cards/fox-H.html
+fox-B,fox,B,11,picture,Red Fox,cards/fox-B.html
+fox-Q,fox,Q,12,picture,Silver Fox,cards/fox-Q.html
+fox-E,fox,E,13,picture,Kitsune,cards/fox-E.html
+owl-A,owl,A,1,picture,Owlet,cards/owl-A.html
+owl-2,owl,2,2,number,2 stars,cards/owl-2.html
+owl-3,owl,3,3,number,3 stars,cards/owl-3.html
+owl-4,owl,4,4,number,4 stars,cards/owl-4.html
+owl-5,owl,5,5,number,5 stars,cards/owl-5.html
+owl-6,owl,6,6,number,6 stars,cards/owl-6.html
+owl-7,owl,7,7,number,7 stars,cards/owl-7.html
+owl-8,owl,8,8,number,8 stars,cards/owl-8.html
+owl-9,owl,9,9,number,9 stars,cards/owl-9.html
+owl-H,owl,H,10,number,10 stars,cards/owl-H.html
+owl-B,owl,B,11,picture,Wood Owl,cards/owl-B.html
+owl-Q,owl,Q,12,picture,Great Owl,cards/owl-Q.html
+owl-E,owl,E,13,picture,Moon Owl,cards/owl-E.html
+hare-A,hare,A,1,picture,Leveret,cards/hare-A.html
+hare-2,hare,2,2,number,2 clovers,cards/hare-2.html
+hare-3,hare,3,3,number,3 clovers,cards/hare-3.html
+hare-4,hare,4,4,number,4 clovers,cards/hare-4.html
+hare-5,hare,5,5,number,5 clovers,cards/hare-5.html
+hare-6,hare,6,6,number,6 clovers,cards/hare-6.html
+hare-7,hare,7,7,number,7 clovers,cards/hare-7.html
+hare-8,hare,8,8,number,8 clovers,cards/hare-8.html
+hare-9,hare,9,9,number,9 clovers,cards/hare-9.html
+hare-H,hare,H,10,number,10 clovers,cards/hare-H.html
+hare-B,hare,B,11,picture,Brown Hare,cards/hare-B.html
+hare-Q,hare,Q,12,picture,Snow Hare,cards/hare-Q.html
+hare-E,hare,E,13,picture,Moon Hare,cards/hare-E.html
+toad-A,toad,A,1,picture,Toadlet,cards/toad-A.html
+toad-2,toad,2,2,number,2 mushrooms,cards/toad-2.html
+toad-3,toad,3,3,number,3 mushrooms,cards/toad-3.html
+toad-4,toad,4,4,number,4 mushrooms,cards/toad-4.html
+toad-5,toad,5,5,number,5 mushrooms,cards/toad-5.html
+toad-6,toad,6,6,number,6 mushrooms,cards/toad-6.html
+toad-7,toad,7,7,number,7 mushrooms,cards/toad-7.html
+toad-8,toad,8,8,number,8 mushrooms,cards/toad-8.html
+toad-9,toad,9,9,number,9 mushrooms,cards/toad-9.html
+toad-H,toad,H,10,number,10 mushrooms,cards/toad-H.html
+toad-B,toad,B,11,picture,Forest Toad,cards/toad-B.html
+toad-Q,toad,Q,12,picture,Moss Toad,cards/toad-Q.html
+toad-E,toad,E,13,picture,Elder Toad,cards/toad-E.html

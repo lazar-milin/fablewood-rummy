@@ -1,0 +1,2 @@
+export const FOREST_NAMES=['Bramble','Clover','Fern','Willow','Rowan','Juniper','Thistle','Moss','Birch','Alder','Hazel','Holly','Ivy','Acorn','Briar','Hawthorn','Sorrel','Wren','Grove','Sylvan','Rune','Charm','Wisp','Glimmer','Spell','Arcana','Nimbus','Ember','Fable','Gossamer','Moonbeam','Starlight','Solstice','Glim','Faerie','Oracle','Myth','Dusk','Twilight','Astral'];
+export function forestName(used=[],random=Math.random){const free=FOREST_NAMES.filter(n=>!used.includes(n)),pool=free.length?free:FOREST_NAMES;return pool[Math.floor(random()*pool.length)];}

@@ -1,0 +1,190 @@
+/* Compact table header, with seats centered in the available middle column. */
+#header{grid-template-columns:max-content minmax(0,1fr) max-content;align-items:center;gap:16px;padding:9px 20px;min-height:78px}
+body:not(.at-table) #header-players{display:none}
+body:not(.at-table) #header{grid-template-columns:1fr auto}
+.header-controls{width:auto;max-width:65vw;align-items:center}
+#header-players{min-width:0;overflow-x:auto;overflow-y:hidden;padding:3px 2px 9px;scrollbar-width:thin}
+#header-players .players{margin:0!important;padding:0;display:flex;flex-wrap:nowrap;justify-content:safe center;align-items:stretch;gap:7px;min-height:47px}
+#header-players .player{width:105px;min-width:80px;max-width:112px;flex:0 1 105px;padding:5px 5px 7px!important;display:flex;flex-direction:column;justify-content:center;gap:0;border-width:1px}
+#header-players .player strong{font-size:10px;min-height:15px;line-height:1.2;gap:4px}
+#header-players .player strong span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:90px}
+#header-players .player small{font-size:7px;line-height:1.3;margin-top:3px;white-space:nowrap}
+#header-players .wizard-hat,#header-players .bot-icon{width:12px;height:12px;flex:0 0 12px}
+#header-players .player.active:after{top:auto;bottom:-8px;transform:translateX(-50%);font-size:7px;line-height:1;padding:2px 5px;border-width:1px}
+#header-players .seat-actions{margin-top:4px;gap:3px}
+#header-players .seat-actions button{font-size:7px;padding:2px 3px}
+#header-players .seat-actions .bot-icon{width:9px;height:9px;flex-basis:9px}
+#header-players .player.add-seat{gap:3px;padding:3px!important}
+#header-players .add-seat button{font-size:7px;gap:4px;padding:2px}
+#header-players .add-seat button span,#header-players .add-seat button[data-add="bot"]>span:last-child{font-size:7px}
+#copy{font-size:10px;padding:7px 9px}
+#copy small{font-size:8px}
+#copy .code-main>span{text-transform:none}
+/* Inline labels, with Both centered between the two ace sequences. */
+.core-rule-row.four-rule-controls{grid-template-columns:130px minmax(300px,1.8fr) minmax(140px,1fr) minmax(150px,1fr)}
+.four-rule-controls>.rule-choice-row{flex-direction:row;align-items:center;gap:8px;padding:0 10px;justify-content:center}
+.four-rule-controls>.rule-choice-row>span{min-width:0;white-space:nowrap}
+.four-rule-controls .rule-choice-row>div{align-items:center;justify-content:center;gap:5px}
+.four-rule-controls .ace-sequence{font-family:Woodland,monospace;font-size:11px;margin:0;line-height:1.5}
+.four-rule-controls .rule-choice{align-self:center}
+.four-rule-controls .rule-choice[data-rule="aceMode"][data-rule-value="both"]{align-self:center}
+/* Stock and cut card share one stack; discard is below it. */
+.board{grid-template-columns:145px minmax(0,1fr);gap:24px;min-height:365px;padding:20px}
+.board .piles{display:flex;flex-direction:column;flex-wrap:nowrap;align-items:center;justify-content:flex-start;gap:16px;border-right:2px dashed #a583b4;border-bottom:0;padding:0 24px 0 0}
+.board .piles>div{gap:8px}
+.board .stock-stack{position:relative;padding-bottom:30px;min-height:168px}
+.board #draw-stock{z-index:2;position:relative}
+.board .stock-stack>small{position:absolute;bottom:0;left:50%;transform:translateX(-50%)}
+.cut-card-button{position:absolute;top:calc(140px * .8);left:0;z-index:1;padding:0;border:0;box-shadow:none;background:transparent!important;width:84px;height:140px;transform:translateY(-112px)}
+.cut-card-button .card{width:84px;height:140px;pointer-events:none;margin:0}
+.cut-card-button:disabled{opacity:1;filter:none}
+.cut-card-button:hover:not(:disabled){transform:translateY(-112px)}
+.board .stock-stack:has(.cut-card-button){padding-bottom:136px;min-height:276px}
+.board .stock-stack:has(.cut-card-button) #draw-stock{margin-left:0}
+.board .stock-stack:has(.cut-card-button) .cut-card-button{top:112px;transform:none}
+.board .stock-stack:has(.cut-card-button) .cut-card-button:hover{transform:none}
+.board .meld-area{min-width:0}
+.board .melds{margin-top:0}
+/* A shared group shell, a centered footer, and hover-only removal controls. */
+.hand .packed-hand{padding:3px 4px 0!important;outline:0;border-radius:35px 35px 28px 28px;cursor:pointer}
+.hand .packed-hand.pack-selected{outline:3px solid #d7acec;outline-offset:3px;box-shadow:0 0 14px #bc80d966}
+.hand .packed-hand .pack-cards{pointer-events:auto;gap:0}
+.group-member{display:block;position:relative;flex:0 0 68px;width:68px;height:113px}
+.group-member+.group-member{margin-left:-11px}
+.hand .group-member .card{display:block;pointer-events:none;transform:none;outline:0;margin:0}
+.hand .packed-hand .pack-select{padding:0!important;width:100%;height:32px;min-height:32px;display:block;border-radius:0 0 25px 25px}
+.hand .packed-hand .pack-footer{position:static;display:block;text-align:center;white-space:normal;font-size:8px;line-height:1.4;padding:3px 0;user-select:none}
+.hand .packed-hand .pack-close,.hand .packed-hand .eject-card{background-color:#875aa3;background-image:inherit;color:#f4778e;border:1px solid #c59add;box-shadow:0 0 5px #28133588;display:grid;place-items:center;padding:0;line-height:1;font-size:22px;z-index:5}
+.hand .packed-hand .pack-close{width:32px;height:32px;right:-17px;top:45px;bottom:auto;border-radius:0 50% 50% 0;opacity:0;visibility:hidden;pointer-events:none}
+.hand .packed-hand:hover .pack-close,.hand .packed-hand:focus-within .pack-close{opacity:1;visibility:visible;pointer-events:auto}
+.hand .packed-hand .eject-card{position:absolute;top:27px;left:50%;width:32px;height:32px;border-radius:50%;transform:translateX(-50%);visibility:hidden;opacity:0;pointer-events:none;transition:opacity .1s,visibility 0s .1s;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28'%3E%3Ctext x='1' y='9' fill='%23e6bcf7' opacity='.55' font-size='9'%3E%2B%20*%3C/text%3E%3Ctext x='5' y='24' fill='%23e6bcf7' opacity='.55' font-size='9'%3Ex%20-%3C/text%3E%3C/svg%3E")}
+.hand .group-member:hover .eject-card,.hand .group-member:focus-within .eject-card{visibility:visible;opacity:1;pointer-events:auto;transition-delay:1s}
+.hand .eject-card:focus-visible{visibility:visible;opacity:1;pointer-events:auto;transition:none}
+.hand .packed-hand .pack-close:hover,.hand .packed-hand .eject-card:hover{color:#ffd3dc;background-color:#734174;transform:none}
+.hand .packed-hand .eject-card:hover{transform:translateX(-50%)}
+.hand .pending-pack{outline:3px solid #d7acec;outline-offset:2px}
+.packed-layout.hand-cards{gap:18px 26px!important}
+.score-rows li{display:flex;align-items:center;justify-content:space-between;gap:20px}
+.score-rows li>span{display:flex;align-items:center;gap:7px;text-align:left}
+.score-rows li>strong{text-align:right;margin-left:auto;white-space:nowrap}
+.leader-cup{width:17px;height:20px;color:#edce82;flex:0 0 17px}
+@media(max-width:1050px){#header{gap:10px;padding:9px 12px}.header-controls{gap:5px;max-width:58vw}#header-players .player{flex-basis:88px;min-width:75px}.core-rule-row.four-rule-controls{display:flex;overflow-x:auto;flex-wrap:nowrap}.four-rule-controls>.rule-choice-row{flex:0 0 auto;min-width:110px;padding:0 12px!important}.four-rule-controls>.rule-choice-row:nth-child(2){min-width:290px}.four-rule-controls>.direct-rule{width:150px}.four-rule-controls>.rule-choice-row+.rule-choice-row{border-top:0!important;border-left:2px dashed #93739f}}
+@media(max-width:650px){#header{grid-template-columns:95px minmax(0,1fr) auto;gap:6px;min-height:72px}.header-controls{max-width:45vw}.at-table #header .brand{font-size:10px!important;text-align:left}#mode-label{font-size:7px}#header-players .player{min-width:75px;flex-basis:75px}#header-players .player strong{font-size:8px}.board{grid-template-columns:104px minmax(0,1fr);gap:14px;padding:14px;min-height:330px}.board .piles{padding-right:14px}.board .piles .card,.cut-card-button .card{width:66px;height:110px}.cut-card-button{width:66px;height:110px;left:0}.board .stock-stack:has(.cut-card-button) .cut-card-button{top:22px}.board .stock-stack:has(.cut-card-button){min-height:158px;padding-bottom:40px}.group-member{width:54px;flex-basis:54px;height:90px}.group-member+.group-member{margin-left:-9px}.hand .packed-hand .pack-close{top:35px;width:27px;height:27px;right:-14px;font-size:19px}.hand .packed-hand .eject-card{width:27px;height:27px;top:22px;font-size:19px}.hand .packed-hand .pack-footer{font-size:7px}.four-rule-controls .ace-sequence{font-size:10px}}
+@media(max-width:650px){.board .stock-stack:has(.cut-card-button) .cut-card-button{top:88px}.board .stock-stack:has(.cut-card-button){min-height:222px;padding-bottom:112px}}
+/* Grimoire refinements: Alagard sequences, compact peers, outlined option sets. */
+@font-face{font-family:Alagard;src:url('/fonts/alagard.ttf') format('truetype');font-display:swap}
+.core-rule-row.four-rule-controls{display:flex;flex-wrap:nowrap;align-items:center;justify-content:flex-start;gap:9px;border:0;margin-top:17px;padding:0;overflow-x:auto}
+.core-rule-row.four-rule-controls>.rule-choice-row{flex:0 0 auto;min-width:0;width:auto;padding:6px 8px!important;gap:7px;flex-direction:row;align-items:center;justify-content:flex-start;border:0!important}
+.core-rule-row.four-rule-controls>.rule-choice-row:nth-child(-n+2){border:1px dashed #93739f!important;border-radius:4px}
+.core-rule-row.four-rule-controls>.rule-choice-row>div{display:flex;flex-wrap:nowrap;align-items:center;gap:4px}
+.core-rule-row.four-rule-controls>.rule-choice-row>span{min-width:0;white-space:nowrap;font-size:10px}
+.core-rule-row.four-rule-controls .rule-choice{font-size:10px;padding:5px 7px;line-height:1.4;min-height:28px;white-space:nowrap}
+.core-rule-row.four-rule-controls .ace-sequence{font-family:Alagard,Woodland,monospace;font-size:17px;line-height:1;margin:0;white-space:nowrap}
+.core-rule-row.four-rule-controls>.direct-rule{padding:0!important}
+.core-rule-row.four-rule-controls>.direct-rule>.rule-toggle{width:auto;min-height:30px;height:30px;padding:5px 8px;font-size:10px;line-height:1.4;white-space:nowrap}
+.finishing-settings{border:0;padding-top:16px;margin-top:0}
+.finish-rule-buttons>.rule-choice-row{display:flex;align-items:center;gap:10px;min-height:40px}
+.finish-rule-buttons>.rule-choice-row>span{min-width:0;white-space:nowrap}
+.finish-rule-buttons>.rule-choice-row>div{display:flex;gap:6px;flex-wrap:nowrap}
+/* Keep horizontal reveal geometry fixed throughout its transition. */
+#copy{height:47px;min-height:47px;max-height:47px;box-sizing:border-box;overflow:hidden;flex-wrap:nowrap;align-items:center}
+#copy .code-main{white-space:nowrap}
+#copy .code-rules{height:31px;min-height:31px;max-height:31px;flex-shrink:0;line-height:1.5;align-content:center}
+#copy:hover .code-rules,#copy:focus-visible .code-rules{height:31px;min-height:31px;max-height:31px}
+/* Consume the header's free center space before either strip needs scrolling. */
+#header{grid-template-columns:max-content minmax(0,1fr) minmax(0,max-content);gap:10px}
+#header .header-controls{width:max-content;max-width:calc(100vw - 235px);min-width:0;justify-content:flex-start}
+#header-players .players{width:max-content;min-width:100%;justify-content:center}
+#header-players .player{flex-shrink:0}
+#header-players{padding-left:0;padding-right:0}
+@media(max-width:1050px){#header{gap:7px;padding-left:10px;padding-right:10px}.at-table .header-left{max-width:125px}.at-table #header .brand{white-space:normal;font-size:11px!important}#header .header-controls{max-width:calc(100vw - 205px)}.core-rule-row.four-rule-controls{gap:7px}.core-rule-row.four-rule-controls>.rule-choice-row{min-width:0;width:auto}.core-rule-row.four-rule-controls>.rule-choice-row:nth-child(2){min-width:0}.core-rule-row.four-rule-controls>.direct-rule{width:auto}}
+@media(max-width:650px){#header{grid-template-columns:85px minmax(0,1fr) minmax(0,max-content);gap:5px}#header .header-controls{max-width:calc(100vw - 140px)}#copy{height:38px;min-height:38px;max-height:38px}#copy .code-rules,#copy:hover .code-rules,#copy:focus-visible .code-rules{height:26px;min-height:26px;max-height:26px;font-size:8px}.core-rule-row.four-rule-controls{gap:6px;padding:0}.core-rule-row.four-rule-controls>.rule-choice-row>span{font-size:9px}.core-rule-row.four-rule-controls .rule-choice{font-size:9px;padding:5px}.core-rule-row.four-rule-controls>.direct-rule>.rule-toggle{font-size:9px;padding:5px 7px}.core-rule-row.four-rule-controls .ace-sequence{font-size:16px}}
+/* Finishing rules and the host's green start action. */
+.finishing-settings{border-top:2px dashed #93739f;margin-top:15px;padding-top:15px}
+.finishing-settings .finishing-rules-title{font-size:13px;margin:0 0 10px;color:#e6c8f2}
+.lobby-actions #start{background:#b6d5a7;color:#294c30;border-color:#83aa76;box-shadow:0 3px 0 #203b2455}
+.lobby-actions #start:hover:not(:disabled){background:#cbe4bf;border-color:#a7cb99;color:#294c30}
+/* The sideways cut card is tucked beneath a fifth of the deck. */
+.board .piles #draw-stock,.board .discard-stack .card,.board .discard-stack .empty-card{width:84px;height:140px;max-width:84px}
+.board .stock-stack:has(.cut-card-button){width:140px;padding-bottom:0;min-height:231px;justify-content:flex-start}
+.board .stock-stack:has(.cut-card-button) #draw-stock{align-self:center}
+.board .stock-stack:has(.cut-card-button) .cut-card-button{width:140px;height:84px;left:0;top:112px;display:grid;place-items:center;transform:none}
+.board .cut-card-button .card{width:84px;height:140px;transform:rotate(90deg);margin:0}
+.board .cut-card-button:hover:not(:disabled) .card{transform:rotate(90deg)}
+.board{grid-template-columns:170px minmax(0,1fr)}
+.board .piles{padding-right:24px}
+.board .stock-stack>small{bottom:7px}
+/* Selection is outside the patterned shell, and lifts the entire pack. */
+.hand .packed-hand.pack-selected,.hand .packed-hand.pack-selected:hover:not(:disabled){transform:translateY(-7px);outline:3px solid #d7acec;outline-offset:6px}
+.hand .pending-pack{outline-offset:6px}
+.hand .packed-hand .pack-close{border-radius:50%;width:32px;height:32px;right:-18px;top:45px;display:grid;place-items:center}
+.hand .packed-hand .pack-close>span,.hand .packed-hand .eject-card>span{display:block;font-family:Woodland,monospace;font-size:21px;line-height:1;transform:translateY(-1px);pointer-events:none}
+/* A fixed compact move strip: actions scroll horizontally, never wrap. */
+.playing .hand-heading{height:76px;min-height:76px;max-height:76px;box-sizing:border-box;display:grid;grid-template-columns:minmax(160px,1fr) minmax(0,auto);align-items:center;gap:14px;margin:12px 0;padding:9px 14px;overflow:hidden}
+.hand-heading .turn{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:4px 8px;min-width:0;max-height:54px}
+.hand-heading .turn>.eyebrow{font-size:8px;line-height:1.3;letter-spacing:0;white-space:nowrap}
+.hand-heading .turn h2{font-size:15px;line-height:1.4;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hand-heading .turn p{grid-column:1/-1;font-size:10px;line-height:1.5;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hand-heading .actions{display:flex;flex-wrap:nowrap;align-items:center;gap:10px;min-width:0;max-width:100%;width:auto}
+.action-buttons{display:flex;align-items:center;gap:8px;flex-wrap:nowrap;overflow-x:auto;overflow-y:hidden;padding:3px 2px 4px;min-width:0;scrollbar-width:thin}
+.hand-heading .actions button{height:35px;min-height:35px;max-height:35px;box-sizing:border-box;flex:0 0 auto;white-space:nowrap;font-size:10px;line-height:1.2;padding:7px 10px;display:flex;align-items:center;justify-content:center}
+.hand-heading .selection-count{font-size:9px;line-height:1.4;flex:0 0 70px;width:70px;text-align:right;color:#dcb8ef;white-space:nowrap}
+.hand-heading #discard{background:#d79a64;border-color:#edbc89;color:#54301e}
+.hand-heading #discard:hover:not(:disabled){background:#e9af7b;border-color:#ffd2a2}
+.hand-heading #open,.hand-heading #meld{background:#a3c8b4;border-color:#c2e0cf;color:#2e5145}
+.hand-heading #unpack{background:#a58abd;border:2px solid #cbb3e0;color:#342341}
+.hand-heading #cancel-draw{background:#9d526c;border-color:#c9859b;color:#ffe1eb}
+.hand-heading #undo-move{background:#d9c7ed;border-color:#876ba8;color:#5c427a}
+.hand-heading #undo-move svg{width:16px;height:16px;flex:0 0 16px}
+.hand-heading .actions button:disabled{opacity:.5}
+@media(max-width:950px){.playing .hand-heading{grid-template-columns:minmax(150px,.8fr) minmax(0,1.2fr)}.hand-heading .turn{display:block}.hand-heading .turn>.eyebrow{display:block;margin-bottom:2px}.hand-heading .turn h2{font-size:13px}.hand-heading .turn p{font-size:9px}.hand-heading .actions{width:100%}}
+@media(max-width:650px){.playing .hand-heading{height:76px;min-height:76px;max-height:76px;grid-template-columns:minmax(90px,.7fr) minmax(0,1.3fr);gap:8px;padding:8px 10px}.hand-heading .turn h2{font-size:11px}.hand-heading .turn>.eyebrow{font-size:7px}.hand-heading .actions{gap:5px}.hand-heading .selection-count{font-size:8px;width:53px;flex-basis:53px}.hand-heading .actions button{font-size:9px;height:35px;min-height:35px;max-height:35px;padding:6px 8px}.action-buttons{gap:5px}.board{grid-template-columns:138px minmax(0,1fr)}.board .stock-stack:has(.cut-card-button){width:110px;min-height:187px}.board .stock-stack:has(.cut-card-button) .cut-card-button{top:88px;width:110px;height:66px}.board .piles #draw-stock,.board .discard-stack .card,.board .discard-stack .empty-card,.board .cut-card-button .card{width:66px;height:110px;max-width:66px}.board .piles{padding-right:18px}.hand .packed-hand .pack-close{width:27px;height:27px;right:-15px;top:35px}.hand .packed-hand .pack-close>span,.hand .packed-hand .eject-card>span{font-size:18px}}
+/* Clear labels, unclipped selection rings, and fantasy-font remove marks. */
+.hand-heading .turn{display:block}
+.hand-heading .turn h2{margin:0 0 3px}
+.hand .hand-cards.packed-layout{overflow:visible!important;position:relative}
+.hand{overflow:visible;isolation:isolate}
+.hand .packed-hand.pack-selected,.hand .pending-pack,.hand .card.selected{z-index:3}
+.hand .packed-hand .pack-close,.hand .packed-hand .eject-card{border:1px dashed #e0b7f4;box-sizing:border-box}
+.hand .packed-hand .pack-close>span,.hand .packed-hand .eject-card>span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:Alagard,Woodland,monospace;font-size:25px;line-height:1;transform:none;padding:0 0 2px;box-sizing:border-box}
+.board .stock-stack:has(.cut-card-button){min-height:190px;padding-bottom:0}
+.board .stock-stack:has(.cut-card-button) .cut-card-button{top:70px}
+.board .stock-stack>.deck-count{bottom:5px;z-index:4;padding:3px 5px;background:#2c2637;border-radius:3px;color:#f0dfed;font-size:10px;line-height:1.3;white-space:nowrap}
+.board #draw-stock:disabled{opacity:1;filter:none}
+.board #draw-stock{background:repeating-linear-gradient(45deg,#4f3d66 0 5px,#443459 5px 10px);border-color:#ae8fc5;color:#e3c9f0}
+@media(max-width:650px){.board .stock-stack:has(.cut-card-button){min-height:155px}.board .stock-stack:has(.cut-card-button) .cut-card-button{top:55px}.board .stock-stack>.deck-count{font-size:9px}.hand .packed-hand .pack-close>span,.hand .packed-hand .eject-card>span{font-size:22px}}
+/* Explicit centering keeps half the sideways card tucked under the stock. */
+.board .stock-stack:has(.cut-card-button){min-height:214px}
+.board .stock-stack:has(.cut-card-button) .cut-card-button{top:98px}
+.board .cut-card-button .card,.board .cut-card-button:hover:not(:disabled) .card{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(90deg)}
+@media(max-width:650px){.board .stock-stack:has(.cut-card-button){min-height:175px}.board .stock-stack:has(.cut-card-button) .cut-card-button{top:77px}}
+/* Game surfaces do not accidentally highlight or drag; editable fields do. */
+body,body *{-webkit-user-select:none;user-select:none}
+input,textarea,[contenteditable="true"],[contenteditable="true"] *{-webkit-user-select:text;user-select:text}
+img,svg,a{-webkit-user-drag:none}
+.hand .packed-hand .pack-close>span,.hand .packed-hand .eject-card>span{position:absolute;inset:0;display:block;width:100%;height:100%;padding:0;transform:none;font-size:0}
+.hand .packed-hand .pack-close>span>svg,.hand .packed-hand .eject-card>span>svg{display:block;width:100%;height:100%;overflow:visible}
+/* Measure the full header: hide the title before resorting to strip scrolling. */
+.at-table #header{grid-template-columns:144px minmax(0,1fr) minmax(0,max-content)}
+.at-table #header .header-left{width:144px;max-width:144px}
+.at-table #header .brand{white-space:nowrap!important;font-size:13px!important}
+.at-table #header.hide-header-title{grid-template-columns:minmax(0,1fr) minmax(0,max-content)}
+.at-table #header.hide-header-title .header-left{display:none}
+#header .header-controls{max-width:calc(100vw - 105px)}
+@media(max-width:650px){.at-table #header{grid-template-columns:144px minmax(0,1fr) minmax(0,max-content)}.at-table #header.hide-header-title{grid-template-columns:minmax(0,1fr) minmax(0,max-content)}}
+/* The hand owns Ungroup; its reserved slot never moves the card rows. */
+.hand .hand-title{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:12px;height:36px;min-height:36px;max-height:36px}
+.hand .hand-title h2{display:flex;align-items:center;gap:10px;height:36px;min-height:36px;margin:0;white-space:nowrap;overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+.hand .hand-title h2 small{display:inline-block;flex:0 0 auto;margin:0;font-size:9px}
+.hand .unpack-slot{display:inline-flex;align-items:center;flex:0 0 136px;width:136px;height:32px}
+.hand #unpack{height:30px;min-height:30px;box-sizing:border-box;white-space:nowrap;font-size:10px;line-height:1.2;padding:6px 10px;background:#a58abd;border:2px solid #cbb3e0;color:#342341;box-shadow:none}
+.hand #unpack:hover{background:#b69bcf;border-color:#dfc9ef;color:#342341}
+.hand .hand-title #sort{white-space:nowrap}
+/* The game name always uses its fantasy title font. */
+#header .brand,.at-table #header .brand{font-family:Alagard,Woodland,monospace}
+/* A proper grimoire Back button, matching the game's purple controls. */
+.lobby-title-row{grid-template-columns:96px minmax(0,1fr) 96px}
+.lobby-title-row .back-button{display:flex;align-items:center;justify-content:center;min-height:35px;padding:8px 12px;margin:0;border:2px solid #9874b8;border-radius:3px;background:#d9c7ed;color:#5c427a;box-shadow:0 3px 0 #27193144;font-size:11px;line-height:1.2}
+.lobby-title-row .back-button:hover{background:#ecdaf5;border-color:#b28bc8;color:#5c427a}
+.game-screen main{max-width:1800px;padding-left:clamp(14px,2vw,32px);padding-right:clamp(14px,2vw,32px)}
+@media(max-width:650px){.lobby-title-row{grid-template-columns:80px minmax(0,1fr);gap:8px}.lobby-title-row .back-button{font-size:10px;padding:8px 10px}}

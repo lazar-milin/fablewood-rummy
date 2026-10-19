@@ -1,0 +1,5 @@
+@font-face{font-family:Woodland;src:url('/fonts/vcr-osd-mono.ttf') format('truetype')}
+.back-to-game{position:fixed;top:13px;left:14px;z-index:100;display:inline-flex;align-items:center;justify-content:center;min-height:36px;padding:9px 12px;border:2px solid #9874b8;border-radius:3px;background:#d9c7ed;color:#5c427a;box-shadow:0 3px 0 #27193144;text-decoration:none;font:11px/1.2 Woodland,monospace}
+.back-to-game:hover{background:#ecdaf5;border-color:#b28bc8}.masthead{padding-left:205px}.single-card-page main{padding-top:65px}
+body,body *{user-select:none;-webkit-user-select:none}input,textarea,[contenteditable=true]{user-select:text;-webkit-user-select:text}img,svg,a{-webkit-user-drag:none}
+@media(max-width:650px){.back-to-game{font-size:9px;padding:8px;left:9px;top:10px}.masthead{padding-left:165px}.masthead .brand{font-size:20px}}

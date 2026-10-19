@@ -1,0 +1,78 @@
+[
+  {
+    "suit": "fox",
+    "animal": {
+      "outline": "#2E1A14",
+      "shadow": "#6A2E1E",
+      "body": "#D9672B",
+      "light": "#F08B3E",
+      "pale": "#F6DFC0",
+      "highlight": "#FFF1DD"
+    },
+    "card": "#F3DFC0",
+    "pip": "#B6383A",
+    "illustrations": {
+      "A": "Fox kit",
+      "B": "Red Fox",
+      "Q": "Silver Fox",
+      "E": "Kitsune"
+    }
+  },
+  {
+    "suit": "owl",
+    "animal": {
+      "outline": "#20243D",
+      "shadow": "#464F71",
+      "body": "#7D88B3",
+      "light": "#B3BCDF",
+      "pale": "#ECEAF3",
+      "highlight": "#FFF9E9"
+    },
+    "card": "#CAD4E6",
+    "pip": "#C99832",
+    "illustrations": {
+      "A": "Owlet",
+      "B": "Wood Owl",
+      "Q": "Great Owl",
+      "E": "Moon Owl"
+    }
+  },
+  {
+    "suit": "hare",
+    "animal": {
+      "outline": "#29231C",
+      "shadow": "#5B5242",
+      "body": "#9C8A6E",
+      "light": "#CDB99A",
+      "pale": "#F3E8D8",
+      "highlight": "#FFF8EF"
+    },
+    "card": "#DBE1BA",
+    "pip": "#527A3A",
+    "illustrations": {
+      "A": "Leveret",
+      "B": "Brown Hare",
+      "Q": "Snow Hare",
+      "E": "Moon Hare"
+    }
+  },
+  {
+    "suit": "toad",
+    "animal": {
+      "outline": "#222D26",
+      "shadow": "#4C6144",
+      "body": "#7B9567",
+      "light": "#ADC493",
+      "pale": "#E8EDCF",
+      "highlight": "#FFF9E6"
+    },
+    "card": "#C8DCD6",
+    "pip": "#B34A3C",
+    "illustrations": {
+      "A": "Toadlet",
+      "B": "Forest Toad",
+      "Q": "Moss Toad",
+      "E": "Elder Toad"
+    }
+  }
+]

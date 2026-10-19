@@ -1,0 +1,46 @@
+[
+  {
+    "id": "joker-dragon",
+    "animal": "dragon",
+    "title": "Emerald Dragon",
+    "palette": "Twilight rose",
+    "description": "Jade scales, folded wings and woodland magic.",
+    "rank": "JOKER",
+    "type": "joker",
+    "file": "cards/joker-dragon.html",
+    "art": "/art/card-kit/assets/jokers/dragon.png"
+  },
+  {
+    "id": "joker-unicorn",
+    "animal": "unicorn",
+    "title": "Opal Unicorn",
+    "palette": "Twilight rose",
+    "description": "Ivory coat, moonlit mane and a golden spiral horn.",
+    "rank": "JOKER",
+    "type": "joker",
+    "file": "cards/joker-unicorn.html",
+    "art": "/art/card-kit/assets/jokers/unicorn-equine.png"
+  },
+  {
+    "id": "joker-phoenix",
+    "animal": "phoenix",
+    "title": "Ember Phoenix",
+    "palette": "Twilight rose",
+    "description": "Coral feathers, curling flame tails and warm embers.",
+    "rank": "JOKER",
+    "type": "joker",
+    "file": "cards/joker-phoenix.html",
+    "art": "/art/card-kit/assets/jokers/phoenix.png"
+  },
+  {
+    "id": "joker-griffin",
+    "animal": "griffin",
+    "title": "Golden Griffin",
+    "palette": "Twilight rose",
+    "description": "Eagle feathers, lion haunches and a watchful woodland presence.",
+    "rank": "JOKER",
+    "type": "joker",
+    "file": "cards/joker-griffin.html",
+    "art": "/art/card-kit/assets/jokers/griffin.png"
+  }
+]

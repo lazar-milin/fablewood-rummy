@@ -1,0 +1,79 @@
+/* Compositions and sprite placement imported from the finished card kit. */
+.card .forest-card{aspect-ratio:1/2;width:100%;position:relative;isolation:isolate;border-radius:50% / 25%;overflow:hidden;color:var(--card-ink);filter:drop-shadow(0 6px 6px #382c1c24)}
+.card .forest-card img{position:absolute;display:block;pointer-events:none;image-rendering:pixelated;object-fit:contain}
+.card .forest-card .card-frame{inset:0;width:100%;height:100%;image-rendering:auto}
+.card .head-marker{left:20%;top:4%;width:60%;height:25%;z-index:1}
+.card .border-motif{width:10.5%;height:25%;z-index:1;opacity:.95}
+.card .upper-left{left:8.5%;top:28%}
+.card .upper-right{right:8.5%;top:28%;transform:scaleX(-1)}
+.card .lower-left{left:8.5%;top:53%}
+.card .lower-right{right:8.5%;top:53%;transform:scaleX(-1)}
+.card .pip-field{position:absolute;inset:29% 20% 22%}
+.card .forest-card .pip{width:34%;height:21%;transform:translate(-50%,-50%)}
+.card .pip-field[aria-label^="7 "] .pip{width:32%}
+.card .pip-field[aria-label^="10 "] .pip{height:19%;width:32%}
+.card .art-rank{font:normal clamp(35px,5vw,76px)/1 Alagard;position:absolute;top:80.2%;height:14%;left:30%;width:40%;text-align:center;display:flex;align-items:center;justify-content:center;color:var(--card-ink)}
+.card .forest-card .animal-art{left:10%;top:35%;width:80%;height:45.5%;z-index:2;object-position:center bottom}
+.card .picture .upper-left,.card .picture .upper-right{top:28%;height:25%}
+.card .picture .art-rank{top:81.2%}
+.card .footer-flourish{top:79.5%;width:16%;height:11.2%;z-index:3}
+.card .footer-flourish.left{left:18%}
+.card .footer-flourish.right{right:18%;transform:scaleX(-1)}
+.card .forest-card{filter:none}
+.card .continuous-left{left:7.5%}
+.card .continuous-right{right:7.5%;transform:scaleX(-1)}
+.card .number.suit-fox .border-motif,.card .number.suit-hare .border-motif{top:28.6477%;height:46.7046%}
+.card .number.suit-fox .continuous-left,.card .number.suit-hare .continuous-left{left:6.658%}
+.card .number.suit-fox .continuous-right,.card .number.suit-hare .continuous-right{right:6.658%}
+.card .picture .border-motif{top:28%;height:25%;width:auto;max-width:none}
+.card .picture .upper-left{left:7.5%}
+.card .picture .upper-right{right:7.5%}
+.card .picture.suit-fox .border-motif,.card .picture.suit-hare .border-motif{width:auto;height:23.3523%;top:28.6477%}
+.card .picture.suit-fox .upper-left,.card .picture.suit-hare .upper-left{left:6.658%}
+.card .picture.suit-fox .upper-right,.card .picture.suit-hare .upper-right{right:6.658%}
+.card .picture.suit-owl.rank-E .animal-art{left:10%;width:80%;top:36.5%;height:44%}
+.card .suit-hare .head-marker{left:24.332%;top:5.805%;width:51.336%;height:21.39%}
+.card .forest-card .joker-moon{top:8%;left:45%;width:10%;height:6%;object-fit:contain}
+.card .forest-card .joker-side{top:29%;height:34%;width:auto;max-width:12%;z-index:1}
+.card .joker-side.left{left:8%}
+.card .joker-side.right{right:8%;transform:scaleX(-1)}
+.card .joker-rank{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:3}
+.card .joker-rank text{font-family:Alagard; font-size:38px;fill:var(--card-ink)}
+.card{padding:0;border:0;border-radius:50% / 25%;background:transparent!important;overflow:visible;isolation:isolate}
+.card:before{display:none}
+.card .forest-card{display:block;width:100%;height:100%;container-type:inline-size;filter:none;border-radius:inherit;pointer-events:none}
+.card .forest-card .art-rank{font-family:Alagard;font-size:32cqw;line-height:1}
+.card .forest-card.joker-card .art-rank{font-size:20cqw}
+.card .forest-card .back-surround{left:7%;top:9%;width:86%;height:82%}
+.card .forest-card .back-grimoire{left:18%;top:27%;width:64%;height:46%;filter:drop-shadow(0 3px 2px #160b2099)}
+.card .joker-value{position:absolute;left:12%;right:12%;top:73%;background:#4c305ce8;border-radius:4px;color:#f5e3fd;font:7px Woodland;text-align:center;padding:2px;z-index:4}
+.hand .card{height:136px!important;aspect-ratio:1/2}
+.group-member{height:136px}
+.hand .packed-hand,.hand .pending-pack{border-radius:35px 35px 28px 28px}
+.card.mini-card{height:120px}
+.board .piles #draw-stock,.board .discard-stack .card,.board .discard-stack .empty-card{width:84px;height:168px;max-width:84px}
+.board #draw-stock{background:transparent!important;border:0;color:inherit}
+.board .stock-stack:has(.cut-card-button){width:168px;min-height:242px}
+.board .stock-stack:has(.cut-card-button) .cut-card-button{width:168px;height:84px;top:126px}
+.board .cut-card-button .card{width:84px;height:168px}
+.board{grid-template-columns:198px minmax(0,1fr)}
+.hand .group-member .card{height:136px!important}
+.empty-card{border-radius:50% / 25%}
+@media(max-width:650px){.hand .card,.hand .group-member .card{height:108px!important}.group-member{height:108px}.board .piles #draw-stock,.board .discard-stack .card,.board .discard-stack .empty-card{width:66px;height:132px;max-width:66px}.board .stock-stack:has(.cut-card-button){width:132px;min-height:197px}.board .stock-stack:has(.cut-card-button) .cut-card-button{width:132px;height:66px;top:99px}.board .cut-card-button .card{width:66px;height:132px}.board{grid-template-columns:160px minmax(0,1fr)}}
+.card .number .border-motif{top:28%;height:50%;width:auto;max-width:none}
+.card .number.suit-fox .border-motif,.card .number.suit-hare .border-motif{top:28.6477%;height:46.7046%}
+.card .forest-card.joker-card .animal-art{left:12%;top:17%;width:76%;height:62%;object-position:center bottom}
+/* Larger default artwork, with matching pack and pile geometry. */
+.hand .card,.hand .group-member .card{width:80px!important;max-width:80px!important;flex-basis:80px!important;height:160px!important;aspect-ratio:1/2}
+.group-member{width:80px;flex:0 0 80px;height:160px}
+.group-member+.group-member,.pack-cards>.card+.card{margin-left:-14px}
+.hand .packed-hand,.hand .pending-pack{border-radius:42px 42px 30px 30px}
+.hand .packed-hand .pack-close{top:64px}
+.hand .packed-hand .eject-card{top:44px}
+.card.mini-card{width:70px;height:140px}
+.board .piles #draw-stock,.board .discard-stack .card,.board .discard-stack .empty-card{width:96px;height:192px;max-width:96px}
+.board .stock-stack:has(.cut-card-button){width:192px;min-height:270px}
+.board .stock-stack:has(.cut-card-button) .cut-card-button{width:192px;height:96px;top:144px}
+.board .cut-card-button .card{width:96px;height:192px}
+.board{grid-template-columns:222px minmax(0,1fr)}
+@media(max-width:650px){.hand .card,.hand .group-member .card{width:62px!important;max-width:62px!important;flex-basis:62px!important;height:124px!important}.group-member{width:62px;flex-basis:62px;height:124px}.group-member+.group-member,.pack-cards>.card+.card{margin-left:-11px}.hand .packed-hand,.hand .pending-pack{border-radius:33px 33px 26px 26px}.hand .packed-hand .pack-close{top:48px}.hand .packed-hand .eject-card{top:33px}.card.mini-card{width:58px;height:116px}.board .piles #draw-stock,.board .discard-stack .card,.board .discard-stack .empty-card{width:72px;height:144px;max-width:72px}.board .stock-stack:has(.cut-card-button){width:144px;min-height:210px}.board .stock-stack:has(.cut-card-button) .cut-card-button{width:144px;height:72px;top:108px}.board .cut-card-button .card{width:72px;height:144px}.board{grid-template-columns:174px minmax(0,1fr)}}

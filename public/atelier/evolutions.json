@@ -1,0 +1,26 @@
+{
+  "fox": {
+    "A": "Fox kit",
+    "B": "Red Fox",
+    "Q": "Silver Fox",
+    "E": "Kitsune"
+  },
+  "owl": {
+    "A": "Owlet",
+    "B": "Wood Owl",
+    "Q": "Great Owl",
+    "E": "Moon Owl"
+  },
+  "hare": {
+    "A": "Leveret",
+    "B": "Brown Hare",
+    "Q": "Snow Hare",
+    "E": "Moon Hare"
+  },
+  "toad": {
+    "A": "Toadlet",
+    "B": "Forest Toad",
+    "Q": "Moss Toad",
+    "E": "Elder Toad"
+  }
+}

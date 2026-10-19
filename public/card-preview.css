@@ -1,0 +1,8 @@
+.atelier-button{display:flex;justify-content:center;align-items:center;margin:20px auto 0;padding:10px 18px;max-width:230px;border:2px solid #a37bb5;border-radius:4px;background:#674779;color:#eed5fa;font:24px/1.2 Alagard,Woodland,monospace;text-decoration:none;box-shadow:0 3px 0 #21172a66}
+.atelier-button:hover{background:#79548f;border-color:#cea6e2;color:#fff0ff}
+#card-magnifier{position:fixed;inset:0;z-index:100;display:grid;place-items:center;background:#120b218c;pointer-events:none;animation:card-reveal .18s ease-out}
+.magnifier-content{display:flex;align-items:center;flex-direction:column;gap:18px;max-width:90vw}
+#card-magnifier .magnifier-card{width:min(35vh,320px)!important;height:min(70vh,640px)!important;max-width:none!important;flex:none;border-radius:50% / 25%;outline:2px solid #d6a8ef;outline-offset:5px;box-shadow:0 0 28px 9px #ae68dc99,0 0 80px 20px #7d3cbd77;transform:none;overflow:visible}
+#card-magnifier h2{font:clamp(25px,4vw,40px)/1.1 Alagard,Woodland,monospace;text-align:center;color:#f2d7ff;text-shadow:0 0 15px #bd72ed,0 2px 3px #190b29;margin:0;max-width:85vw}
+@keyframes card-reveal{from{opacity:0}to{opacity:1}}
+@media(prefers-reduced-motion:reduce){#card-magnifier{animation:none}}
