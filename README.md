@@ -1,26 +1,79 @@
 # Fablewood Rummy
 
-Run `npm start` and open http://127.0.0.1:3010. Node.js 22+; no dependencies to install. `npm test` checks game rules, packing, names, and room behavior.
+A magical-forest card game for online tables, hot-seat play, and practice against bots. Classic Rummy follows Serbian Remi 51 with configurable house rules. Rummikub and additional variants are not implemented yet.
 
-Hover a card for four seconds to see a large centered view with a purple glow and its name in Alagard. On a touch screen, hold the card for half a second instead; with the keyboard, press V on a focused card. Move away, tap or click, scroll, press Escape or move focus to dismiss it.
+## Run locally
 
-On phones and tablets the table adapts: in portrait the header splits into a players row and a controls row and the piles sit side by side above the melds; in landscape the board scrolls on the left while your turn and hand stay on the right. Labels are at least 11 px on these screens. The landing page's **Card Atelier** button opens the included collection, with a **Back to the game** button on every collection page. Game and Atelier share the same local artwork.
+Use Node.js 22 or newer. There are no runtime dependencies or build step.
 
-The centered entrance uses the supplied night-forest background and an animated violet heading. Empty names and bots draw from a forest/magic word list. Host names have a red wizard hat; bot names have the existing pixel robot icon.
+```sh
+npm start
+```
 
-Create an online, hot-seat, or practice table. Add human seats or bots in the player row, up to six seats. Share the eight-character code; uppercase and lowercase input are accepted. Hot-seat names appear beneath the lobby controls. Results appear only after a completed round.
+Open http://127.0.0.1:3010. The server listens on `0.0.0.0` and uses the `PORT` environment variable when set. For hosting, run it as a Node web service with `npm start`.
 
-The grimoire replaces the lobby’s inner panel. Use Back beside “Speak the truenames” to return before starting; the server also rejects starting while the grimoire is open. Compact buttons turn green when selected. Options include base hands of 7–14, a 31/51 opening, low/high/both ace positions, and whether jokers may sit at run ends. Finishing from hand options control enablement, minimum-opening requirements, joker eligibility, winner bonus, opponent penalty doubling, and cut-card finishes. Defaults follow [the selected Serbian Remi reference](https://www.remi51.rs/uputstvo_sr); bonus alternatives are explicit house rules.
+Tables, scores, and games live in server memory. Restarting or redeploying the server clears them. Run a single server instance: room state is not shared between processes.
 
-Click compatible cards to move a potential group left. A pair gets one tight outer symbol border. A completed meld stays highlighted while another loose card can extend it; clicking elsewhere packs it into an overlapping capsule. Its bottom strip selects the whole group; the bottom-right × returns its cards to the loose hand. Sorting by rank or animal affects only loose cards. Groups are remembered per player and round. Select groups reaching the opening threshold, then press Open on a legal turn. Nothing opens automatically. No opening is made during the first lap or before drawing. After opening, select capsules and use Lay selected meld. Keep one final discard.
+## Start a table
 
-The top code block shows Table CODE, the current turn, and Copy code. It expands with abbreviated game rules on hover or keyboard focus; timer and undo are represented by their separate indicators. Compact player panels sit between the title and controls, with the playing indicator below the active player. The scoreboard aligns names left and scores right, with a cup beside each tied lowest scorer.
+Enter a name, or leave it blank for a forest-inspired name, and create a table. Choose online play, hot-seat play, or a practice game. Add human or bot seats in the player panels, up to six seats. Online players join using the eight-character table code or an open table on the landing page. Codes accept either case.
 
-The horizontal cut card sits under the stock with half of its short side covered, and the equally sized stock/discard cards sit above and below that stack. A dashed divider separates the piles from table melds. Newly formed groups remain selected and lift together, with a purple outline outside the patterned shell and a centered points/select footer. Hover a group to reveal its circular ungroup control, or hover an individual card for one second to reveal a red remove button. Removing a card preserves a valid remaining group; an incomplete compatible remainder returns to a highlighted draft.
+The host chooses the rules through the grimoire, then returns to the lobby and starts the game. Timer and Undo preferences are in the header controls. Results appear on the scoreboard after the first completed round; the lowest total leads.
 
-The move strip stays 76 pixels high, with equal-height action buttons and the selected-card count on the right. Discard is orange, opening/laying is green, ungrouping is violet, and Undo retains its imported icon and purple styling. The host's Start game button is green.
+## Rules as implemented
 
-Two decks and four jokers make 108 uniquely identified cards. Scores accumulate and first player rotates. Tables reset when the server restarts. Stock exhaustion reshuffles discards while retaining their top card. This stock convention is unchanged. The finished card kit from “Build Rummy Forest card mockup” supplies all ordinary cards, four distinct mystical jokers, and the grimoire back. Artwork uses its original 1:2 proportions and Alagard lettering, including H/B/Q/E.
+- The deck has two copies of four animal suits and four jokers: 108 cards. Foxes, hares, toads, and owls replace the traditional suits. Displayed ranks are A, 2–9, H (10), B (11), Q (12), and E (13).
+- Players normally receive 14 cards. The first player receives one extra and starts by discarding. Opening is unavailable during the first lap.
+- After the first turn, draw from the stock or the top discard, play legal groups if permitted, and discard to end the turn. Always keep a final discard.
+- Sets contain at least three equal ranks in distinct animal suits. Runs contain at least three consecutive ranks in one animal suit. Aces may be low, high, or both according to the table preference; a run cannot wrap from high to low.
+- Your first opening combines new groups worth at least 51 points by default. Select the groups and press **Open**. Packed groups do not open automatically. After opening, you may lay more groups, extend table melds, and replace a joker with the card it represents.
+- A closed player taking the discard after the first lap must open that turn. The cut card is available only for an eligible finish from hand. A forced opening or cut-card draw can be cancelled before completing its requirement.
+- A reclaimed joker must go into a fresh meld before the turn ends, or be buried with an ordinary card under the implemented burying rule. Jokers retain their assigned values in table melds.
+- Finishing from hand means opening and playing your own groups in one turn without laying off onto existing melds, then making the final discard. Host preferences determine eligibility, bonuses, and penalties.
+- Stock exhaustion reshuffles the discard pile while retaining its top card.
 
-The temporary deterministic browser-QA helpers are in the chat’s `work/` directory and are not part of the game server or delivered game source.
+The default rules are based on [Serbian Remi 51](https://www.remi51.rs/uputstvo_sr). The choices below include explicit house rules.
 
+## Host preferences
+
+| Preference | Choices | Default |
+| --- | --- | --- |
+| Starting hand | 7–14 cards; first player gets one extra | 14 |
+| Opening threshold | 31 or 51 | 51 |
+| Aces in runs | Low, high, or both | Both |
+| Jokers at run ends | Allowed or forbidden | Allowed |
+| Finishing from hand | Enabled or disabled | Enabled |
+| Opening threshold for a hand finish | Required or waived | Required |
+| Jokers in a hand finish | Allowed or forbidden | Allowed |
+| Hand-finish winner bonus | −80 or −100 | −80 |
+| Double opponents' penalties for a hand finish | On or off | On |
+| Cut-card finish | Enabled or disabled | Enabled |
+| Cut-card winner bonus | −120 or −140 | −120 |
+| Turn timer | Off, 30, 60, or 120 seconds | Off |
+| Undo | Enabled or disabled | Enabled |
+
+An ordinary winner scores −40. Other opened players score the value of their remaining cards; closed players score 100. Aces are worth 10, numbered cards their rank capped at 10, and jokers 20. Eligible hand finishes apply the configured winner bonus and opponent multiplier. Scores accumulate across rounds and the first player rotates.
+
+Undo is limited to your current turn. It cannot undo a stock draw to reveal a hidden card or take back a completed discard. The timer completes an expired turn automatically.
+
+## Hand controls and card inspection
+
+Click compatible cards to draft a group. A completed group stays editable while another card in hand can extend it; choosing something else packs it into one capsule. Select a capsule using its footer. Its close button ungroups it, and an individual card's remove control takes that card out. Sorting affects loose cards only.
+
+Hover a card for four seconds to inspect a large version. On touch screens, hold it for half a second; with a keyboard, press **V** on a focused card. Move away, click or tap, scroll, move focus, or press Escape to dismiss the preview.
+
+The landing page's **Card Atelier** opens the complete deck and artwork collection. Every Atelier page has a **Back to the game** link.
+
+## Development
+
+```sh
+npm test
+```
+
+Tests cover the engine, rules, bots, hand packing, room privacy, undo, static serving, and artwork links. Server tests start temporary localhost services on ports 3011, 3013, and 3015. The same suite runs in GitHub Actions. See [CLAUDE.md](CLAUDE.md) for architecture and contribution conventions.
+
+## Artwork and licence
+
+The card illustrations and decorative sprites were generated with OpenAI's image-generation tools, then converted from pixel artwork into vector SVGs with `tools/px2svg.py`. The forest background was supplied for this project and converted to SVG as well. [ASSETS.md](ASSETS.md) records provenance and credits.
+
+The project is distributed under [GPL-3.0-only](LICENSE). Third-party fonts retain their authors' terms: Alagard by Hewett Tsoi (Pix3M), and VCR OSD Mono by Riciery Leal (MrManet). Their notices are included in [public/fonts/](public/fonts/).

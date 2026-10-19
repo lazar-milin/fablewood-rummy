@@ -1,4 +1,4 @@
-@font-face{font-family:Woodland;src:url('/art/card-kit/assets/fonts/vcr-osd-mono.ttf') format('truetype');font-display:swap}
+@font-face{font-family:Woodland;src:url('/fonts/vcr-osd-mono.ttf') format('truetype');font-display:swap}
 :root{--paper:#30233c;--ink:#efe6d9;--muted:#bfa7ca;--line:#93739f77;--forest:#d9b5eb;color-scheme:dark;font-synthesis:none}
 body{font-family:Woodland,monospace;font-size:13px;background:#04152d;color:var(--ink);min-height:100vh}
 body:before{content:'';position:fixed;inset:0;z-index:-2;background:linear-gradient(#09132a36,#11101f99),url('/art/card-kit/assets/ui/forest-night.svg') center/cover no-repeat;image-rendering:pixelated}

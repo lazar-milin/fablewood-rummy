@@ -1,0 +1,14 @@
+VCR OSD Mono
+Creator: Riciery Leal (MrManet; MrManet is the designer embedded in this font).
+Source: https://www.dafont.com/vcr-osd-mono.font
+Permission: https://www.dafont.com/font-comment.php?file=vcr_osd_mono
+Verified: 19 October 2026
+
+The author's distribution page lists the font as "100% Free". On 24 February
+2017, the author, posting as mrmanet, confirmed:
+"Yes, the font is free even for commercial purposes."
+
+Fablewood Rummy uses and credits VCR OSD Mono by Riciery Leal / MrManet.
+The original download archive contains its TTF only, with no separate licence
+text. This notice records the author's published permission; it is not a grant
+of a new licence. The font is not relicensed under the project's GPL.

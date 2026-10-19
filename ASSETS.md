@@ -1,47 +1,40 @@
-# Vector artwork
+# Artwork and third-party credits
 
-Every image under `public/art/` is an SVG. The artwork was made as pixel-art PNGs, and some earlier "SVG" files only wrapped one of those PNGs in base64. `tools/px2svg.py` turned each one into real vectors:
+## Card artwork
 
-- It finds the image's pixel grid. The generated art has slightly uneven pixel sizes, so each grid line snaps to the nearest colour edge.
-- It takes one colour per grid cell and reduces the image to at most 128 colours.
-- It writes one crisp-edged path per colour in the original pixel coordinates. Image sizes, `viewBox` crops and card placement are unchanged.
+The card kit supplies 52 ordinary faces, four mystical jokers, and a crescent-grimoire back. The animal suits are fox, hare, toad, and owl. Illustrations, suit heads, counting pips, frames, ornaments, and grimoire artwork were generated using OpenAI's image-generation tools, assembled into card compositions, and converted to vector SVGs. The original PNG artwork is retained in Git history at commit `5ba4355`.
 
-The PNG originals are in git history at commit `5ba4355`.
+`public/art/card-kit/assets/` is the shared artwork directory for the game and Card Atelier. `public/card-art.js` contains the card compositions; `public/card-art.css` positions their components. The original 1:2 card proportions are preserved. Game values remain numeric; displayed face ranks use H/B/Q/E. Joker variants are dragon, unicorn, phoenix, and griffin. The game favicon uses `assets/jokers/griffin.svg` from that shared kit.
 
-To convert new art, run `pip install pillow numpy`. Then run `python3 tools/px2svg.py jobs.json`, where `jobs.json` is a list of `{"src": "in.png", "dst": "out.svg"}` entries. Check the result in the Card Atelier before replacing an asset.
+The active unicorn is `assets/jokers/unicorn-equine.svg`. The earlier unicorn and moon illustrations, the superseded forest background, and obsolete standalone preview pages have been retired.
 
-# Active background
+## Background and interface
 
-`public/art/card-kit/assets/ui/forest-night.svg` was vectorized from the user's supplied “Enchanted Pixel Forest at Night true size.pixel-16bit.png”.
+`public/art/card-kit/assets/ui/forest-night.svg` was vectorized from the project owner's supplied image, “Enchanted Pixel Forest at Night true size.pixel-16bit.png”. It is the active night-forest background.
 
-# Active card artwork
+`assets/back/grimoire-book.svg` is the generated purple-and-gold book sprite used by the lobby's rule controls and the card back. `public/icons.js` contains the code-defined control icons shared with the author's Birdcard and Bugtile games. Layout, card frames, and decorative patterns are also defined in the project's CSS and SVG markup.
 
-The approved `rummyforest-card-kit-v2` from the chat **Build Rummy Forest card mockup** is now used for all 52 ordinary faces, four mystical jokers, and the grimoire deck back. Its referenced assets were copied into `public/art/card-kit/assets/` and later vectorized (see Vector artwork). Source metadata and the imported file list are in `public/art/card-kit/SOURCE.json`.
+## Vector conversion and production records
 
-`public/card-art.js` contains the imported card compositions. `public/card-art.css` preserves their sprite placement and adapts sizes to the game. The numeric game values remain unchanged; displayed ranks use A, 2–9, H, B, Q, E. Joker 0 is the dragon, 1 the unicorn, 2 the phoenix, and 3 the griffin. No new image generation was used for this import.
+`tools/px2svg.py` detects the pixel grid, samples its colour cells, reduces the palette to at most 128 colours, and emits crisp SVG paths in the original coordinates. It preserves intrinsic dimensions and viewBox crops. The current SVG artwork contains vector geometry rather than embedded bitmap images.
 
-`public/atelier/` includes the latest Card Atelier from that same chat. It shares `public/art/card-kit/assets/` with the game, including the additional reference and component assets. Only navigation back to the game and shared asset URLs were added to the imported pages.
+Art generation prompts, validation notes, layout records, and the historical import inventory are kept in [docs/art/](docs/art/), outside the served `public/` directory. The live Atelier retains the deck, palette, joker, and asset manifests used for its reference collection.
 
-# Grimoire sprite
+To convert new art, install Pillow and NumPy in a Python environment, then run:
 
-File: `public/art/card-kit/assets/back/grimoire-book.svg`
+```sh
+python tools/px2svg.py jobs.json
+```
 
-Generated with the built-in Imagegen tool on a transparent background, then copied unchanged into the project.
+`jobs.json` is an array of `{"src":"input.png","dst":"output.svg"}` entries. Inspect new assets in the Atelier before changing the shared card compositions.
 
-Final prompt:
+## Fonts
 
-> Use case: stylized-concept. Asset type: isolated pixel art inventory sprite for a magical forest card game UI. A single clearly recognizable closed grimoire book, viewed almost front-on with a slight three-quarter tilt so its cream page block and thick spine show. Rich plum purple leather cover, maroon spine, gold corner guards and clasp, a little silver moon embossed in the cover. Crisp retro 16-bit pixel art with deliberately chunky square pixels and clear dark outlines, readable at 48px tall. Compact full book centered with modest transparent padding, no surrounding objects, no text or letters, no scenery, no cast shadow outside the sprite. Genuine transparent background.
+The game and Atelier both load the single copies in `public/fonts/`. Font files are unmodified and retain their authors' terms separately from the project GPL licence.
 
-# Earlier background (retained, unused)
+| Font | Creator | Published permission and credit |
+| --- | --- | --- |
+| Alagard | Hewett Tsoi, credited in the font as Pix3M | The [author's distribution page](https://www.dafont.com/alagard.font) lists it as 100% Free and requires credit. The author's permission is recorded in [LICENSE-alagard.txt](public/fonts/LICENSE-alagard.txt). |
+| VCR OSD Mono | Riciery Leal, credited in the font as MrManet | The [author's distribution page](https://www.dafont.com/vcr-osd-mono.font) lists it as 100% Free. The author explicitly permits commercial use in a [24 February 2017 comment](https://www.dafont.com/font-comment.php?file=vcr_osd_mono). See [LICENSE-vcr-osd-mono.txt](public/fonts/LICENSE-vcr-osd-mono.txt). |
 
-File: `public/art/forest-pixel.svg`
-
-Generated with the built-in Imagegen tool using the user's fox/toad/hare card mockup as a style reference. Existing card artwork was retained.
-
-Final prompt:
-
-> Use case: stylized-concept. Asset type: wide background for a pixel-art magical forest card game website. Use the attached card mockup only as an art-style and palette reference: crisp warm storybook pixel art, natural olive and sage leaves, brown trunks, cream light, burgundy mushroom caps. Create an empty enchanted woodland clearing, no cards, no UI, no text, no animals or characters. Grassy mossy ground along bottom fifth, a few small glowing mushrooms and flowers at lower corners; tall branching tree trunks frame left and right above the ground; dense green pixel leaf canopy at the top edge. Middle is quiet misty sage-green woodland depth with lots of clear low-contrast space behind interface panels. Firefly sparkles and subtle magical lilac highlights. Actual visible square pixel clusters, low resolution retro 8-bit game scenery scaled with hard nearest-neighbor edges, no smooth gradients or vector curves. Landscape 16:9 composition.
-
-Font and control icons were copied from the user's Bugtile project, whose icon definitions were originally copied from Birdcard. The font is `public/fonts/vcr-osd-mono.ttf`; icons are in `public/icons.js`.
-
-`public/fonts/alagard.ttf` is the user-supplied Alagard font, copied unchanged from the Rummy assets folder. The grimoire's ace sequence buttons use it.
+The original distribution archives were checked on 19 October 2026; each contains only its font file and no separate licence document. The included notices preserve the published author attribution and permission statements; they do not assign a different licence to the fonts.

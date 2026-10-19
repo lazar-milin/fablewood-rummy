@@ -1,0 +1,12 @@
+Alagard
+Creator: Hewett Tsoi (Pix3M; Pix3M is the attribution embedded in this font).
+Source: https://www.dafont.com/alagard.font
+Verified: 19 October 2026
+
+The author's distribution page lists the font as "100% Free" and states:
+"Give credit if used. That's it."
+
+Fablewood Rummy uses and credits Alagard by Hewett Tsoi / Pix3M.
+The original download archive contains alagard.ttf only, with no separate
+licence text. This notice records the author's published permission; it is
+not a grant of a new licence. The font is not relicensed under the project's GPL.

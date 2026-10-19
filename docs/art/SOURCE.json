@@ -1,6 +1,5 @@
 {
-  "chat": "Build Rummy Forest card mockup",
-  "source": "rummyforest-card-kit-v2 (Build Rummy Forest card mockup)",
+  "source": "Fablewood Rummy card kit",
   "cards": [
     {
       "id": "fox-A",
@@ -620,5 +619,6 @@
     "assets/pips/hare-clovers.svg",
     "assets/pips/owl-stars.svg",
     "assets/pips/toad-mushrooms.svg"
-  ]
+  ],
+  "description": "Historical import inventory; see ASSETS.md for current paths and retired assets."
 }
