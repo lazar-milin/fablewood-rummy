@@ -80,8 +80,10 @@ export function play(state,player,action){
  }else if(action.type==='replace'){
   if(!s.opened[player]||s.mustHand)throw Error('Open before reclaiming a joker.');const cards=pick(action.ids),m=s.melds[action.index],j=m?.cards.find(c=>c.id===action.jokerId&&c.joker);if(cards.length!==1||cards[0].joker||!j||cards[0].rank!==j.as.rank||cards[0].suit!==j.as.suit)throw Error('Select the exact card represented by that joker.');m.cards[m.cards.indexOf(j)]=cards[0];remove(cards);delete j.as;hand.push(j);s.pendingJokers.push(j.id);s.laidOffThisTurn=true;log('reclaimed a joker, to use in a new meld this turn.');
  }else if(action.type==='discard'){
-  if(s.mustOpen)throw Error(`This draw requires an opening of ${rules.opening} points. Cancel the draw to choose again.`);if(s.mustHand&&hand.length!==1)throw Error('You must finish from hand this turn.');if(s.pendingJokers.length)throw Error('Use reclaimed jokers in a new meld before discarding.');
+  if(s.mustOpen)throw Error(`This draw requires an opening of ${rules.opening} points. Cancel the draw to choose again.`);if(s.mustHand&&hand.length!==1)throw Error('You must finish from hand this turn.');
   const cards=pick(action.ids),jokers=cards.filter(c=>c.joker),ordinary=cards.filter(c=>!c.joker);
+  // A reclaimed joker that can't go into a new meld may only leave the hand buried with an ordinary card.
+  if(s.pendingJokers.some(id=>!cards.some(c=>c.id===id)))throw Error('Use the reclaimed joker in a new meld, or bury it with one ordinary card.');
   const lastJokers=cards.length===hand.length&&jokers.length===cards.length;
   if(!(cards.length===1&&!jokers.length||cards.length===2&&jokers.length===1&&ordinary.length===1||lastJokers))throw Error('Discard one card. Bury a joker with one ordinary card, unless it is your final card.');
   remove(cards);s.discard.push(...jokers,...ordinary);log(jokers.length?'discarded a joker.':'discarded a card.');
@@ -99,7 +101,7 @@ export function candidateMelds(hand,rules={}){
 }
 export function findOpening(hand,{finish=false,rules={}}={}){
  const options={...DEFAULT_RULES,...rules},candidates=candidateMelds(hand,options);let best=null,nodes=0;
- function visit(start,used,groups,sum){if(++nodes>12000)return;const finishBypass=options.handEnabled&&!options.handRequiresOpening&&used.size===hand.length-1&&(options.handJokers||!groups.some(m=>m.cards.some(c=>c.joker)));if(groups.length&&(sum>=options.opening||finishBypass)&&used.size<hand.length&&(!finish||used.size===hand.length-1)){if(!best||used.size>best.count)best={groups:groups.map(m=>m.ids),points:sum,count:used.size};if(finish)return;}
+ function visit(start,used,groups,sum){if(++nodes>12000)return;const finishBypass=options.handEnabled&&!options.handRequiresOpening&&used.size===hand.length-1&&(options.handJokers||!hand.some(c=>c.joker));if(groups.length&&(sum>=options.opening||finishBypass)&&used.size<hand.length&&(!finish||used.size===hand.length-1)){if(!best||used.size>best.count)best={groups:groups.map(m=>m.ids),points:sum,count:used.size};if(finish)return;}
   for(let i=start;i<candidates.length;i++){const m=candidates[i];if(m.ids.some(id=>used.has(id))||used.size+m.ids.length>=hand.length)continue;visit(i+1,new Set([...used,...m.ids]),[...groups,m],sum+m.points);if(finish&&best)return;}
  }visit(0,new Set(),[],0);return best;
 }
@@ -113,7 +115,13 @@ export function botAction(s){
    if(hand.length>1)for(let index=0;index<s.melds.length;index++)for(const c of hand){const m=s.melds[index];if(m.kind==='set'&&c.joker)continue;if(resolveMeld([...m.cards,c],{kind:m.kind,rules:s.options}))return {type:'layoff',index,ids:[c.id]};}
   }
  }
+ return botDiscard(s);
+}
+// The least useful legal discard; also the server's fallback when any other automatic move is rejected.
+export function botDiscard(s){
+ const hand=s.hands[s.turn],pending=hand.filter(c=>s.pendingJokers.includes(c.id));
  const potential=c=>hand.reduce((n,o)=>n+(o.id!==c.id&&!o.joker?(o.rank===c.rank?4:0)+(o.suit===c.suit&&Math.abs(o.rank-c.rank)<=2?2:0):0),0);
  const ordinary=hand.filter(c=>!c.joker).sort((a,b)=>potential(a)-potential(b)||points(b)-points(a));
+ if(pending.length&&ordinary.length)return {type:'discard',ids:[pending[0].id,ordinary[0].id]};
  if(ordinary.length)return {type:'discard',ids:[ordinary[0].id]};return {type:'discard',ids:hand.map(c=>c.id)};
 }
