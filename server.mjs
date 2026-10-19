@@ -53,6 +53,8 @@ const server=http.createServer(async(req,res)=>{const url=new URL(req.url,'http:
    if(r.phase!=='game')throw Error('The game has not started.');const p=control(r,you),prior=r.state,priorBackup=r.turnBackup;
    if(prior.turn!==p||r.players[p].type==='bot')throw Error('It is not your turn.');
    const next=play(prior,p,body.action);r.history.push({state:prior,player:p,turnBackup:priorBackup});if(body.action.type==='draw')r.turnBackup={state:prior,player:p};r.state=next;
+   // Undo stays within the current turn and can't take back a draw that revealed a hidden card.
+   if(body.action.type==='draw'&&body.action.source!=='discard'||next.turn!==prior.turn||next.winner!==null)r.history=[];
    if(next.turn!==prior.turn||next.winner!==null)r.turnBackup=null;bots(r);scoreRound(r);
   }else if(endpoint==='cancel-draw'){
    const p=control(r,you);if(!r.turnBackup||r.turnBackup.player!==p||r.state.turn!==p||!r.state.mustOpen&&!r.state.mustHand)throw Error('Only a discard or cut-card draw that requires an opening can be cancelled.');r.state=r.turnBackup.state;r.turnBackup=null;r.history=[];
