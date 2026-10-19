@@ -5,7 +5,7 @@
 Use Node.js 22.9 or newer. There are no runtime packages or build step.
 
 - `npm start` loads `.env` if present and runs `server.mjs`, serving `public/` and the room API on `HOST` (default 127.0.0.1) and `PORT` (default 3010). `.env.example` lists the settings.
-- `npm test` runs `node --test tests/*.test.mjs`. The HTTP tests use temporary ports 3011, 3013, 3015, 3017, 3019, and 3021; these must be free and localhost sockets must be allowed.
+- `npm test` runs `node --test tests/*.test.mjs`. The HTTP tests use temporary ports 3011, 3013, 3015, 3017, 3019, 3021, and 3023; these must be free and localhost sockets must be allowed.
 - GitHub Actions runs the same suite on pushes and pull requests.
 
 Keep changes focused. Run the relevant tests, and run the complete suite before publishing a change. Check responsive UI work in a browser at phone and desktop widths. Do not restart an existing local server unnecessarily: room state lives in memory.
@@ -14,9 +14,9 @@ Keep changes focused. Run the relevant tests, and run the complete suite before 
 
 `public/engine.js` is the shared, DOM-independent rules engine. `createGame()` deals a new state. `play()` validates an action and returns a cloned next state. `resolveMeld()`, opening search, and bot planning share the table's rules. `DEFAULT_RULES` supplies the Serbian Remi 51 defaults; README.md documents the selectable house rules.
 
-Preserve unique card IDs and conservation of all 108 cards across hands, stock, discard, cut card, and melds. Animal suits are fox, hare, toad, and owl. Ranks remain numeric internally; H/B/Q/E are display labels only. Do not implement rule changes solely in the UI: validate them in the engine or server and cover rule edge cases in tests.
+Preserve unique card IDs and conservation of all 108 cards across hands, stock, discard, cut card, and melds. Animal suits are fox, hare, toad, and owl. Ranks remain numeric internally; H/B/Q/E are display labels only. Do not implement rule changes solely in the UI: validate them in the engine or server and cover rule edge cases in tests. Opening groups allow at most one joker; later new melds may use multiple jokers. `meldChoices()` enumerates legal run placements; action `assignments` declare their joker ranks and suits. Validate declarations against the player’s hand.
 
-The first player begins with one extra card and discards without a draw. Opening is forbidden during the first lap. Later turns draw, optionally play melds, then discard. A final discard is required, including a finish from hand. Respect forced-opening draws, cut-card finishes, assigned joker values, reclaimed-joker obligations, and host preferences. Bots and timed-out turns use validated engine actions; `botMove()` falls back to a legal discard when a plan is rejected.
+The first player begins with one extra card and discards without a draw. Opening is forbidden during the first lap. Later turns draw, optionally play melds, then discard. A final discard is required, including a finish from hand. Respect forced-opening draws, cut-card finishes, fixed run-joker positions, flexible set-joker animals, reclaimed-joker obligations, and host preferences. Bots and timed-out turns use validated engine actions; `botMove()` falls back to a legal discard when a plan is rejected.
 
 ## Server and private state
 
@@ -36,7 +36,7 @@ Undo is constrained to the current turn and cannot reveal the stock: a stock dra
 
 ## Client and responsive layout
 
-`public/app.js` renders the landing page, lobby, header, play surface, and preferences. It polls the same-origin HTTP API. State-changing actions are serialized through `run()`; `accept()` updates the room and renders. `public/packing.js` handles local hand grouping without changing game ownership or rule validity. Sorting affects loose cards only, and opening always requires the explicit Open action.
+`public/app.js` renders the landing page, lobby, header, play surface, and preferences. It long-polls the same-origin HTTP API with `since=<revision>` (25-second wait, 204 when unchanged), keeping one request in flight and backing off after errors. Authenticated mutations send their base revision; a mismatch returns 409 with a fresh private view. Create/join admissions need no revision. State-changing actions are serialized through `run()`; `accept()` updates the room and renders. `public/packing.js` handles local hand grouping without changing game ownership or rule validity. Sorting affects loose cards only, and opening always requires the explicit Open action.
 
 `public/index.html` loads the CSS layers in order: base, remi, fablewood, refinements, table layout, card art, card preview, then responsive overrides. Header controls retain 47px square collapsed buttons, expand labels on hover, and slide as one row. `fitHeader()` measures collapsed control widths so hovering does not change header layout. Player tiles move below when needed and center in that row. Their status text and reserved badge space must match between active and inactive players.
 

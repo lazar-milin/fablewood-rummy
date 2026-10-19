@@ -6,15 +6,16 @@ export const DEFAULT_RULES={opening:51,aceMode:'both',jokerEnds:true,handEnabled
 export const points=c=>c.joker?20:c.rank===1?10:Math.min(c.rank,10);
 const rankOf=c=>c.joker?c.as?.rank:c.rank;
 const suitOf=c=>c.joker?c.as?.suit:c.suit;
-// Wildcards keep their declared position when a table meld grows.
+// Run jokers keep their declared positions; set jokers cover any missing animal.
 export function resolveMeld(cards,{opening=false,kind=null,rules={}}={}){
  const options={...DEFAULT_RULES,...rules};
  if(cards.length<3||new Set(cards.map(c=>c.id)).size!==cards.length)return null;
  const wild=cards.filter(c=>c.joker&&!c.as),fixed=cards.filter(c=>!c.joker||c.as);
+ const setWild=cards.filter(c=>c.joker),setFixed=cards.filter(c=>!c.joker);
  if(!fixed.length||opening&&cards.filter(c=>c.joker).length>1)return null;
- if(kind!=='run'&&cards.length<=4&&new Set(fixed.map(rankOf)).size===1&&new Set(fixed.map(suitOf)).size===fixed.length){
-  const rank=rankOf(fixed[0]),missing=SUITS.filter(s=>!fixed.some(c=>suitOf(c)===s));
-  if(missing.length>=wild.length){const resolved=[...fixed,...wild.map((c,i)=>({...c,as:{suit:missing[i],rank}}))];return {kind:'set',cards:resolved,points:resolved.reduce((n,c)=>n+points({rank:rankOf(c)}),0)};}
+ if(kind!=='run'&&setFixed.length&&cards.length<=4&&new Set(setFixed.map(rankOf)).size===1&&new Set(setFixed.map(suitOf)).size===setFixed.length){
+  const rank=rankOf(setFixed[0]),missing=SUITS.filter(s=>!setFixed.some(c=>suitOf(c)===s));
+  if(missing.length>=setWild.length){const resolved=[...setFixed,...setWild.map((c,i)=>({...c,as:{suit:missing[i],rank}}))];return {kind:'set',cards:resolved,points:resolved.reduce((n,c)=>n+points({rank:rankOf(c)}),0)};}
  }
  if(kind==='set'||new Set(fixed.map(suitOf)).size!==1||cards.length>13)return null;
  const suit=suitOf(fixed[0]);
@@ -32,6 +33,24 @@ export function resolveMeld(cards,{opening=false,kind=null,rules={}}={}){
   }
  }
  return null;
+}
+export function meldChoices(cards,{opening=false,rules={}}={}){
+ const results=[],seen=new Set(),add=m=>{if(!m)return;const key=m.kind+'|'+m.cards.map(c=>c.id+':'+(c.as?.rank||c.rank)).join('|');if(!seen.has(key)){seen.add(key);results.push(m);}};
+ add(resolveMeld(cards,{opening,rules}));
+ const real=cards.filter(c=>!c.joker),wild=cards.filter(c=>c.joker);
+ if(!wild.length||!real.length||new Set(real.map(c=>c.suit)).size!==1)return results;
+ for(const high of [false,true])for(let start=high?2:1;start+cards.length-1<=(high?14:13);start++){
+  const values=real.map(c=>high&&c.rank===1?14:c.rank),range=Array.from({length:cards.length},(_,i)=>start+i);
+  if(new Set(values).size!==values.length||values.some(n=>!range.includes(n)))continue;
+  const missing=range.filter(n=>!values.includes(n));if(missing.length!==wild.length)continue;
+  add(resolveMeld([...real,...wild.map((c,i)=>({...c,as:{suit:real[0].suit,rank:missing[i]===14?1:missing[i]}}))],{opening,kind:'run',rules}));
+ }
+ return results;
+}
+function declaredCards(cards,assignments={}){
+ if(!assignments||typeof assignments!=='object'||Array.isArray(assignments))throw new PlayerError('Choose valid joker positions.');
+ for(const [id,as] of Object.entries(assignments))if(!cards.some(c=>c.id===id&&c.joker)||!as||!SUITS.includes(as.suit)||!Number.isInteger(as.rank)||as.rank<1||as.rank>13)throw new PlayerError('Choose valid joker positions.');
+ return cards.map(c=>c.joker&&assignments[c.id]?{...c,as:assignments[c.id]}:c);
 }
 export const validMeld=cards=>!!resolveMeld(cards);
 export function createGame(names,options={},random=Math.random){
@@ -69,18 +88,18 @@ export function play(state,player,action,random=Math.random){
  if(action.type==='open'){
   if(s.opened[player])throw new PlayerError('You are already open.');
   const groups=action.groups||[],cards=pick(groups.flat());reserve(cards);if(!groups.length)throw new PlayerError('Stage your opening groups first.');
-  const resolved=groups.map(ids=>resolveMeld(pick(ids),{opening:true,rules}));if(resolved.some(m=>!m))throw new PlayerError('Each group must follow the selected ace and joker rules, with at most one joker.');
+  const declared=declaredCards(cards,action.assignments);const resolved=groups.map(ids=>resolveMeld(ids.map(id=>declared.find(c=>c.id===id)),{opening:true,rules}));if(resolved.some(m=>!m))throw new PlayerError('Each group must follow the selected ace and joker rules, with at most one joker.');
   const sum=resolved.reduce((n,m)=>n+m.points,0),usesJoker=cards.some(c=>c.joker),finishOnly=rules.handEnabled&&!rules.handRequiresOpening&&cards.length===hand.length-1&&(rules.handJokers||!hand.some(c=>c.joker));
   if(sum<rules.opening&&!finishOnly)throw new PlayerError(`Opening is ${sum}; at least ${rules.opening} points are needed.`);
   if(s.fromCut&&!rules.handJokers&&hand.some(c=>c.joker))throw new PlayerError('This table does not allow jokers when finishing from hand.');
   if(sum<rules.opening)s.mustHand=true;
   s.handUsedJokers=usesJoker;s.opened[player]=true;s.openedThisTurn=true;s.mustOpen=false;for(const m of resolved)s.melds.push({...m,owner:player});remove(cards);log(`opened with ${sum} points.`);
  }else if(action.type==='meld'){
-  if(!s.opened[player])throw new PlayerError(`Group ${rules.opening} points to open first.`);const cards=pick(action.ids);reserve(cards);const m=resolveMeld(cards,{opening:true,rules});if(!m)throw new PlayerError('Choose a valid run or set under this table’s rules.');s.handUsedJokers ||= cards.some(c=>c.joker);s.melds.push({...m,owner:player});remove(cards);log('laid a meld.');
+  if(!s.opened[player])throw new PlayerError(`Group ${rules.opening} points to open first.`);const cards=pick(action.ids);reserve(cards);const m=resolveMeld(declaredCards(cards,action.assignments),{opening:false,rules});if(!m)throw new PlayerError('Choose a valid run or set under this table’s rules.');s.handUsedJokers ||= cards.some(c=>c.joker);s.melds.push({...m,owner:player});remove(cards);log('laid a meld.');
  }else if(action.type==='layoff'){
   if(!s.opened[player]||s.mustHand)throw new PlayerError('Open before adding to melds. A hand-only finish must use your own groups.');const cards=pick(action.ids);reserve(cards);const m=s.melds[action.index];if(!m||!cards.length||m.kind==='set'&&cards.some(c=>c.joker))throw new PlayerError('You cannot add those cards to this meld.');const result=resolveMeld([...m.cards,...cards],{kind:m.kind,rules});if(!result)throw new PlayerError('Those cards do not extend this meld under the selected rules.');s.melds[action.index]={...result,owner:m.owner};remove(cards);s.laidOffThisTurn=true;log('extended a meld.');
  }else if(action.type==='replace'){
-  if(!s.opened[player]||s.mustHand)throw new PlayerError('Open before reclaiming a joker.');const cards=pick(action.ids),m=s.melds[action.index],j=m?.cards.find(c=>c.id===action.jokerId&&c.joker);if(cards.length!==1||cards[0].joker||!j||cards[0].rank!==j.as.rank||cards[0].suit!==j.as.suit)throw new PlayerError('Select the exact card represented by that joker.');m.cards[m.cards.indexOf(j)]=cards[0];remove(cards);delete j.as;hand.push(j);s.pendingJokers.push(j.id);s.laidOffThisTurn=true;log('reclaimed a joker, to use in a new meld this turn.');
+  if(!s.opened[player]||s.mustHand)throw new PlayerError('Open before reclaiming a joker.');const cards=pick(action.ids),m=s.melds[action.index],j=m?.cards.find(c=>c.id===action.jokerId&&c.joker);if(cards.length!==1||cards[0].joker||!j||cards[0].rank!==j.as.rank||(m.kind==='set'?m.cards.some(c=>!c.joker&&c.suit===cards[0].suit):cards[0].suit!==j.as.suit))throw new PlayerError('Select a missing animal of this rank for a set, or the exact card represented in a run.');m.cards[m.cards.indexOf(j)]=cards[0];const resolved=resolveMeld(m.cards,{kind:m.kind,rules});if(!resolved)throw new PlayerError('That card cannot replace this joker.');s.melds[action.index]={...resolved,owner:m.owner};remove(cards);delete j.as;hand.push(j);s.pendingJokers.push(j.id);s.laidOffThisTurn=true;log('reclaimed a joker, to use in a new meld this turn.');
  }else if(action.type==='discard'){
   if(s.mustOpen)throw new PlayerError(`This draw requires an opening of ${rules.opening} points. Cancel the draw to choose again.`);if(s.mustHand&&hand.length!==1)throw new PlayerError('You must finish from hand this turn.');
   const cards=pick(action.ids),jokers=cards.filter(c=>c.joker),ordinary=cards.filter(c=>!c.joker);
@@ -94,11 +113,11 @@ export function play(state,player,action,random=Math.random){
  }else throw new PlayerError('Unknown action.');
  return s;
 }
-export function candidateMelds(hand,rules={}){
+export function candidateMelds(hand,rules={},opening=true){
  const out=[],seen=new Set(),wild=hand.filter(c=>c.joker);
- const add=cs=>{const key=cs.map(c=>c.id).sort().join('|');if(seen.has(key))return;const m=resolveMeld(cs,{opening:true,rules});if(m){seen.add(key);out.push({...m,ids:cs.map(c=>c.id)});}};
- for(let rank=1;rank<=13;rank++){const bySuit=SUITS.map(s=>hand.find(c=>!c.joker&&c.rank===rank&&c.suit===s)).filter(Boolean);if(bySuit.length>=3){add(bySuit);if(bySuit.length===4)for(let i=0;i<4;i++)add(bySuit.filter((_,j)=>j!==i));}if(bySuit.length>=2)for(const j of wild){add([...bySuit.slice(0,2),j]);if(bySuit.length===3)add([...bySuit,j]);}}
- for(const suit of SUITS)for(const high of [false,true]){const get=n=>hand.find(c=>!c.joker&&c.suit===suit&&c.rank===(n===14?1:n));for(let start=high?2:1;start<=12;start++)for(let end=start+2;end<=(high?14:13);end++){const range=Array.from({length:end-start+1},(_,i)=>get(start+i)),miss=range.filter(c=>!c).length;if(!miss)add(range);else if(miss===1)for(const j of wild)add(range.map(c=>c||j));}}
+ const add=cs=>{const key=cs.map(c=>c.id).sort().join('|');if(seen.has(key))return;const m=resolveMeld(cs,{opening,rules});if(m){seen.add(key);out.push({...m,ids:cs.map(c=>c.id)});}};
+ for(let rank=1;rank<=13;rank++){const bySuit=SUITS.map(s=>hand.find(c=>!c.joker&&c.rank===rank&&c.suit===s)).filter(Boolean);if(bySuit.length>=3){add(bySuit);if(bySuit.length===4)for(let i=0;i<4;i++)add(bySuit.filter((_,j)=>j!==i));}if(!opening&&bySuit.length)for(let n=2;n<=Math.min(wild.length,4-bySuit.length);n++)add([...bySuit,...wild.slice(0,n)]);if(bySuit.length>=2)for(const j of wild){add([...bySuit.slice(0,2),j]);if(bySuit.length===3)add([...bySuit,j]);}}
+ for(const suit of SUITS)for(const high of [false,true]){const get=n=>hand.find(c=>!c.joker&&c.suit===suit&&c.rank===(n===14?1:n));for(let start=high?2:1;start<=12;start++)for(let end=start+2;end<=(high?14:13);end++){const range=Array.from({length:end-start+1},(_,i)=>get(start+i)),miss=range.filter(c=>!c).length;if(!miss)add(range);else if(miss>0&&miss<=wild.length&&(!opening||miss===1)){for(let offset=0;offset+miss<=wild.length;offset++){let i=offset;add(range.map(c=>c||wild[i++]));}}}}
  return out.sort((a,b)=>b.ids.length-a.ids.length||b.points-a.points);
 }
 export function findOpening(hand,{finish=false,rules={}}={}){
@@ -113,7 +132,7 @@ export function botAction(s){
  if(!firstLap){
   if(!s.opened[p]){const opening=findOpening(hand,{rules:s.options});if(opening)return {type:'open',groups:opening.groups};}
   else{
-   for(const m of candidateMelds(hand,s.options))if(m.ids.length<hand.length)return {type:'meld',ids:m.ids};
+   for(const m of candidateMelds(hand,s.options,false))if(m.ids.length<hand.length)return {type:'meld',ids:m.ids};
    if(hand.length>1)for(let index=0;index<s.melds.length;index++)for(const c of hand){const m=s.melds[index];if(m.kind==='set'&&c.joker)continue;if(resolveMeld([...m.cards,c],{kind:m.kind,rules:s.options}))return {type:'layoff',index,ids:[c.id]};}
   }
  }

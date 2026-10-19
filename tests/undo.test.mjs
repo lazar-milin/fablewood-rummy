@@ -2,7 +2,7 @@ import test from 'node:test';import assert from 'node:assert/strict';import {spa
 test('undo stays inside your own turn and never reveals the stock',async()=>{
  const child=spawn(process.execPath,['server.mjs'],{cwd:new URL('..',import.meta.url),env:{...process.env,PORT:'3015'},stdio:['ignore','pipe','pipe']});
  try{await Promise.race([once(child.stdout,'data'),new Promise((_,reject)=>setTimeout(()=>reject(Error('Server startup timeout')),7000).unref())]);
- const api=async(endpoint,body,token)=>{const r=await fetch('http://127.0.0.1:3015/api/'+endpoint,{method:'POST',headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{})},body:JSON.stringify(body)});return {status:r.status,value:await r.json()};};
+ const api=async(endpoint,body,token)=>{if(body&&token&&endpoint!=='state'&&endpoint!=='join'){const state=await fetch('http://127.0.0.1:3015/api/state?code='+body.code,{headers:{Authorization:'Bearer '+token}}).then(r=>r.json());body={revision:state.revision,...body};}const r=await fetch('http://127.0.0.1:3015/api/'+endpoint,{method:'POST',headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{})},body:JSON.stringify(body)});return {status:r.status,value:await r.json()};};
  const created=await api('create',{name:'Host'}),code=created.value.room.code,host=created.value.token;
  const guest=(await api('join',{code,name:'Guest'})).value.token;
  const started=await api('start',{code},host);assert.equal(started.value.canUndo,false);

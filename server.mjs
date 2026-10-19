@@ -27,6 +27,15 @@ function needHost(r,you){if(you!==r.host)throw new PlayerError('Only the host ca
 function needLobby(r,you){needHost(r,you);if(r.phase!=='lobby')throw new PlayerError('Change this before starting the game.');}
 function control(r,you){return r.mode==='hotseat'&&you===0&&r.players[r.state.turn].type!=='bot'?r.state.turn:you;}
 function scoreRound(r){if(r.state.winner===null||r.scored)return;r.totals=r.totals.map((n,i)=>n+r.state.scores[i]);r.scored=true;r.completedGames++;}
+// Wake held state requests after every visible table change, including timers and departures.
+const waiting=new Map();
+function wake(r){for(const done of [...(waiting.get(r.code)||[])])done();}
+function changed(r){r.revision++;wake(r);}
+function waitForChange(r,res){return new Promise(resolve=>{
+ const list=waiting.get(r.code)||new Set();waiting.set(r.code,list);
+ const done=()=>{clearTimeout(timer);res.off('close',done);list.delete(done);if(!list.size)waiting.delete(r.code);resolve();};
+ const timer=setTimeout(done,25000);list.add(done);res.once('close',done);
+});}
 const server=http.createServer(async(req,res)=>{res.setHeader('X-Content-Type-Options','nosniff');const url=new URL(req.url,'http://localhost');const send=(s,v)=>{res.writeHead(s,{'Content-Type':'application/json','Cache-Control':'no-store'});res.end(JSON.stringify(v));};try{
  if(url.pathname.startsWith('/api/')){
   const ip=clientAddress(req);if(!limiter.allow(ip))return send(429,{error:'Too many requests. Try again shortly.'});
@@ -35,9 +44,19 @@ const server=http.createServer(async(req,res)=>{res.setHeader('X-Content-Type-Op
   if(endpoint==='tables')return send(200,[...rooms.values()].filter(r=>r.phase==='lobby'&&r.mode==='online'&&r.players.some(p=>p.type==='human'&&!p.token)).map(r=>({code:r.code,host:r.players[r.host].name,count:r.players.filter(p=>p.token||p.type==='bot').length,seats:r.players.length})));
   if(endpoint==='create'){if(!creates.allow(ip))return send(429,{error:'Too many new tables. Try again shortly.'});let code;do{code=randomBytes(4).toString('hex');}while(rooms.has(code));const t=token();const r={code,host:0,touched:Date.now(),players:[{name:clean(body.name),token:t,type:'human'},{name:'',token:null,type:'human'}],mode:'online',phase:'lobby',options:{...DEFAULT_RULES,handSize:14,undo:true,timer:0,variant:'remi51'},revision:0,state:null,history:[],turnBackup:null,totals:[0,0],scored:false,completedGames:0,tinkering:false,round:0};rooms.set(code,r);return send(200,{token:t,room:view(r,t)});}
   const r=rooms.get(String(body.code||url.searchParams.get('code')||'').toLowerCase());if(!r)throw new PlayerError('Table not found.');r.touched=Date.now();
-  if(endpoint==='join'){const index=r.players.findIndex(p=>p.type==='human'&&!p.token);if(r.mode!=='online'||r.phase!=='lobby'||index<0)throw new PlayerError('This table is not open.');const t=token();r.players[index]={name:clean(body.name),token:t,type:'human'};r.revision++;return send(200,{token:t,room:view(r,t)});}
+  if(endpoint==='join'){const index=r.players.findIndex(p=>p.type==='human'&&!p.token);if(r.mode!=='online'||r.phase!=='lobby'||index<0)throw new PlayerError('This table is not open.');const t=token();r.players[index]={name:clean(body.name),token:t,type:'human'};changed(r);return send(200,{token:t,room:view(r,t)});}
   const you=r.players.findIndex(p=>p.token===auth);if(you<0)throw new PlayerError('Please join this table.');
-  if(endpoint==='state')return send(200,view(r,auth));
+  if(endpoint==='state'){
+   const raw=url.searchParams.get('since'),since=raw===null?null:Number(raw);
+   if(raw!==null&&(!Number.isInteger(since)||since<0))throw new PlayerError('Invalid table revision.');
+   if(since!==null&&since===r.revision)await waitForChange(r,res);
+   if(res.destroyed)return;
+   if(!rooms.has(r.code))throw new PlayerError('Table not found.');
+   if(since===r.revision){res.writeHead(204,{'Cache-Control':'no-store'});return res.end();}
+   return send(200,view(r,auth));
+  }
+  if(req.method!=='POST')return send(405,{error:'Use POST to change the table.'});
+  if(!Number.isInteger(body.revision)||body.revision!==r.revision)return send(409,{error:'The table changed. Review the latest position and try again.',room:view(r,auth)});
   if(endpoint==='settings'){
    needLobby(r,you);
    const next={...r.options};
@@ -73,7 +92,7 @@ const server=http.createServer(async(req,res)=>{res.setHeader('X-Content-Type-Op
    if(!r.options.undo||!r.history.length||r.state.winner!==null)throw new PlayerError('Nothing to undo.');const last=r.history.at(-1);if(r.mode!=='hotseat'&&last.player!==you)throw new PlayerError('Only your latest action can be undone.');r.history.pop();r.state=last.state;r.turnBackup=last.turnBackup;
   }else if(endpoint==='leave'){
    // The table closes only when its last player leaves. Hot-seat and practice tables have just the host.
-   const others=r.players.map((p,i)=>i).filter(i=>i!==you&&r.players[i].token);if(!others.length){rooms.delete(r.code);return send(200,{left:true});}
+   const others=r.players.map((p,i)=>i).filter(i=>i!==you&&r.players[i].token);if(!others.length){rooms.delete(r.code);wake(r);return send(200,{left:true});}
    // In the lobby the host keeps the first seat, so a leaving host's seat goes to the next player.
    if(r.phase==='lobby'){const seat=you===r.host?others[0]:you;r.players[you]=r.players[seat];r.players[seat]={name:'',token:null,type:'human'};}
    else{
@@ -83,8 +102,8 @@ const server=http.createServer(async(req,res)=>{res.setHeader('X-Content-Type-Op
     if(r.state.turn===you&&r.state.winner===null){if(r.turnBackup)r.state=r.turnBackup.state;r.turnBackup=null;r.history=[];}
     r.state.log.push(`${r.state.names[you]} left the table. A bot plays the seat.`);bots(r);scoreRound(r);
    }
-   r.revision++;return send(200,{left:true});
-  }else throw new PlayerError('Unknown request.');r.revision++;return send(200,view(r,auth));
+   changed(r);return send(200,{left:true});
+  }else throw new PlayerError('Unknown request.');changed(r);return send(200,view(r,auth));
  }
  // Resolve as a plain file path (never a URL, which would honour file: and %2e%2e) and refuse anything outside public/.
  let path;try{path=url.pathname==='/'?'index.html':decodeURIComponent(url.pathname.slice(1));}catch{res.writeHead(400);return res.end('Bad request');}
@@ -99,7 +118,7 @@ const server=http.createServer(async(req,res)=>{res.setHeader('X-Content-Type-Op
   // Messages written for players pass through; anything else is a server fault and stays in the server log.
   if(e instanceof PlayerError)return send(400,{error:e.message});console.error(e);if(res.headersSent)return res.end();send(500,{error:'Something went wrong. Try again.'});
  }});
-setInterval(()=>{for(const r of rooms.values()){if(r.phase!=='game'||r.state.winner!==null||!r.options.timer)continue;if(Date.now()-r.state.turnStarted>r.options.timer*1000){try{if(r.turnBackup){r.state=r.turnBackup.state;r.turnBackup=null;}let guard=0,p=r.state.turn;while(r.state.turn===p&&r.state.winner===null&&guard++<60)r.state=botMove(r.state);bots(r);scoreRound(r);r.history=[];r.revision++;}catch(e){console.error(e);r.state.turnStarted=Date.now();r.state.log.push('The timer could not finish the turn.');r.revision++;}}}},1000).unref();
+setInterval(()=>{for(const r of rooms.values()){if(r.phase!=='game'||r.state.winner!==null||!r.options.timer)continue;if(Date.now()-r.state.turnStarted>r.options.timer*1000){try{if(r.turnBackup){r.state=r.turnBackup.state;r.turnBackup=null;}let guard=0,p=r.state.turn;while(r.state.turn===p&&r.state.winner===null&&guard++<60)r.state=botMove(r.state);bots(r);scoreRound(r);r.history=[];changed(r);}catch(e){console.error(e);r.state.turnStarted=Date.now();r.state.log.push('The timer could not finish the turn.');changed(r);}}}},1000).unref();
 // Tables live only in memory: one untouched for a day is removed, and so are request counts for quiet addresses.
 setInterval(()=>{expireTables(rooms);limiter.sweep();creates.sweep();},60000).unref();
 server.listen(port,address,()=>console.log(`Fablewood Rummy: http://${['0.0.0.0','::'].includes(address)?'127.0.0.1':address.includes(':')?`[${address}]`:address}:${port}`));

@@ -2,7 +2,7 @@ import test from 'node:test';import assert from 'node:assert/strict';import {spa
 test('mixed seats, lowercase codes, host settings, online privacy and turn rollback',async()=>{
  const child=spawn(process.execPath,['server.mjs'],{cwd:new URL('..',import.meta.url),env:{...process.env,PORT:'3011'},stdio:['ignore','pipe','pipe']});
  try{await Promise.race([once(child.stdout,'data'),new Promise((_,reject)=>setTimeout(()=>reject(Error('Server startup timeout')),7000).unref())]);
- const api=async(endpoint,body,token)=>{const r=await fetch('http://127.0.0.1:3011/api/'+endpoint,{method:body?'POST':'GET',headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{})},...(body?{body:JSON.stringify(body)}:{})});return {status:r.status,value:await r.json()};};
+ const api=async(endpoint,body,token)=>{if(body&&token&&endpoint!=='state'&&endpoint!=='join'){const state=await fetch('http://127.0.0.1:3011/api/state?code='+body.code,{headers:{Authorization:'Bearer '+token}}).then(r=>r.json());body={revision:state.revision,...body};}const r=await fetch('http://127.0.0.1:3011/api/'+endpoint,{method:body?'POST':'GET',headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{})},...(body?{body:JSON.stringify(body)}:{})});return {status:r.status,value:await r.json()};};
  const created=await api('create',{name:'Host'}),code=created.value.room.code,host=created.value.token;
  assert.match(code,/^[a-f0-9]{8}$/);assert.equal(created.value.room.options.handSize,14);
  assert.equal(created.value.room.completedGames,0);

@@ -7,3 +7,5 @@
 @keyframes card-reveal{from{opacity:0}to{opacity:1}}
 @media(prefers-reduced-motion:reduce){#card-magnifier{animation:none}}
 .card[data-card],#draw-stock{-webkit-touch-callout:none}
+
+.joker-choices{display:flex;flex-wrap:wrap;gap:10px}.joker-choices button{min-height:42px;white-space:normal}

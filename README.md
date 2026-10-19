@@ -30,7 +30,7 @@ The host chooses the rules through the grimoire, then returns to the lobby and s
 - Sets contain at least three equal ranks in distinct animal suits. Runs contain at least three consecutive ranks in one animal suit. Aces may be low, high, or both according to the table preference; a run cannot wrap from high to low.
 - Your first opening combines new groups worth at least 51 points by default. Select the groups and press **Open**. Packed groups do not open automatically. After opening, you may lay more groups, extend table melds, and replace a joker with the card it represents.
 - A closed player taking the discard after the first lap must open that turn. The cut card is available only for an eligible finish from hand. A forced opening or cut-card draw can be cancelled before completing its requirement.
-- A reclaimed joker must go into a fresh meld before the turn ends, or be buried with an ordinary card under the implemented burying rule. Jokers retain their assigned values in table melds.
+- A reclaimed joker must go into a fresh meld before the turn ends, or be buried with an ordinary card under the implemented burying rule. Each opening group may contain at most one joker; new melds after opening may contain multiple jokers. A set joker represents any missing animal of its rank, so either missing animal may extend the set or replace it. When a run has multiple legal joker positions, choose one before laying it; run positions then remain fixed.
 - Finishing from hand means opening and playing your own groups in one turn without laying off onto existing melds, then making the final discard. Host preferences determine eligibility, bonuses, and penalties.
 - Stock exhaustion reshuffles the discard pile while retaining its top card.
 
@@ -79,3 +79,5 @@ Tests cover the engine, rules, bots, hand packing, room privacy, undo, static se
 The card illustrations and decorative sprites were generated with OpenAI's image-generation tools, then converted from pixel artwork into vector SVGs with `tools/px2svg.py`. The forest background was supplied for this project and converted to SVG as well. [ASSETS.md](ASSETS.md) records provenance and credits.
 
 The project is distributed under [GPL-3.0-only](LICENSE). Third-party fonts retain their authors' terms: Alagard by Hewett Tsoi (Pix3M), and VCR OSD Mono by Riciery Leal (MrManet). Their notices are included in [public/fonts/](public/fonts/).
+
+Table updates use one held HTTP request per client, waiting up to 25 seconds for a change. Unchanged tables return 204. Authenticated changes require the displayed `revision`; stale or missing revisions return 409 and the latest private table view. Creating or joining a table is an admission request and does not require a prior private revision. The entrance table list refreshes every 15 seconds only while visible.
