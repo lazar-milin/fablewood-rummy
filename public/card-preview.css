@@ -6,3 +6,4 @@
 #card-magnifier h2{font:clamp(25px,4vw,40px)/1.1 Alagard,Woodland,monospace;text-align:center;color:#f2d7ff;text-shadow:0 0 15px #bd72ed,0 2px 3px #190b29;margin:0;max-width:85vw}
 @keyframes card-reveal{from{opacity:0}to{opacity:1}}
 @media(prefers-reduced-motion:reduce){#card-magnifier{animation:none}}
+.card[data-card],#draw-stock{-webkit-touch-callout:none}
