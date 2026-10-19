@@ -63,13 +63,7 @@ document.fonts.load('25px Alagard').then(()=>{
 });
 function requestHeaderFit(){if(!headerFitFrame)headerFitFrame=requestAnimationFrame(fitHeader);}
 function fitHeader(){
- headerFitFrame=0;const header=$('header');if(!room){header.classList.remove('hide-header-title');return;}
- const css=getComputedStyle(header),available=header.clientWidth-parseFloat(css.paddingLeft)-parseFloat(css.paddingRight),gap=parseFloat(css.columnGap)||0;
- const strip=$('header-players').querySelector('.players'),seats=[...strip.children],seatGap=parseFloat(getComputedStyle(strip).columnGap)||0;
- const seatWidth=seats.reduce((n,e)=>n+e.getBoundingClientRect().width,0)+Math.max(0,seats.length-1)*seatGap+4;
- const nav=header.querySelector('.header-controls'),navCss=getComputedStyle(nav),controls=[...nav.children].filter(e=>getComputedStyle(e).display!=='none');
- const controlWidth=controls.reduce((n,e)=>n+e.getBoundingClientRect().width,0)+Math.max(0,controls.length-1)*(parseFloat(navCss.columnGap)||0)+parseFloat(navCss.paddingLeft)+parseFloat(navCss.paddingRight);
- header.classList.toggle('hide-header-title',144+seatWidth+controlWidth+2*gap>available);
+ headerFitFrame=0;const header=$('header');header.classList.remove('hide-header-title');
 }
 const headerSizer=new ResizeObserver(requestHeaderFit);
 for(const el of [$('header'),$('header-players'),$('copy'),document.querySelector('.header-controls')])headerSizer.observe(el);
