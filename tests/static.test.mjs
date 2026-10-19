@@ -6,7 +6,7 @@ test('static files are served only from public/',async()=>{
  try{await Promise.race([once(child.stdout,'data'),new Promise((_,reject)=>setTimeout(()=>reject(Error('Server startup timeout')),7000).unref())]);
  const home=await get(3013,'/');assert.equal(home.status,200);assert.match(home.body,/Fablewood/);
  const icon=home.body.match(/<link rel="icon" type="image\/svg\+xml" href="([^"]+)"/);assert.ok(icon,'the game declares an SVG favicon');
- assert.match(icon[1],/\/griffin\.svg$/);const favicon=await get(3013,icon[1]);assert.equal(favicon.status,200);assert.equal(favicon.type,'image/svg+xml');
+ assert.match(icon[1],/\/heads\/toad-head\.svg$/);const favicon=await get(3013,icon[1]);assert.equal(favicon.status,200);assert.equal(favicon.type,'image/svg+xml');
  const art=await get(3013,'/art/card-kit/assets/heads/fox-head.svg');assert.equal(art.status,200);assert.equal(art.type,'image/svg+xml');
  for(const path of ['/atelier/PROMPTS.json','/atelier/VALIDATION.md','/art/card-kit/SOURCE.json','/docs/art/SOURCE.json','/docs/art/production/PROMPTS.json','/atelier/evolution-reference.html','/atelier/joker-preview.html','/atelier/ornament-preview.html','/art/card-kit/assets/fonts/alagard.ttf','/art/card-kit/assets/fonts/vcr-osd-mono.ttf'])assert.equal((await get(3013,path)).status,404,path);
  for(const name of ['alagard','vcr-osd-mono']){const font=await get(3013,`/fonts/${name}.ttf`);assert.equal(font.status,200);assert.equal(font.type,'font/ttf');}

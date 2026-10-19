@@ -4,7 +4,7 @@
 
 The card kit supplies 52 ordinary faces, four mystical jokers, and a crescent-grimoire back. The animal suits are fox, hare, toad, and owl. Illustrations, suit heads, counting pips, frames, ornaments, and grimoire artwork were generated using OpenAI's image-generation tools, assembled into card compositions, and converted to vector SVGs. The original PNG artwork is retained in Git history at commit `5ba4355`.
 
-`public/art/card-kit/assets/` is the shared artwork directory for the game and Card Atelier. `public/card-art.js` contains the card compositions; `public/card-art.css` positions their components. The original 1:2 card proportions are preserved. Game values remain numeric; displayed face ranks use H/B/Q/E. Joker variants are dragon, unicorn, phoenix, and griffin. The game favicon uses `assets/jokers/griffin.svg` from that shared kit.
+`public/art/card-kit/assets/` is the shared artwork directory for the game and Card Atelier. `public/card-art.js` contains the card compositions; `public/card-art.css` positions their components. The original 1:2 card proportions are preserved. Game values remain numeric; displayed face ranks use H/B/Q/E. Joker variants are dragon, unicorn, phoenix, and griffin. The game favicon uses `assets/heads/toad-head.svg` from that shared kit.
 
 The active unicorn is `assets/jokers/unicorn-equine.svg`. The earlier unicorn and moon illustrations, the superseded forest background, and obsolete standalone preview pages have been retired.
 
