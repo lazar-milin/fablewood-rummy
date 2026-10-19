@@ -1,3 +1,5 @@
+// Errors meant for players; the server hides every other error's message.
+export class PlayerError extends Error{}
 export const SUITS=['fox','hare','toad','owl'];
 export const RULESETS={remi51:{name:'Classic Rummy',opening:51}};
 export const DEFAULT_RULES={opening:51,aceMode:'both',jokerEnds:true,handEnabled:true,handRequiresOpening:true,handJokers:true,handBonus:80,handDouble:true,cutEnabled:true,cutBonus:120};
@@ -42,54 +44,54 @@ export function createGame(names,options={},random=Math.random){
  for(let i=0;i<names.length;i++)while(hands[i].length<count+(i===first?1:0))hands[i].push(deck.shift());
  return {names,hands,stock:deck,cutCard,discard:[],melds:[],turn:first,first,stage:'meld',turns:0,opened:names.map(()=>false),winner:null,log:[`Classic Rummy: opening ${options.opening}. The first player starts with one extra card and discards.`],scores:names.map(()=>0),turnStarted:Date.now(),options:{undo:true,timer:0,...options},mustOpen:false,mustHand:false,fromCut:false,handUsedJokers:false,openedThisTurn:false,laidOffThisTurn:false,pendingJokers:[]};
 }
-export function play(state,player,action){
- const s=structuredClone(state);if(s.winner!==null)throw Error('The round has ended.');if(player!==s.turn)throw Error('It is not your turn.');
+export function play(state,player,action,random=Math.random){
+ const s=structuredClone(state);if(s.winner!==null)throw new PlayerError('The round has ended.');if(player!==s.turn)throw new PlayerError('It is not your turn.');
  const hand=s.hands[player],firstLap=s.turns<s.names.length,rules={...DEFAULT_RULES,...s.options};
- const pick=ids=>{if(!Array.isArray(ids)||new Set(ids).size!==ids.length)throw Error('Choose each card once.');const cs=ids.map(id=>hand.find(c=>c.id===id));if(cs.some(c=>!c))throw Error('Choose cards from your hand.');return cs;};
+ const pick=ids=>{if(!Array.isArray(ids)||new Set(ids).size!==ids.length)throw new PlayerError('Choose each card once.');const cs=ids.map(id=>hand.find(c=>c.id===id));if(cs.some(c=>!c))throw new PlayerError('Choose cards from your hand.');return cs;};
  const remove=cs=>{for(const c of cs){hand.splice(hand.findIndex(x=>x.id===c.id),1);s.pendingJokers=s.pendingJokers.filter(id=>id!==c.id);}};
- const reserve=cs=>{if(hand.length-cs.length<1)throw Error('Keep one card for the final discard.');};
+ const reserve=cs=>{if(hand.length-cs.length<1)throw new PlayerError('Keep one card for the final discard.');};
  const log=t=>s.log.push(`${s.names[player]} ${t}`);
  if(action.type==='draw'){
-  if(s.stage!=='draw')throw Error('You have already drawn, or hold the opening extra card.');
-  if(!['stock','discard','cut'].includes(action.source))throw Error('Choose a draw pile.');
+  if(s.stage!=='draw')throw new PlayerError('You have already drawn, or hold the opening extra card.');
+  if(!['stock','discard','cut'].includes(action.source))throw new PlayerError('Choose a draw pile.');
   if(action.source==='cut'){
-   if(firstLap||s.opened[player]||!s.cutCard||!rules.handEnabled||!rules.cutEnabled)throw Error('The cut card is only for an enabled finish from a closed hand.');
+   if(firstLap||s.opened[player]||!s.cutCard||!rules.handEnabled||!rules.cutEnabled)throw new PlayerError('The cut card is only for an enabled finish from a closed hand.');
    hand.push(s.cutCard);s.cutCard=null;s.mustHand=true;s.mustOpen=true;s.fromCut=true;log('took the cut card and must finish from hand.');
   }else{
-   if(action.source==='stock'&&!s.stock.length){if(s.discard.length<2)throw Error('Stock is empty. Take the discard or end a blocked round.');const top=s.discard.pop();s.stock=s.discard;s.discard=[top];for(let i=s.stock.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[s.stock[i],s.stock[j]]=[s.stock[j],s.stock[i]];}}
-   const c=s[action.source].pop();if(!c)throw Error('That pile is empty.');hand.push(c);
+   if(action.source==='stock'&&!s.stock.length){if(s.discard.length<2)throw new PlayerError('Stock is empty. Take the discard or end a blocked round.');const top=s.discard.pop();s.stock=s.discard;s.discard=[top];for(let i=s.stock.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[s.stock[i],s.stock[j]]=[s.stock[j],s.stock[i]];}}
+   const c=s[action.source].pop();if(!c)throw new PlayerError('That pile is empty.');hand.push(c);
    s.mustOpen=action.source==='discard'&&!firstLap&&!s.opened[player];log(`drew from the ${action.source}.`);
   }
   s.stage='meld';return s;
  }
- if(s.stage!=='meld')throw Error('Draw a card first.');
- if(['open','meld','layoff','replace'].includes(action.type)&&firstLap)throw Error('No opening or melding during the first lap.');
+ if(s.stage!=='meld')throw new PlayerError('Draw a card first.');
+ if(['open','meld','layoff','replace'].includes(action.type)&&firstLap)throw new PlayerError('No opening or melding during the first lap.');
  if(action.type==='open'){
-  if(s.opened[player])throw Error('You are already open.');
-  const groups=action.groups||[],cards=pick(groups.flat());reserve(cards);if(!groups.length)throw Error('Stage your opening groups first.');
-  const resolved=groups.map(ids=>resolveMeld(pick(ids),{opening:true,rules}));if(resolved.some(m=>!m))throw Error('Each group must follow the selected ace and joker rules, with at most one joker.');
+  if(s.opened[player])throw new PlayerError('You are already open.');
+  const groups=action.groups||[],cards=pick(groups.flat());reserve(cards);if(!groups.length)throw new PlayerError('Stage your opening groups first.');
+  const resolved=groups.map(ids=>resolveMeld(pick(ids),{opening:true,rules}));if(resolved.some(m=>!m))throw new PlayerError('Each group must follow the selected ace and joker rules, with at most one joker.');
   const sum=resolved.reduce((n,m)=>n+m.points,0),usesJoker=cards.some(c=>c.joker),finishOnly=rules.handEnabled&&!rules.handRequiresOpening&&cards.length===hand.length-1&&(rules.handJokers||!hand.some(c=>c.joker));
-  if(sum<rules.opening&&!finishOnly)throw Error(`Opening is ${sum}; at least ${rules.opening} points are needed.`);
-  if(s.fromCut&&!rules.handJokers&&hand.some(c=>c.joker))throw Error('This table does not allow jokers when finishing from hand.');
+  if(sum<rules.opening&&!finishOnly)throw new PlayerError(`Opening is ${sum}; at least ${rules.opening} points are needed.`);
+  if(s.fromCut&&!rules.handJokers&&hand.some(c=>c.joker))throw new PlayerError('This table does not allow jokers when finishing from hand.');
   if(sum<rules.opening)s.mustHand=true;
   s.handUsedJokers=usesJoker;s.opened[player]=true;s.openedThisTurn=true;s.mustOpen=false;for(const m of resolved)s.melds.push({...m,owner:player});remove(cards);log(`opened with ${sum} points.`);
  }else if(action.type==='meld'){
-  if(!s.opened[player])throw Error(`Group ${rules.opening} points to open first.`);const cards=pick(action.ids);reserve(cards);const m=resolveMeld(cards,{opening:true,rules});if(!m)throw Error('Choose a valid run or set under this table’s rules.');s.handUsedJokers ||= cards.some(c=>c.joker);s.melds.push({...m,owner:player});remove(cards);log('laid a meld.');
+  if(!s.opened[player])throw new PlayerError(`Group ${rules.opening} points to open first.`);const cards=pick(action.ids);reserve(cards);const m=resolveMeld(cards,{opening:true,rules});if(!m)throw new PlayerError('Choose a valid run or set under this table’s rules.');s.handUsedJokers ||= cards.some(c=>c.joker);s.melds.push({...m,owner:player});remove(cards);log('laid a meld.');
  }else if(action.type==='layoff'){
-  if(!s.opened[player]||s.mustHand)throw Error('Open before adding to melds. A hand-only finish must use your own groups.');const cards=pick(action.ids);reserve(cards);const m=s.melds[action.index];if(!m||!cards.length||m.kind==='set'&&cards.some(c=>c.joker))throw Error('You cannot add those cards to this meld.');const result=resolveMeld([...m.cards,...cards],{kind:m.kind,rules});if(!result)throw Error('Those cards do not extend this meld under the selected rules.');s.melds[action.index]={...result,owner:m.owner};remove(cards);s.laidOffThisTurn=true;log('extended a meld.');
+  if(!s.opened[player]||s.mustHand)throw new PlayerError('Open before adding to melds. A hand-only finish must use your own groups.');const cards=pick(action.ids);reserve(cards);const m=s.melds[action.index];if(!m||!cards.length||m.kind==='set'&&cards.some(c=>c.joker))throw new PlayerError('You cannot add those cards to this meld.');const result=resolveMeld([...m.cards,...cards],{kind:m.kind,rules});if(!result)throw new PlayerError('Those cards do not extend this meld under the selected rules.');s.melds[action.index]={...result,owner:m.owner};remove(cards);s.laidOffThisTurn=true;log('extended a meld.');
  }else if(action.type==='replace'){
-  if(!s.opened[player]||s.mustHand)throw Error('Open before reclaiming a joker.');const cards=pick(action.ids),m=s.melds[action.index],j=m?.cards.find(c=>c.id===action.jokerId&&c.joker);if(cards.length!==1||cards[0].joker||!j||cards[0].rank!==j.as.rank||cards[0].suit!==j.as.suit)throw Error('Select the exact card represented by that joker.');m.cards[m.cards.indexOf(j)]=cards[0];remove(cards);delete j.as;hand.push(j);s.pendingJokers.push(j.id);s.laidOffThisTurn=true;log('reclaimed a joker, to use in a new meld this turn.');
+  if(!s.opened[player]||s.mustHand)throw new PlayerError('Open before reclaiming a joker.');const cards=pick(action.ids),m=s.melds[action.index],j=m?.cards.find(c=>c.id===action.jokerId&&c.joker);if(cards.length!==1||cards[0].joker||!j||cards[0].rank!==j.as.rank||cards[0].suit!==j.as.suit)throw new PlayerError('Select the exact card represented by that joker.');m.cards[m.cards.indexOf(j)]=cards[0];remove(cards);delete j.as;hand.push(j);s.pendingJokers.push(j.id);s.laidOffThisTurn=true;log('reclaimed a joker, to use in a new meld this turn.');
  }else if(action.type==='discard'){
-  if(s.mustOpen)throw Error(`This draw requires an opening of ${rules.opening} points. Cancel the draw to choose again.`);if(s.mustHand&&hand.length!==1)throw Error('You must finish from hand this turn.');
+  if(s.mustOpen)throw new PlayerError(`This draw requires an opening of ${rules.opening} points. Cancel the draw to choose again.`);if(s.mustHand&&hand.length!==1)throw new PlayerError('You must finish from hand this turn.');
   const cards=pick(action.ids),jokers=cards.filter(c=>c.joker),ordinary=cards.filter(c=>!c.joker);
   // A reclaimed joker that can't go into a new meld may only leave the hand buried with an ordinary card.
-  if(s.pendingJokers.some(id=>!cards.some(c=>c.id===id)))throw Error('Use the reclaimed joker in a new meld, or bury it with one ordinary card.');
+  if(s.pendingJokers.some(id=>!cards.some(c=>c.id===id)))throw new PlayerError('Use the reclaimed joker in a new meld, or bury it with one ordinary card.');
   const lastJokers=cards.length===hand.length&&jokers.length===cards.length;
-  if(!(cards.length===1&&!jokers.length||cards.length===2&&jokers.length===1&&ordinary.length===1||lastJokers))throw Error('Discard one card. Bury a joker with one ordinary card, unless it is your final card.');
+  if(!(cards.length===1&&!jokers.length||cards.length===2&&jokers.length===1&&ordinary.length===1||lastJokers))throw new PlayerError('Discard one card. Bury a joker with one ordinary card, unless it is your final card.');
   remove(cards);s.discard.push(...jokers,...ordinary);log(jokers.length?'discarded a joker.':'discarded a card.');
   if(!hand.length){s.winner=player;s.handFinish=rules.handEnabled&&s.openedThisTurn&&!s.laidOffThisTurn&&(rules.handJokers||!s.handUsedJokers&&!jokers.length);s.scores=s.hands.map((h,i)=>i===player?(s.handFinish?-(s.fromCut?rules.cutBonus:rules.handBonus):-40):(s.opened[i]?h.reduce((n,c)=>n+points(c),0):100)*(s.handFinish&&rules.handDouble?2:1));log(s.handFinish?'finished from hand!':'closed the round!');}
   else{s.turn=(s.turn+1)%s.names.length;s.stage='draw';s.turns++;s.turnStarted=Date.now();s.mustOpen=false;s.mustHand=false;s.fromCut=false;s.handUsedJokers=false;s.openedThisTurn=false;s.laidOffThisTurn=false;}
- }else throw Error('Unknown action.');
+ }else throw new PlayerError('Unknown action.');
  return s;
 }
 export function candidateMelds(hand,rules={}){

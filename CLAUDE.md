@@ -2,10 +2,10 @@
 
 ## Commands and structure
 
-Use Node.js 22 or newer. There are no runtime packages or build step.
+Use Node.js 22.9 or newer. There are no runtime packages or build step.
 
-- `npm start` runs `server.mjs`, serving `public/` and the room API on `PORT` or 3010.
-- `npm test` runs `node --test tests/*.test.mjs`. The HTTP tests use temporary ports 3011, 3013, 3015, and 3017; these must be free and localhost sockets must be allowed.
+- `npm start` loads `.env` if present and runs `server.mjs`, serving `public/` and the room API on `HOST` (default 127.0.0.1) and `PORT` (default 3010). `.env.example` lists the settings.
+- `npm test` runs `node --test tests/*.test.mjs`. The HTTP tests use temporary ports 3011, 3013, 3015, 3017, 3019, and 3021; these must be free and localhost sockets must be allowed.
 - GitHub Actions runs the same suite on pushes and pull requests.
 
 Keep changes focused. Run the relevant tests, and run the complete suite before publishing a change. Check responsive UI work in a browser at phone and desktop widths. Do not restart an existing local server unnecessarily: room state lives in memory.
@@ -20,11 +20,13 @@ The first player begins with one extra card and discards without a draw. Opening
 
 ## Server and private state
 
-`server.mjs` uses Node's HTTP server and a process-local `Map` of rooms. Room codes have eight hexadecimal characters. A bearer token identifies a seated human. Host-only changes and mode/phase restrictions are validated server-side. The room's `host` field holds the host's seat index. In the lobby the host always sits in seat 0, which hot-seat and practice logic rely on. In a running game a bot takes over a leaving player's seat, and a leaving host passes the host controls to the next player. A table is deleted only when its last player leaves. Player names come from `public/names.js` when omitted.
+`server.mjs` uses Node's HTTP server and a process-local `Map` of rooms. Room codes have eight hexadecimal characters. A bearer token identifies a seated human. Host-only changes and mode/phase restrictions are validated server-side. The room's `host` field holds the host's seat index. In the lobby the host always sits in seat 0, which hot-seat and practice logic rely on. In a running game a bot takes over a leaving player's seat, and a leaving host passes the host controls to the next player. A table is deleted only when its last player leaves. Player names come from `public/names.js` when omitted. Deals, reshuffles, and generated names use the server's `crypto.randomInt()`-based `random`; pass it to `createGame()`, `play()`, and `forestName()`.
+
+Throw `PlayerError` (from `public/engine.js`) for messages meant for players; they answer 400. Any other error is a server fault: it is logged and answers 500 with a generic message, so never rely on a plain `Error` reaching the player. `limits.mjs` holds the per-address rate limits (1,800 API requests and 20 new tables a minute) and the 24-hour expiry of untouched tables; every room request updates `touched`. With `TRUST_PROXY=true` the limits count the address a single reverse proxy appends to `X-Forwarded-For`; otherwise that header is ignored, so clients cannot choose their own address.
 
 All room responses go through `view()`. Never return the raw room or raw game state. In online/practice play, other players' hand entries are replaced with `{hidden:true}`. Stock entries are always hidden. Hot-seat mode intentionally reveals human hands to the shared device, and the client provides the pass-screen flow. Seat tokens must not be exposed in public player lists or table listings. Keep the privacy and static-path traversal tests passing.
 
-Only `public/` is served. The static handler resolves file paths inside that directory and rejects paths outside it. Keep production notes, prompts, licences for the project, and contributor documents outside `public/`; font notices stay beside the publicly distributed fonts.
+Only `public/` is served. The static handler resolves file paths inside that directory and rejects paths outside it. It sends types from its map (unknown types as `application/octet-stream`), `nosniff`, and weak ETags; art and fonts are cached for a week, and other files are revalidated on every load. Keep production notes, prompts, licences for the project, and contributor documents outside `public/`; font notices stay beside the publicly distributed fonts.
 
 ## Undo, turn boundaries, and scores
 
