@@ -1,9 +1,11 @@
 import http from 'node:http';
 import {readFile} from 'node:fs/promises';
 import {randomBytes} from 'node:crypto';
+import {resolve} from 'node:path';
+import {fileURLToPath} from 'node:url';
 import {createGame,play,botAction,DEFAULT_RULES} from './public/engine.js';
 import {forestName} from './public/names.js';
-const rooms=new Map(),port=Number(process.env.PORT||3010),root=new URL('./public/',import.meta.url);
+const rooms=new Map(),port=Number(process.env.PORT||3010),publicDir=fileURLToPath(new URL('./public/',import.meta.url));
 const token=()=>randomBytes(16).toString('hex');
 const clean=(n,fallback=forestName())=>String(n||fallback).trim().slice(0,24)||fallback;
 const botName=(i,used=[])=>forestName(used);
@@ -58,7 +60,8 @@ const server=http.createServer(async(req,res)=>{const url=new URL(req.url,'http:
    if(you===0||r.phase==='game'){rooms.delete(r.code);return send(200,{left:true});}r.players[you]={name:'',token:null,type:'human'};r.revision++;return send(200,{left:true});
   }else throw Error('Unknown request.');r.revision++;return send(200,view(r,auth));
  }
- const path=url.pathname==='/'?'index.html':decodeURIComponent(url.pathname.slice(1));if(path.split('/').includes('..')||path.startsWith('/')||path.includes('\\')){res.writeHead(403);return res.end();}let data;try{data=await readFile(new URL(path,root));}catch{res.writeHead(404);return res.end('Not found');}res.writeHead(200,{'Content-Type':path.endsWith('.js')?'text/javascript':path.endsWith('.css')?'text/css':path.endsWith('.ttf')?'font/ttf':path.endsWith('.png')?'image/png':path.endsWith('.svg')?'image/svg+xml':'text/html','Cache-Control':'no-cache'});res.end(data);
+ // Resolve as a plain file path (never a URL, which would honour file: and %2e%2e) and refuse anything outside public/.
+ const path=url.pathname==='/'?'index.html':decodeURIComponent(url.pathname.slice(1)),file=resolve(publicDir,path);if(!file.startsWith(publicDir)||path.includes('\0')){res.writeHead(403);return res.end();}let data;try{data=await readFile(file);}catch{res.writeHead(404);return res.end('Not found');}res.writeHead(200,{'Content-Type':path.endsWith('.js')?'text/javascript':path.endsWith('.css')?'text/css':path.endsWith('.ttf')?'font/ttf':path.endsWith('.png')?'image/png':path.endsWith('.svg')?'image/svg+xml':'text/html','Cache-Control':'no-cache'});res.end(data);
  }catch(e){send(400,{error:e.message});}});
 setInterval(()=>{for(const r of rooms.values()){if(r.phase!=='game'||r.state.winner!==null||!r.options.timer)continue;if(Date.now()-r.state.turnStarted>r.options.timer*1000){try{if(r.turnBackup){r.state=r.turnBackup.state;r.turnBackup=null;}let guard=0,p=r.state.turn;while(r.state.turn===p&&r.state.winner===null&&guard++<60)r.state=play(r.state,p,botAction(r.state));bots(r);scoreRound(r);r.history=[];r.revision++;}catch(e){r.state.turnStarted=Date.now();r.state.log.push('Timer could not finish the turn: '+e.message);r.revision++;}}}},1000).unref();
 server.listen(port,'0.0.0.0',()=>console.log(`Fablewood Rummy: http://127.0.0.1:${port}`));
