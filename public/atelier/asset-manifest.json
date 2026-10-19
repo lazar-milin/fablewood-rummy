@@ -1,6 +1,6 @@
 [
   {
-    "file": "/art/card-kit/assets/pips/fox-berries.png",
+    "file": "/art/card-kit/assets/pips/fox-berries.svg",
     "label": "Fox · berries",
     "type": "Counting pip",
     "suit": "fox",
@@ -12,7 +12,7 @@
     "type": "Full ornament",
     "suit": "fox",
     "description": "Continuous shaded side strip used on number cards.",
-    "source": "/art/card-kit/assets/motifs/source/fox-side.png"
+    "source": "/art/card-kit/assets/motifs/source/fox-side.svg"
   },
   {
     "file": "/art/card-kit/assets/motifs/fox-side-upper.svg",
@@ -20,7 +20,7 @@
     "type": "Border motif",
     "suit": "fox",
     "description": "Upper piece: use left and mirrored right on every card.",
-    "source": "/art/card-kit/assets/motifs/source/fox-side.png"
+    "source": "/art/card-kit/assets/motifs/source/fox-side.svg"
   },
   {
     "file": "/art/card-kit/assets/motifs/fox-side-lower.svg",
@@ -28,7 +28,7 @@
     "type": "Border motif",
     "suit": "fox",
     "description": "Optional lower reference crop; cards use the complete joined strip.",
-    "source": "/art/card-kit/assets/motifs/source/fox-side.png"
+    "source": "/art/card-kit/assets/motifs/source/fox-side.svg"
   },
   {
     "file": "/art/card-kit/assets/motifs/fox-footer.svg",
@@ -36,7 +36,7 @@
     "type": "Footer motif",
     "suit": "fox",
     "description": "Rank flourish used on every card, mirrored beside the rank; no counting symbols.",
-    "source": "/art/card-kit/assets/motifs/source/fox-footer.png"
+    "source": "/art/card-kit/assets/motifs/source/fox-footer.svg"
   },
   {
     "file": "/art/card-kit/assets/frames/fox-capsule.svg",
@@ -46,42 +46,42 @@
     "description": "240 × 480. Solid #F3DFC0 interior."
   },
   {
-    "file": "/art/card-kit/assets/heads/fox-head.png",
+    "file": "/art/card-kit/assets/heads/fox-head.svg",
     "label": "Fox · head marker",
     "type": "Suit marker / favicon",
     "suit": "fox",
     "description": "Transparent head-only PNG used in the upper cap."
   },
   {
-    "file": "/art/card-kit/assets/illustrations/fox-A.png",
+    "file": "/art/card-kit/assets/illustrations/fox-A.svg",
     "label": "A · Fox kit",
     "type": "Animal illustration",
     "suit": "fox",
     "description": "Distinct Fox A stage, transparent PNG."
   },
   {
-    "file": "/art/card-kit/assets/illustrations/fox-B.png",
+    "file": "/art/card-kit/assets/illustrations/fox-B.svg",
     "label": "B · Red Fox",
     "type": "Animal illustration",
     "suit": "fox",
     "description": "Distinct Fox B stage, transparent PNG."
   },
   {
-    "file": "/art/card-kit/assets/illustrations/fox-Q.png",
+    "file": "/art/card-kit/assets/illustrations/fox-Q.svg",
     "label": "Q · Silver Fox",
     "type": "Animal illustration",
     "suit": "fox",
     "description": "Distinct Fox Q stage, transparent PNG."
   },
   {
-    "file": "/art/card-kit/assets/illustrations/fox-E.png",
+    "file": "/art/card-kit/assets/illustrations/fox-E.svg",
     "label": "E · Kitsune",
     "type": "Animal illustration",
     "suit": "fox",
     "description": "Distinct Fox E stage, transparent PNG."
   },
   {
-    "file": "/art/card-kit/assets/pips/owl-stars.png",
+    "file": "/art/card-kit/assets/pips/owl-stars.svg",
     "label": "Owl · stars",
     "type": "Counting pip",
     "suit": "owl",
@@ -93,7 +93,7 @@
     "type": "Full ornament",
     "suit": "owl",
     "description": "Continuous shaded side strip used on number cards.",
-    "source": "/art/card-kit/assets/motifs/source/owl-side.png"
+    "source": "/art/card-kit/assets/motifs/source/owl-side.svg"
   },
   {
     "file": "/art/card-kit/assets/motifs/owl-side-upper.svg",
@@ -101,7 +101,7 @@
     "type": "Border motif",
     "suit": "owl",
     "description": "Upper piece: use left and mirrored right on every card.",
-    "source": "/art/card-kit/assets/motifs/source/owl-side.png"
+    "source": "/art/card-kit/assets/motifs/source/owl-side.svg"
   },
   {
     "file": "/art/card-kit/assets/motifs/owl-side-lower.svg",
@@ -109,7 +109,7 @@
     "type": "Border motif",
     "suit": "owl",
     "description": "Optional lower reference crop; cards use the complete joined strip.",
-    "source": "/art/card-kit/assets/motifs/source/owl-side.png"
+    "source": "/art/card-kit/assets/motifs/source/owl-side.svg"
   },
   {
     "file": "/art/card-kit/assets/motifs/owl-footer.svg",
@@ -117,7 +117,7 @@
     "type": "Footer motif",
     "suit": "owl",
     "description": "Rank flourish used on every card, mirrored beside the rank; no counting symbols.",
-    "source": "/art/card-kit/assets/motifs/source/owl-footer.png"
+    "source": "/art/card-kit/assets/motifs/source/owl-footer.svg"
   },
   {
     "file": "/art/card-kit/assets/frames/owl-capsule.svg",
@@ -127,42 +127,42 @@
     "description": "240 × 480. Solid #CAD4E6 interior."
   },
   {
-    "file": "/art/card-kit/assets/heads/owl-head.png",
+    "file": "/art/card-kit/assets/heads/owl-head.svg",
     "label": "Owl · head marker",
     "type": "Suit marker / favicon",
     "suit": "owl",
     "description": "Transparent head-only PNG used in the upper cap."
   },
   {
-    "file": "/art/card-kit/assets/illustrations/owl-A.png",
+    "file": "/art/card-kit/assets/illustrations/owl-A.svg",
     "label": "A · Owlet",
     "type": "Animal illustration",
     "suit": "owl",
     "description": "Distinct Owl A stage, transparent PNG."
   },
   {
-    "file": "/art/card-kit/assets/illustrations/owl-B.png",
+    "file": "/art/card-kit/assets/illustrations/owl-B.svg",
     "label": "B · Wood Owl",
     "type": "Animal illustration",
     "suit": "owl",
     "description": "Distinct Owl B stage, transparent PNG."
   },
   {
-    "file": "/art/card-kit/assets/illustrations/owl-Q.png",
+    "file": "/art/card-kit/assets/illustrations/owl-Q.svg",
     "label": "Q · Great Owl",
     "type": "Animal illustration",
     "suit": "owl",
     "description": "Distinct Owl Q stage, transparent PNG."
   },
   {
-    "file": "/art/card-kit/assets/illustrations/owl-E.png",
+    "file": "/art/card-kit/assets/illustrations/owl-E.svg",
     "label": "E · Moon Owl",
     "type": "Animal illustration",
     "suit": "owl",
     "description": "Distinct Owl E stage, transparent PNG."
   },
   {
-    "file": "/art/card-kit/assets/pips/hare-clovers.png",
+    "file": "/art/card-kit/assets/pips/hare-clovers.svg",
     "label": "Hare · clovers",
     "type": "Counting pip",
     "suit": "hare",
@@ -174,7 +174,7 @@
     "type": "Full ornament",
     "suit": "hare",
     "description": "Continuous shaded side strip used on number cards.",
-    "source": "/art/card-kit/assets/motifs/source/hare-side.png"
+    "source": "/art/card-kit/assets/motifs/source/hare-side.svg"
   },
   {
     "file": "/art/card-kit/assets/motifs/hare-side-upper.svg",
@@ -182,7 +182,7 @@
     "type": "Border motif",
     "suit": "hare",
     "description": "Upper piece: use left and mirrored right on every card.",
-    "source": "/art/card-kit/assets/motifs/source/hare-side.png"
+    "source": "/art/card-kit/assets/motifs/source/hare-side.svg"
   },
   {
     "file": "/art/card-kit/assets/motifs/hare-side-lower.svg",
@@ -190,7 +190,7 @@
     "type": "Border motif",
     "suit": "hare",
     "description": "Optional lower reference crop; cards use the complete joined strip.",
-    "source": "/art/card-kit/assets/motifs/source/hare-side.png"
+    "source": "/art/card-kit/assets/motifs/source/hare-side.svg"
   },
   {
     "file": "/art/card-kit/assets/motifs/hare-footer.svg",
@@ -198,7 +198,7 @@
     "type": "Footer motif",
     "suit": "hare",
     "description": "Rank flourish used on every card, mirrored beside the rank; no counting symbols.",
-    "source": "/art/card-kit/assets/motifs/source/hare-footer.png"
+    "source": "/art/card-kit/assets/motifs/source/hare-footer.svg"
   },
   {
     "file": "/art/card-kit/assets/frames/hare-capsule.svg",
@@ -208,42 +208,42 @@
     "description": "240 × 480. Solid #DBE1BA interior."
   },
   {
-    "file": "/art/card-kit/assets/heads/hare-head.png",
+    "file": "/art/card-kit/assets/heads/hare-head.svg",
     "label": "Hare · head marker",
     "type": "Suit marker / favicon",
     "suit": "hare",
     "description": "Transparent head-only PNG used in the upper cap."
   },
   {
-    "file": "/art/card-kit/assets/illustrations/hare-A.png",
+    "file": "/art/card-kit/assets/illustrations/hare-A.svg",
     "label": "A · Leveret",
     "type": "Animal illustration",
     "suit": "hare",
     "description": "Distinct Hare A stage, transparent PNG."
   },
   {
-    "file": "/art/card-kit/assets/illustrations/hare-B.png",
+    "file": "/art/card-kit/assets/illustrations/hare-B.svg",
     "label": "B · Brown Hare",
     "type": "Animal illustration",
     "suit": "hare",
     "description": "Distinct Hare B stage, transparent PNG."
   },
   {
-    "file": "/art/card-kit/assets/illustrations/hare-Q.png",
+    "file": "/art/card-kit/assets/illustrations/hare-Q.svg",
     "label": "Q · Snow Hare",
     "type": "Animal illustration",
     "suit": "hare",
     "description": "Distinct Hare Q stage, transparent PNG."
   },
   {
-    "file": "/art/card-kit/assets/illustrations/hare-E.png",
+    "file": "/art/card-kit/assets/illustrations/hare-E.svg",
     "label": "E · Moon Hare",
     "type": "Animal illustration",
     "suit": "hare",
     "description": "Distinct Hare E stage, transparent PNG."
   },
   {
-    "file": "/art/card-kit/assets/pips/toad-mushrooms.png",
+    "file": "/art/card-kit/assets/pips/toad-mushrooms.svg",
     "label": "Toad · mushrooms",
     "type": "Counting pip",
     "suit": "toad",
@@ -255,7 +255,7 @@
     "type": "Full ornament",
     "suit": "toad",
     "description": "Continuous shaded side strip used on number cards.",
-    "source": "/art/card-kit/assets/motifs/source/toad-side.png"
+    "source": "/art/card-kit/assets/motifs/source/toad-side.svg"
   },
   {
     "file": "/art/card-kit/assets/motifs/toad-side-upper.svg",
@@ -263,7 +263,7 @@
     "type": "Border motif",
     "suit": "toad",
     "description": "Upper piece: use left and mirrored right on every card.",
-    "source": "/art/card-kit/assets/motifs/source/toad-side.png"
+    "source": "/art/card-kit/assets/motifs/source/toad-side.svg"
   },
   {
     "file": "/art/card-kit/assets/motifs/toad-side-lower.svg",
@@ -271,7 +271,7 @@
     "type": "Border motif",
     "suit": "toad",
     "description": "Optional lower reference crop; cards use the complete joined strip.",
-    "source": "/art/card-kit/assets/motifs/source/toad-side.png"
+    "source": "/art/card-kit/assets/motifs/source/toad-side.svg"
   },
   {
     "file": "/art/card-kit/assets/motifs/toad-footer.svg",
@@ -279,7 +279,7 @@
     "type": "Footer motif",
     "suit": "toad",
     "description": "Rank flourish used on every card, mirrored beside the rank; no counting symbols.",
-    "source": "/art/card-kit/assets/motifs/source/toad-footer.png"
+    "source": "/art/card-kit/assets/motifs/source/toad-footer.svg"
   },
   {
     "file": "/art/card-kit/assets/frames/toad-capsule.svg",
@@ -289,35 +289,35 @@
     "description": "240 × 480. Solid #C8DCD6 interior."
   },
   {
-    "file": "/art/card-kit/assets/heads/toad-head.png",
+    "file": "/art/card-kit/assets/heads/toad-head.svg",
     "label": "Toad · head marker",
     "type": "Suit marker / favicon",
     "suit": "toad",
     "description": "Transparent head-only PNG used in the upper cap."
   },
   {
-    "file": "/art/card-kit/assets/illustrations/toad-A.png",
+    "file": "/art/card-kit/assets/illustrations/toad-A.svg",
     "label": "A · Toadlet",
     "type": "Animal illustration",
     "suit": "toad",
     "description": "Distinct Toad A stage, transparent PNG."
   },
   {
-    "file": "/art/card-kit/assets/illustrations/toad-B.png",
+    "file": "/art/card-kit/assets/illustrations/toad-B.svg",
     "label": "B · Forest Toad",
     "type": "Animal illustration",
     "suit": "toad",
     "description": "Distinct Toad B stage, transparent PNG."
   },
   {
-    "file": "/art/card-kit/assets/illustrations/toad-Q.png",
+    "file": "/art/card-kit/assets/illustrations/toad-Q.svg",
     "label": "Q · Moss Toad",
     "type": "Animal illustration",
     "suit": "toad",
     "description": "Distinct Toad Q stage, transparent PNG."
   },
   {
-    "file": "/art/card-kit/assets/illustrations/toad-E.png",
+    "file": "/art/card-kit/assets/illustrations/toad-E.svg",
     "label": "E · Elder Toad",
     "type": "Animal illustration",
     "suit": "toad",
