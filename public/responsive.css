@@ -2,20 +2,6 @@
    Regions are scaled with zoom so the card art, pack capsules and their buttons keep the geometry the other stylesheets give them;
    text inside a zoomed region is enlarged by the inverse of that zoom so it stays at least 11px on screen. */
 
-/* Keep the compact move strip stable. The instruction text wraps and controls
-   stay on the right; only the button group scrolls when the viewport is too narrow. */
-@media (max-width:950px),(orientation:landscape) and (max-width:1100px) and (max-height:820px){
- .game-screen .playing .hand-heading{height:76px!important;min-height:76px!important;max-height:76px!important;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr)!important;gap:7px;padding:7px 9px;overflow:hidden}
- .game-screen .hand-heading .turn{display:block;min-width:0;max-height:none;overflow:hidden}
- .game-screen .hand-heading .turn h2,.game-screen .hand-heading .turn p{max-width:100%;white-space:normal;overflow:hidden;text-overflow:clip;overflow-wrap:anywhere}
- .game-screen .hand-heading .turn h2{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-height:1.25}
- .game-screen .hand-heading .turn p{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;line-height:1.25}
- .game-screen .hand-heading .actions{justify-self:end;width:auto;max-width:100%;min-width:0;overflow:hidden;flex-wrap:nowrap;justify-content:flex-end;gap:4px}
- .game-screen .hand-heading .action-buttons{flex:0 1 auto;max-width:min(100%,calc(100vw - 205px));min-width:0;overflow-x:auto;overflow-y:hidden;flex-wrap:nowrap;justify-content:flex-start}
- .game-screen .hand-heading .action-buttons>button{flex:0 0 auto}
- .game-screen .hand-heading .selection-count{flex:0 0 52px;width:52px;min-width:52px;max-width:52px;overflow:hidden;text-align:right;white-space:nowrap;font-size:8px!important}
-}
-
 /* Phones and short landscape screens: the hand title wraps its card count under "Your hand", and the empty Ungroup slot takes no room. */
 @media (max-width:650px),(orientation:landscape) and (max-height:500px){
  .game-screen .hand-title h2{flex-wrap:wrap;row-gap:2px}
@@ -143,10 +129,26 @@
 #header #copy .code-main>small{font-size:10px!important;line-height:1.2}
 #header #copy .code-rules,#header #copy:hover .code-rules,#header #copy:focus-visible .code-rules{height:31px;min-height:31px;max-height:31px;font-size:8px}
 .at-table #header.players-below{grid-template-columns:max-content minmax(0,1fr)!important;grid-template-areas:"brand controls" "players players"}
-.at-table #header.players-below #header-players .players{justify-content:flex-start;min-width:0}
+.at-table #header.players-below #header-players .players{justify-content:safe center;width:max-content;min-width:100%}
 .at-table #header.compact-header{grid-template-columns:minmax(0,1fr)!important;grid-template-areas:"brand" "controls" "players"}
 .at-table #header.compact-header .header-left{flex-direction:row;align-items:baseline;gap:12px}
 @media(max-width:1100px){
  .at-table #header-players .player small{font-size:8px!important;line-height:1.2}
  .at-table #header-players .player:first-child small{font-size:7px!important}
 }
+
+/* Every game tile reserves the same space for its status and playing badge. */
+.game-screen #header-players .player{width:118px!important;min-width:118px;max-width:140px;min-height:70px;flex:0 0 auto;padding:7px 6px 21px!important;box-sizing:border-box}
+.game-screen #header-players .player strong{height:22px;min-height:22px;flex:0 0 22px}
+.game-screen #header-players .player small,.game-screen #header-players .player:first-child small{font-size:10px!important;line-height:1.2;margin-top:3px;white-space:nowrap}
+.game-screen #header-players .player.active:after{top:auto;bottom:3px;left:50%;transform:translateX(-50%);font-size:9px;line-height:1.1;padding:1px 5px}
+
+/* Text yields first; when both sections no longer fit, natural-width actions
+   form a centered row and wrap around the center on the smallest screens. */
+.game-screen .playing .hand-heading{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:10px 18px;height:auto!important;min-height:76px!important;max-height:none!important;padding:10px 14px;overflow:visible}
+.game-screen .hand-heading .turn{display:block;flex:1 1 230px;min-width:0;max-height:none;overflow:visible}
+.game-screen .hand-heading .turn h2,.game-screen .hand-heading .turn p{display:block;max-width:100%;white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:break-word;-webkit-line-clamp:unset}
+.game-screen .hand-heading .actions{display:flex;flex:0 1 auto;flex-wrap:wrap;justify-content:center;align-items:center;width:max-content;max-width:100%;min-width:0;gap:8px;overflow:visible}
+.game-screen .hand-heading .action-buttons{display:contents}
+.game-screen .hand-heading .actions button{flex:0 0 auto;width:auto;height:35px;min-height:35px;max-height:35px}
+.game-screen .hand-heading .selection-count{display:block;flex:0 0 auto;width:auto;min-width:0;max-width:none;text-align:center;white-space:nowrap;font-size:10px!important}
