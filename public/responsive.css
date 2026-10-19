@@ -1,0 +1,109 @@
+/* Phone and tablet layouts (#15). Desktop keeps the layout from the other stylesheets: every rule here sits behind a media query.
+   Regions are scaled with zoom so the card art, pack capsules and their buttons keep the geometry the other stylesheets give them;
+   text inside a zoomed region is enlarged by the inverse of that zoom so it stays at least 11px on screen. */
+
+/* Phones, and tablets in portrait: the header on two rows (players, then controls). */
+@media (max-width:650px),(max-width:1100px) and (orientation:portrait){
+ .at-table #header,.at-table #header.hide-header-title{grid-template-columns:minmax(0,1fr)!important;grid-template-rows:auto auto;row-gap:6px;height:auto;min-height:0;padding:8px 10px}
+ .at-table #header .header-left{display:none}
+ .at-table #header .header-controls{max-width:none!important;width:100%;flex-wrap:wrap;justify-content:space-between;gap:4px 3px}
+ .at-table #header #copy{flex:0 0 auto}
+}
+
+/* Wherever the turn strip is narrow, put the turn text above the buttons instead of cutting both off, and let the buttons wrap. */
+@media (max-width:650px),(max-width:1100px) and (orientation:portrait),(orientation:landscape) and (max-width:1100px) and (max-height:820px){
+ .game-screen .playing .hand-heading{height:auto!important;min-height:0!important;max-height:none!important;grid-template-columns:minmax(0,1fr)!important;gap:8px}
+ .game-screen .hand-heading .turn h2,.game-screen .hand-heading .turn p{white-space:normal;overflow:visible;text-overflow:clip}
+ .game-screen .hand-heading .actions{width:100%;max-width:none;overflow:visible;flex-wrap:wrap;justify-content:space-between;gap:6px}
+ .game-screen .hand-heading .action-buttons{flex:1 1 auto;overflow:visible;flex-wrap:wrap}
+ .game-screen .hand-heading .action-buttons>button{flex:1 1 auto}
+ .game-screen .hand-heading .selection-count{flex:none;width:auto!important;min-width:0!important;max-width:none!important;overflow:visible;white-space:nowrap}
+}
+
+/* Phones and short landscape screens: the hand title wraps its card count under "Your hand", and the empty Ungroup slot takes no room. */
+@media (max-width:650px),(orientation:landscape) and (max-height:500px){
+ .game-screen .hand-title h2{flex-wrap:wrap;row-gap:2px}
+ .game-screen .hand-title h2 small{white-space:nowrap;overflow:visible;text-overflow:clip;max-width:none}
+ .game-screen .hand-title .unpack-slot:empty{display:none}
+}
+
+/* Phones in portrait (#30): compact header buttons, piles side by side above the melds, and a denser hand. */
+@media (max-width:650px){
+ .at-table #header .header-controls{gap:4px 2px}
+ .at-table #header .header-controls>.expand-control{width:32px;min-width:32px;height:36px;flex:0 0 32px;padding:0}
+ .at-table #header #copy{padding-left:6px;padding-right:6px}
+ .at-table #header #sound{width:26px;min-width:26px}
+ .game-screen .playing .board{grid-template-columns:minmax(0,1fr)!important;min-height:0;gap:12px;padding:12px}
+ .game-screen .board .piles{flex-direction:row;justify-content:center;align-items:flex-start;gap:28px;width:auto;border-right:0;border-bottom:2px dashed #a583b4;padding:0 0 12px}
+ .game-screen .meld-area{min-width:0;zoom:.72}
+ .game-screen .meld-area .melds{flex-wrap:wrap}
+ .game-screen .playing .hand{padding-left:10px;padding-right:10px}
+ .game-screen .hand .hand-cards.packed-layout{gap:12px 6px!important;justify-content:center}
+}
+
+/* Tablets in portrait (#30): piles side by side so the board is only as tall as its cards, smaller melds and a tighter hand. */
+@media (min-width:651px) and (max-width:1100px) and (orientation:portrait){
+ .game-screen .playing .board{grid-template-columns:auto minmax(0,1fr)!important;min-height:0}
+ .game-screen .board .piles{flex-direction:row;align-items:flex-start;gap:20px;width:auto}
+ .game-screen .meld-area{min-width:0;zoom:.8}
+ .game-screen .meld-area .melds{flex-wrap:wrap}
+ .game-screen .hand .hand-cards.packed-layout{gap:14px 8px!important}
+}
+
+/* Landscape phones and tablets, and short windows (#31): the page fills the screen like an app. The board scrolls on the left;
+   your turn stays above your hand on the right, and the hand scrolls under it, so the main action and your cards are always on screen. */
+@media (orientation:landscape) and (max-width:1100px) and (max-height:820px){
+ body.game-screen{display:flex;flex-direction:column;height:100vh;height:100dvh;overflow:hidden}
+ body.game-screen>#header{flex:none}
+ body.game-screen>#app{flex:1;min-height:0}
+ .game-screen .playing{height:100%;padding-bottom:10px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.35fr);grid-template-areas:"board heading" "board hand";grid-template-rows:auto minmax(0,1fr);gap:10px}
+ .game-screen .playing>.board{grid-area:board;margin:0;min-height:0;overflow:auto;align-content:start;grid-template-columns:minmax(0,1fr)!important;gap:12px;padding:12px}
+ .game-screen .playing>.hand-heading{grid-area:heading;margin:0}
+ .game-screen .playing>.hand{grid-area:hand;margin:0;min-height:0;overflow-y:auto}
+ .game-screen .board .piles{flex-direction:row;justify-content:center;align-items:flex-start;gap:20px;width:auto;border-right:0;border-bottom:2px dashed #a583b4;padding:0 0 12px}
+ .game-screen .meld-area{min-width:0;zoom:.8}
+ .game-screen .meld-area .melds{flex-wrap:wrap}
+ .game-screen .hand .hand-cards.packed-layout{gap:12px 6px!important}
+}
+
+/* Landscape phones (#31): a compact header, heading and hand title, and smaller cards so two rows of the hand fit under the turn. */
+@media (orientation:landscape) and (max-height:500px){
+ .at-table #header{min-height:0;height:auto;padding-top:4px;padding-bottom:4px}
+ .at-table #header .header-controls{gap:2px}
+ .at-table #header .header-controls>.expand-control{width:32px;min-width:32px;height:36px;flex:0 0 32px;padding:0}
+ .at-table #header #copy{padding-left:6px;padding-right:6px}
+ .game-screen .playing{gap:8px;padding-bottom:6px}
+ .game-screen .board .piles{zoom:.6}
+ .game-screen .meld-area{zoom:.62}
+ .game-screen .playing .hand-heading{padding:6px 10px;gap:4px}
+ .game-screen .hand-heading .action-buttons>button{min-height:30px;padding-top:4px;padding-bottom:4px}
+ .game-screen .hand-heading .selection-count,.game-screen .hand-title .unpack-slot:empty{display:none}
+ .game-screen .playing .hand{padding-top:4px;padding-bottom:4px}
+ .game-screen .hand .hand-title{min-height:0}
+ .game-screen .hand .hand-title h2{min-height:0;font-size:16px}
+ .game-screen .hand .hand-cards.packed-layout{zoom:.56;padding-top:4px;min-height:0!important}
+}
+
+/* Readable text on phones and tablets (#32): no label below 11px. */
+@media (max-width:1100px){
+ .at-table #mode-label,.at-table #header-players .player strong span,.at-table #header .code-main>span{font-size:11px!important}
+ .at-table #header-players .player small,.at-table #header .code-main>small{font-size:11px!important;line-height:1.2}
+ .at-table #header-players .player{width:auto!important;min-width:0;max-width:none;flex:0 0 auto;padding-left:4px!important;padding-right:4px!important}
+ .at-table #header-players .player strong span{max-width:none}
+ .at-table #header-players .player.active:after{font-size:11px;padding:1px 5px}
+ .game-screen .hand-heading .turn p,.game-screen .hand-heading .action-buttons>button,.game-screen .hand-heading .selection-count,.game-screen .hand-title h2 small,.game-screen .hand-title #sort,.game-screen .hand-title .unpack-slot,.game-screen .hand-title .unpack-slot *{font-size:11px!important}
+ .game-screen .board .deck-count,.game-screen .board .discard-stack>small{font-size:11px!important}
+ .game-screen .meld-area .meld>small{font-size:11px}
+ .game-screen .hand .packed-hand .pack-select,.game-screen .hand .packed-hand .pack-select *{font-size:11px}
+}
+@media (max-width:650px){
+ .game-screen .meld-area .meld>small{font-size:calc(11px / .72)}
+}
+@media (min-width:651px) and (max-width:1100px) and (orientation:portrait),(orientation:landscape) and (max-width:1100px) and (max-height:820px){
+ .game-screen .meld-area .meld>small{font-size:calc(11px / .8)}
+}
+@media (orientation:landscape) and (max-height:500px){
+ .game-screen .meld-area .meld>small{font-size:calc(11px / .62)}
+ .game-screen .board .deck-count,.game-screen .board .discard-stack>small{font-size:calc(11px / .6)!important}
+ .game-screen .hand .packed-hand .pack-select,.game-screen .hand .packed-hand .pack-select *{font-size:calc(11px / .56)}
+}

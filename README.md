@@ -2,7 +2,9 @@
 
 Run `npm start` and open http://127.0.0.1:3010. Node.js 22+; no dependencies to install. `npm test` checks game rules, packing, names, and room behavior.
 
-Hover a card for four seconds to see a large centered view with a purple glow and its name in Alagard. Move away, click, scroll, or press Escape to dismiss it. The landing page's **Card Atelier** button opens the included collection, with a **Back to the game** button on every collection page. Game and Atelier share the same local artwork.
+Hover a card for four seconds to see a large centered view with a purple glow and its name in Alagard. On a touch screen, hold the card for half a second instead; with the keyboard, press V on a focused card. Move away, tap or click, scroll, press Escape or move focus to dismiss it.
+
+On phones and tablets the table adapts: in portrait the header splits into a players row and a controls row and the piles sit side by side above the melds; in landscape the board scrolls on the left while your turn and hand stay on the right. Labels are at least 11 px on these screens. The landing page's **Card Atelier** button opens the included collection, with a **Back to the game** button on every collection page. Game and Atelier share the same local artwork.
 
 The centered entrance uses the supplied night-forest background and an animated violet heading. Empty names and bots draw from a forest/magic word list. Host names have a red wizard hat; bot names have the existing pixel robot icon.
 
