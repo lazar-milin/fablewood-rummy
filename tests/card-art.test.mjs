@@ -20,3 +20,8 @@ test('imported ranks use H B Q E, and joker curve IDs remain unique per game car
  assert.ok(b.includes('curve-joker-dragon-joker-4'));
  assert.ok(cardBackMarkup.includes('back-grimoire'));
 });
+test('card markup holds only phrasing content, so it is valid inside the card button',()=>{
+ const cards=[0,1].flatMap(d=>SUITS.flatMap(suit=>Array.from({length:13},(_,i)=>({id:`${d}-${suit}-${i+1}`,suit,rank:i+1}))));
+ cards.push(...Array.from({length:4},(_,i)=>({id:`joker-${i}`,joker:true})));
+ for(const html of [...cards.map(cardMarkup),cardBackMarkup])assert.doesNotMatch(html,/<(div|p|section|h[1-6]|ul|ol)[\s>]/);
+});
