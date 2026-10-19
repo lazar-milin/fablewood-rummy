@@ -22,7 +22,8 @@ test('mixed seats, lowercase codes, host settings, online privacy and turn rollb
  const required=await api('action',{code,action:{type:'draw',source:'discard'}},host);assert.equal(required.value.state.mustOpen,true);
  const cancelled=await api('cancel-draw',{code},host);assert.equal(cancelled.value.state.hands[0].length,9);assert.equal(cancelled.value.state.stage,'draw');
  assert.equal((await api('undo',{code},gt)).status,400);
- await api('leave',{code},host);assert.equal((await api('state?code='+code,null,gt)).status,400);
+ await api('leave',{code},host);const kept=await api('state?code='+code,null,gt);assert.equal(kept.status,200);assert.equal(kept.value.host,1);
+ await api('leave',{code},gt);assert.equal((await api('state?code='+code,null,gt)).status,400);
  const local=await api('create',{name:'Local'}),lc=local.value.room.code,lt=local.value.token;
  await api('settings',{code:lc,mode:'hotseat'},lt);await api('seat',{code:lc,operation:'name',index:1,name:'Friend'},lt);await api('seat',{code:lc,operation:'add',type:'bot'},lt);
  const game=await api('start',{code:lc,names:{1:'New friend'}},lt);assert.equal(game.value.state.names[1],'New friend');assert.ok(game.value.state.hands[1][0].id);assert.deepEqual(game.value.state.hands[2][0],{hidden:true});

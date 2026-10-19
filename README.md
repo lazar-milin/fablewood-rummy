@@ -4,19 +4,21 @@ A magical-forest card game for online tables, hot-seat play, and practice agains
 
 ## Run locally
 
-Use Node.js 22 or newer. There are no runtime dependencies or build step.
+Use Node.js 22.9 or newer. There are no runtime dependencies or build step.
 
 ```sh
 npm start
 ```
 
-Open http://127.0.0.1:3010. The server listens on `0.0.0.0` and uses the `PORT` environment variable when set. For hosting, run it as a Node web service with `npm start`.
+Open http://127.0.0.1:3010. `npm start` reads settings from a `.env` file if there is one; copy [.env.example](.env.example) to start. The server listens only on this computer (`HOST=127.0.0.1`). Set `HOST=0.0.0.0` to let other devices on your network join, or when your hosting provider requires it. `PORT` defaults to 3010. For hosting, run it as a Node web service with `npm start`.
 
-Tables, scores, and games live in server memory. Restarting or redeploying the server clears them. Run a single server instance: room state is not shared between processes.
+Each address may send 1,800 API requests a minute and create 20 tables a minute; more get `429 Too Many Requests`. Behind one reverse proxy, such as a hosting provider's, set `TRUST_PROXY=true` so these limits count each player's address instead of the proxy's. Card art and fonts are cached by the browser for a week, and text assets are sent gzip-compressed.
+
+Tables, scores, and games live in server memory. Restarting or redeploying the server clears them, and a table is removed after 24 hours without activity. Run a single server instance: room state is not shared between processes.
 
 ## Start a table
 
-Enter a name, or leave it blank for a forest-inspired name, and create a table. Choose online play, hot-seat play, or a practice game. Add human or bot seats in the player panels, up to six seats. Online players join using the eight-character table code or an open table on the landing page. Codes accept either case.
+Enter a name, or leave it blank for a forest-inspired name, and create a table. Choose online play, hot-seat play, or a practice game. Add human or bot seats in the player panels, up to six seats. Online players join using the eight-character table code or an open table on the landing page. Codes accept either case. If a player leaves a running game, a bot plays their seat for the rest of it, and if the host leaves, the next player becomes host. A table closes when its last player leaves.
 
 The host chooses the rules through the grimoire, then returns to the lobby and starts the game. Timer and Undo preferences are in the header controls. Results appear on the scoreboard after the first completed round; the lowest total leads.
 
@@ -70,7 +72,7 @@ The landing page's **Card Atelier** opens the complete deck and artwork collecti
 npm test
 ```
 
-Tests cover the engine, rules, bots, hand packing, room privacy, undo, static serving, and artwork links. Server tests start temporary localhost services on ports 3011, 3013, and 3015. The same suite runs in GitHub Actions. See [CLAUDE.md](CLAUDE.md) for architecture and contribution conventions.
+Tests cover the engine, rules, bots, hand packing, room privacy, undo, static serving, and artwork links. Server tests start temporary localhost services on ports 3011, 3013, 3015, 3017, 3019, and 3021. The same suite runs in GitHub Actions. See [CLAUDE.md](CLAUDE.md) for architecture and contribution conventions.
 
 ## Artwork and licence
 
