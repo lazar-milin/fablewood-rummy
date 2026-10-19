@@ -16,7 +16,7 @@ Tables, scores, and games live in server memory. Restarting or redeploying the s
 
 ## Start a table
 
-Enter a name, or leave it blank for a forest-inspired name, and create a table. Choose online play, hot-seat play, or a practice game. Add human or bot seats in the player panels, up to six seats. Online players join using the eight-character table code or an open table on the landing page. Codes accept either case.
+Enter a name, or leave it blank for a forest-inspired name, and create a table. Choose online play, hot-seat play, or a practice game. Add human or bot seats in the player panels, up to six seats. Online players join using the eight-character table code or an open table on the landing page. Codes accept either case. If a player leaves a running game, a bot plays their seat for the rest of it, and if the host leaves, the next player becomes host. A table closes when its last player leaves.
 
 The host chooses the rules through the grimoire, then returns to the lobby and starts the game. Timer and Undo preferences are in the header controls. Results appear on the scoreboard after the first completed round; the lowest total leads.
 
@@ -70,7 +70,7 @@ The landing page's **Card Atelier** opens the complete deck and artwork collecti
 npm test
 ```
 
-Tests cover the engine, rules, bots, hand packing, room privacy, undo, static serving, and artwork links. Server tests start temporary localhost services on ports 3011, 3013, and 3015. The same suite runs in GitHub Actions. See [CLAUDE.md](CLAUDE.md) for architecture and contribution conventions.
+Tests cover the engine, rules, bots, hand packing, room privacy, undo, static serving, and artwork links. Server tests start temporary localhost services on ports 3011, 3013, 3015, and 3017. The same suite runs in GitHub Actions. See [CLAUDE.md](CLAUDE.md) for architecture and contribution conventions.
 
 ## Artwork and licence
 

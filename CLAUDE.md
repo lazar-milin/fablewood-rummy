@@ -5,7 +5,7 @@
 Use Node.js 22 or newer. There are no runtime packages or build step.
 
 - `npm start` runs `server.mjs`, serving `public/` and the room API on `PORT` or 3010.
-- `npm test` runs `node --test tests/*.test.mjs`. The HTTP tests use temporary ports 3011, 3013, and 3015; these must be free and localhost sockets must be allowed.
+- `npm test` runs `node --test tests/*.test.mjs`. The HTTP tests use temporary ports 3011, 3013, 3015, and 3017; these must be free and localhost sockets must be allowed.
 - GitHub Actions runs the same suite on pushes and pull requests.
 
 Keep changes focused. Run the relevant tests, and run the complete suite before publishing a change. Check responsive UI work in a browser at phone and desktop widths. Do not restart an existing local server unnecessarily: room state lives in memory.
@@ -20,7 +20,7 @@ The first player begins with one extra card and discards without a draw. Opening
 
 ## Server and private state
 
-`server.mjs` uses Node's HTTP server and a process-local `Map` of rooms. Room codes have eight hexadecimal characters. A bearer token identifies a seated human. Host-only changes and mode/phase restrictions are validated server-side. Player names come from `public/names.js` when omitted.
+`server.mjs` uses Node's HTTP server and a process-local `Map` of rooms. Room codes have eight hexadecimal characters. A bearer token identifies a seated human. Host-only changes and mode/phase restrictions are validated server-side. The room's `host` field holds the host's seat index. In the lobby the host always sits in seat 0, which hot-seat and practice logic rely on. In a running game a bot takes over a leaving player's seat, and a leaving host passes the host controls to the next player. A table is deleted only when its last player leaves. Player names come from `public/names.js` when omitted.
 
 All room responses go through `view()`. Never return the raw room or raw game state. In online/practice play, other players' hand entries are replaced with `{hidden:true}`. Stock entries are always hidden. Hot-seat mode intentionally reveals human hands to the shared device, and the client provides the pass-screen flow. Seat tokens must not be exposed in public player lists or table listings. Keep the privacy and static-path traversal tests passing.
 

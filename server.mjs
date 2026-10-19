@@ -9,11 +9,11 @@ const rooms=new Map(),port=Number(process.env.PORT||3010),publicDir=fileURLToPat
 const token=()=>randomBytes(16).toString('hex');
 const clean=(n,fallback=forestName())=>String(n||fallback).trim().slice(0,24)||fallback;
 const botName=(i,used=[])=>forestName(used);
-function view(r,t){const you=r.players.findIndex(p=>p.token===t);if(you<0)throw Error('Please join this table.');return {canUndo:!!(r.options.undo&&r.history.length&&r.state?.winner===null&&(r.mode==='hotseat'||r.history.at(-1).player===you)),code:r.code,phase:r.phase,mode:r.mode,host:0,you,players:r.players.map(p=>p.name||''),seatTypes:r.players.map(p=>p.type),seated:r.players.map(p=>!!p.token||p.type==='bot'||r.mode==='hotseat'),round:r.round,tinkering:r.tinkering,completedGames:r.completedGames,options:{...r.options,seats:r.players.length},revision:r.revision,totals:r.totals,state:r.state?{...r.state,hands:r.state.hands.map((h,i)=>r.mode==='hotseat'&&r.players[i].type!=='bot'||i===you?h:h.map(()=>({hidden:true}))),stock:r.state.stock.map(()=>({hidden:true}))}:null};}
+function view(r,t){const you=r.players.findIndex(p=>p.token===t);if(you<0)throw Error('Please join this table.');return {canUndo:!!(r.options.undo&&r.history.length&&r.state?.winner===null&&(r.mode==='hotseat'||r.history.at(-1).player===you)),code:r.code,phase:r.phase,mode:r.mode,host:r.host,you,players:r.players.map(p=>p.name||''),seatTypes:r.players.map(p=>p.type),seated:r.players.map(p=>!!p.token||p.type==='bot'||r.mode==='hotseat'),round:r.round,tinkering:r.tinkering,completedGames:r.completedGames,options:{...r.options,seats:r.players.length},revision:r.revision,totals:r.totals,state:r.state?{...r.state,hands:r.state.hands.map((h,i)=>r.mode==='hotseat'&&r.players[i].type!=='bot'||i===you?h:h.map(()=>({hidden:true}))),stock:r.state.stock.map(()=>({hidden:true}))}:null};}
 // Automatic moves (bots and timed-out turns) fall back to a plain discard, so a rejected plan can't leave the turn stuck.
 function botMove(s){try{return play(s,s.turn,botAction(s));}catch{return play(s,s.turn,botDiscard(s));}}
 function bots(r){let guard=0;while(r.state?.winner===null&&r.players[r.state.turn].type==='bot'&&guard++<150)r.state=botMove(r.state);}
-function needHost(r,you){if(you!==0)throw Error('Only the host can change this.');}
+function needHost(r,you){if(you!==r.host)throw Error('Only the host can change this.');}
 function needLobby(r,you){needHost(r,you);if(r.phase!=='lobby')throw Error('Change this before starting the game.');}
 function control(r,you){return r.mode==='hotseat'&&you===0&&r.players[r.state.turn].type!=='bot'?r.state.turn:you;}
 function scoreRound(r){if(r.state.winner===null||r.scored)return;r.totals=r.totals.map((n,i)=>n+r.state.scores[i]);r.scored=true;r.completedGames++;}
@@ -21,8 +21,8 @@ const server=http.createServer(async(req,res)=>{const url=new URL(req.url,'http:
  if(url.pathname.startsWith('/api/')){
   let body={};if(req.method==='POST'){let raw='';for await(const chunk of req){raw+=chunk;if(raw.length>24000)throw Error('Request too large.');}body=JSON.parse(raw||'{}');}
   const endpoint=url.pathname.slice(5),auth=req.headers.authorization?.replace('Bearer ','');
-  if(endpoint==='tables')return send(200,[...rooms.values()].filter(r=>r.phase==='lobby'&&r.mode==='online'&&r.players.some(p=>p.type==='human'&&!p.token)).map(r=>({code:r.code,host:r.players[0].name,count:r.players.filter(p=>p.token||p.type==='bot').length,seats:r.players.length})));
-  if(endpoint==='create'){let code;do{code=randomBytes(4).toString('hex');}while(rooms.has(code));const t=token();const r={code,players:[{name:clean(body.name),token:t,type:'human'},{name:'',token:null,type:'human'}],mode:'online',phase:'lobby',options:{...DEFAULT_RULES,handSize:14,undo:true,timer:0,variant:'remi51'},revision:0,state:null,history:[],turnBackup:null,totals:[0,0],scored:false,completedGames:0,tinkering:false,round:0};rooms.set(code,r);return send(200,{token:t,room:view(r,t)});}
+  if(endpoint==='tables')return send(200,[...rooms.values()].filter(r=>r.phase==='lobby'&&r.mode==='online'&&r.players.some(p=>p.type==='human'&&!p.token)).map(r=>({code:r.code,host:r.players[r.host].name,count:r.players.filter(p=>p.token||p.type==='bot').length,seats:r.players.length})));
+  if(endpoint==='create'){let code;do{code=randomBytes(4).toString('hex');}while(rooms.has(code));const t=token();const r={code,host:0,players:[{name:clean(body.name),token:t,type:'human'},{name:'',token:null,type:'human'}],mode:'online',phase:'lobby',options:{...DEFAULT_RULES,handSize:14,undo:true,timer:0,variant:'remi51'},revision:0,state:null,history:[],turnBackup:null,totals:[0,0],scored:false,completedGames:0,tinkering:false,round:0};rooms.set(code,r);return send(200,{token:t,room:view(r,t)});}
   const r=rooms.get(String(body.code||url.searchParams.get('code')||'').toLowerCase());if(!r)throw Error('Table not found.');
   if(endpoint==='join'){const index=r.players.findIndex(p=>p.type==='human'&&!p.token);if(r.mode!=='online'||r.phase!=='lobby'||index<0)throw Error('This table is not open.');const t=token();r.players[index]={name:clean(body.name),token:t,type:'human'};r.revision++;return send(200,{token:t,room:view(r,t)});}
   const you=r.players.findIndex(p=>p.token===auth);if(you<0)throw Error('Please join this table.');
@@ -61,7 +61,18 @@ const server=http.createServer(async(req,res)=>{const url=new URL(req.url,'http:
   }else if(endpoint==='undo'){
    if(!r.options.undo||!r.history.length||r.state.winner!==null)throw Error('Nothing to undo.');const last=r.history.at(-1);if(r.mode!=='hotseat'&&last.player!==you)throw Error('Only your latest action can be undone.');r.history.pop();r.state=last.state;r.turnBackup=last.turnBackup;
   }else if(endpoint==='leave'){
-   if(you===0||r.phase==='game'){rooms.delete(r.code);return send(200,{left:true});}r.players[you]={name:'',token:null,type:'human'};r.revision++;return send(200,{left:true});
+   // The table closes only when its last player leaves. Hot-seat and practice tables have just the host.
+   const others=r.players.map((p,i)=>i).filter(i=>i!==you&&r.players[i].token);if(!others.length){rooms.delete(r.code);return send(200,{left:true});}
+   // In the lobby the host keeps the first seat, so a leaving host's seat goes to the next player.
+   if(r.phase==='lobby'){const seat=you===r.host?others[0]:you;r.players[you]=r.players[seat];r.players[seat]={name:'',token:null,type:'human'};}
+   else{
+    // A running game keeps its seats: a bot plays the rest of it, and the host controls pass to the next player.
+    r.players[you]={...r.players[you],token:null,type:'bot'};if(you===r.host)r.host=others.find(i=>i>you)??others[0];
+    // A draw that still needs an opening is taken back, as when the timer runs out, so the bot can always finish the turn.
+    if(r.state.turn===you&&r.state.winner===null){if(r.turnBackup)r.state=r.turnBackup.state;r.turnBackup=null;r.history=[];}
+    r.state.log.push(`${r.state.names[you]} left the table. A bot plays the seat.`);bots(r);scoreRound(r);
+   }
+   r.revision++;return send(200,{left:true});
   }else throw Error('Unknown request.');r.revision++;return send(200,view(r,auth));
  }
  // Resolve as a plain file path (never a URL, which would honour file: and %2e%2e) and refuse anything outside public/.
