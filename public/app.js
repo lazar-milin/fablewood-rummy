@@ -64,6 +64,22 @@ document.fonts.load('25px Alagard').then(()=>{
 function requestHeaderFit(){if(!headerFitFrame)headerFitFrame=requestAnimationFrame(fitHeader);}
 function fitHeader(){
  headerFitFrame=0;const header=$('header');header.classList.remove('hide-header-title');
+ if(!room){header.classList.remove('players-below','compact-header');return;}
+ const css=getComputedStyle(header),nav=header.querySelector('.header-controls'),navCss=getComputedStyle(nav);
+ const visible=[...nav.children].filter(node=>!node.hidden&&getComputedStyle(node).display!=='none');
+ const number=value=>parseFloat(value)||0;
+ // Expanded hover labels belong to the scrollable row, not to its breakpoint calculation.
+ const controls=visible.reduce((sum,node)=>{
+  const style=getComputedStyle(node),label=node.querySelector('.control-label,.code-rules');
+  const extra=label?label.getBoundingClientRect().width+number(getComputedStyle(label).marginLeft):0;
+  return sum+node.getBoundingClientRect().width+number(style.marginLeft)+number(style.marginRight)-extra;
+ },0)+Math.max(0,visible.length-1)*number(navCss.columnGap)+number(navCss.paddingLeft)+number(navCss.paddingRight);
+ const title=Math.max(header.querySelector('.brand').scrollWidth,$('mode-label').scrollWidth);
+ const strip=$('header-players').querySelector('.players'),seats=[...strip.children];
+ const players=seats.reduce((sum,node)=>sum+node.getBoundingClientRect().width,0)+Math.max(0,seats.length-1)*number(getComputedStyle(strip).columnGap);
+ const available=header.clientWidth-number(css.paddingLeft)-number(css.paddingRight),gap=number(css.columnGap);
+ header.classList.toggle('compact-header',title+gap+controls>available);
+ header.classList.toggle('players-below',title+players+controls+2*gap>available);
 }
 const headerSizer=new ResizeObserver(requestHeaderFit);
 for(const el of [$('header'),$('header-players'),$('copy'),document.querySelector('.header-controls')])headerSizer.observe(el);
