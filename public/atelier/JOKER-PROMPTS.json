@@ -3,24 +3,24 @@
     "animal": "dragon",
     "prompt": "Use case: stylized-concept. Create a single transparent full-body dragon illustration for a Rummyforest joker playing card. Reference image is STYLE ONLY: match its rich shaded chunky pixel-art sprite, crisp square pixel clusters, dark stepped outline, six-step light-to-dark tonal structure, charming large glossy eyes, detailed foliage base. Subject: An emerald and teal young forest dragon, amber eyes, little ivory horns, curled tail, wings folded upward close to its body, sitting proudly on moss and tiny ferns. Deep pine shadows, jade scales, pale golden belly. Composition: centered full creature, tall compact silhouette, all anatomy contained, small foliage footing, generous transparent margins, no scenery behind. It must fit a narrow 1:2 capsule card. No card frame, no lettering, no symbols or UI, no watermark. Do not flatten into vector shapes; retain intricate sprite shading.",
     "method": "Built-in image generator",
-    "file": "/art/card-kit/assets/jokers/dragon.png"
+    "file": "/art/card-kit/assets/jokers/dragon.svg"
   },
   {
     "animal": "unicorn",
     "prompt": "Use case: stylized-concept. Create a single transparent full-body unicorn illustration for a Rummyforest joker playing card. Reference image is STYLE ONLY: match its rich shaded chunky pixel-art sprite, crisp square pixel clusters, dark stepped outline, six-step light-to-dark tonal structure, charming large glossy eyes, detailed foliage base. Subject: A graceful ivory unicorn with a lavender and silvery blue flowing mane, single golden spiral horn, sitting with tucked legs on moss and tiny white wildflowers. Midnight violet shadows, opal highlights. Composition: centered full creature, tall compact silhouette, all anatomy contained, small foliage footing, generous transparent margins, no scenery behind. It must fit a narrow 1:2 capsule card. No card frame, no lettering, no symbols or UI, no watermark. Do not flatten into vector shapes; retain intricate sprite shading.",
     "method": "Built-in image generator",
-    "file": "/art/card-kit/assets/jokers/unicorn.png"
+    "file": "/art/card-kit/assets/jokers/unicorn.svg"
   },
   {
     "animal": "phoenix",
     "prompt": "Use case: stylized-concept. Create a single transparent full-body phoenix illustration for a Rummyforest joker playing card. Reference image is STYLE ONLY: match its rich shaded chunky pixel-art sprite, crisp square pixel clusters, dark stepped outline, six-step light-to-dark tonal structure, charming large glossy eyes, detailed foliage base. Subject: A noble small phoenix, upright perched body, folded narrow wings, three elegant long curling tail feathers, fiery coral and amber plumage with warm cream highlights, sitting on a mossy branch with tiny embers. Composition: centered full creature, tall compact silhouette, all anatomy contained, small foliage footing, generous transparent margins, no scenery behind. It must fit a narrow 1:2 capsule card. No card frame, no lettering, no symbols or UI, no watermark. Do not flatten into vector shapes; retain intricate sprite shading.",
     "method": "Built-in image generator",
-    "file": "/art/card-kit/assets/jokers/phoenix.png"
+    "file": "/art/card-kit/assets/jokers/phoenix.svg"
   },
   {
     "animal": "griffin",
     "prompt": "Use case: stylized-concept. Create a single transparent full-body griffin illustration for a Rummyforest joker playing card. Reference image is STYLE ONLY: match its rich shaded chunky pixel-art sprite, crisp square pixel clusters, dark stepped outline, six-step light-to-dark tonal structure, charming large glossy eyes, detailed foliage base. Subject: A noble griffin with an ivory eagle head and feathered chest, golden beak, tawny lion haunches and curled lion tail, folded slate-blue eagle wings close to its body, seated on moss and small ivory flowers. Composition: centered full creature, tall compact silhouette, all anatomy contained, small foliage footing, generous transparent margins, no scenery behind. It must fit a narrow 1:2 capsule card. No card frame, no lettering, no symbols or UI, no watermark. Do not flatten into vector shapes; retain intricate sprite shading.",
     "method": "Built-in image generator",
-    "file": "/art/card-kit/assets/jokers/griffin.png"
+    "file": "/art/card-kit/assets/jokers/griffin.svg"
   }
 ]

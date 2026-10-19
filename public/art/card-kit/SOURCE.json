@@ -533,7 +533,7 @@
       "rank": "JOKER",
       "type": "joker",
       "file": "cards/joker-dragon.html",
-      "art": "assets/jokers/dragon.png"
+      "art": "assets/jokers/dragon.svg"
     },
     {
       "id": "joker-unicorn",
@@ -544,7 +544,7 @@
       "rank": "JOKER",
       "type": "joker",
       "file": "cards/joker-unicorn.html",
-      "art": "assets/jokers/unicorn-equine.png"
+      "art": "assets/jokers/unicorn-equine.svg"
     },
     {
       "id": "joker-phoenix",
@@ -555,7 +555,7 @@
       "rank": "JOKER",
       "type": "joker",
       "file": "cards/joker-phoenix.html",
-      "art": "assets/jokers/phoenix.png"
+      "art": "assets/jokers/phoenix.svg"
     },
     {
       "id": "joker-griffin",
@@ -566,44 +566,44 @@
       "rank": "JOKER",
       "type": "joker",
       "file": "cards/joker-griffin.html",
-      "art": "assets/jokers/griffin.png"
+      "art": "assets/jokers/griffin.svg"
     }
   ],
   "assets": [
-    "assets/back/botanical-surround.png",
+    "assets/back/botanical-surround.svg",
     "assets/back/capsule.svg",
-    "assets/back/grimoire-book.png",
+    "assets/back/grimoire-book.svg",
     "assets/frames/fox-capsule.svg",
     "assets/frames/hare-capsule.svg",
     "assets/frames/joker-capsule.svg",
     "assets/frames/owl-capsule.svg",
     "assets/frames/toad-capsule.svg",
-    "assets/heads/fox-head.png",
-    "assets/heads/hare-head.png",
-    "assets/heads/owl-head.png",
-    "assets/heads/toad-head.png",
-    "assets/illustrations/fox-A.png",
-    "assets/illustrations/fox-B.png",
-    "assets/illustrations/fox-E.png",
-    "assets/illustrations/fox-Q.png",
-    "assets/illustrations/hare-A.png",
-    "assets/illustrations/hare-B.png",
-    "assets/illustrations/hare-E.png",
-    "assets/illustrations/hare-Q.png",
-    "assets/illustrations/owl-A.png",
-    "assets/illustrations/owl-B.png",
-    "assets/illustrations/owl-E.png",
-    "assets/illustrations/owl-Q.png",
-    "assets/illustrations/toad-A.png",
-    "assets/illustrations/toad-B.png",
-    "assets/illustrations/toad-E.png",
-    "assets/illustrations/toad-Q.png",
-    "assets/jokers/dragon.png",
-    "assets/jokers/griffin.png",
+    "assets/heads/fox-head.svg",
+    "assets/heads/hare-head.svg",
+    "assets/heads/owl-head.svg",
+    "assets/heads/toad-head.svg",
+    "assets/illustrations/fox-A.svg",
+    "assets/illustrations/fox-B.svg",
+    "assets/illustrations/fox-E.svg",
+    "assets/illustrations/fox-Q.svg",
+    "assets/illustrations/hare-A.svg",
+    "assets/illustrations/hare-B.svg",
+    "assets/illustrations/hare-E.svg",
+    "assets/illustrations/hare-Q.svg",
+    "assets/illustrations/owl-A.svg",
+    "assets/illustrations/owl-B.svg",
+    "assets/illustrations/owl-E.svg",
+    "assets/illustrations/owl-Q.svg",
+    "assets/illustrations/toad-A.svg",
+    "assets/illustrations/toad-B.svg",
+    "assets/illustrations/toad-E.svg",
+    "assets/illustrations/toad-Q.svg",
+    "assets/jokers/dragon.svg",
+    "assets/jokers/griffin.svg",
     "assets/jokers/moon-pixel.svg",
-    "assets/jokers/phoenix.png",
+    "assets/jokers/phoenix.svg",
     "assets/jokers/purple-side.svg",
-    "assets/jokers/unicorn-equine.png",
+    "assets/jokers/unicorn-equine.svg",
     "assets/motifs/fox-footer.svg",
     "assets/motifs/fox-side-upper.svg",
     "assets/motifs/fox-side.svg",
@@ -616,9 +616,9 @@
     "assets/motifs/toad-footer.svg",
     "assets/motifs/toad-side-upper.svg",
     "assets/motifs/toad-side.svg",
-    "assets/pips/fox-berries.png",
-    "assets/pips/hare-clovers.png",
-    "assets/pips/owl-stars.png",
-    "assets/pips/toad-mushrooms.png"
+    "assets/pips/fox-berries.svg",
+    "assets/pips/hare-clovers.svg",
+    "assets/pips/owl-stars.svg",
+    "assets/pips/toad-mushrooms.svg"
   ]
 }

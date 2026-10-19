@@ -1,10 +1,22 @@
+# Vector artwork
+
+Every image under `public/art/` is an SVG. The artwork was made as pixel-art PNGs, and some earlier "SVG" files only wrapped one of those PNGs in base64. `tools/px2svg.py` turned each one into real vectors:
+
+- It finds the image's pixel grid. The generated art has slightly uneven pixel sizes, so each grid line snaps to the nearest colour edge.
+- It takes one colour per grid cell and reduces the image to at most 128 colours.
+- It writes one crisp-edged path per colour in the original pixel coordinates. Image sizes, `viewBox` crops and card placement are unchanged.
+
+The PNG originals are in git history at commit `5ba4355`.
+
+To convert new art, run `pip install pillow numpy`. Then run `python3 tools/px2svg.py jobs.json`, where `jobs.json` is a list of `{"src": "in.png", "dst": "out.svg"}` entries. Check the result in the Card Atelier before replacing an asset.
+
 # Active background
 
-`public/art/forest-night.png` is the user's supplied “Enchanted Pixel Forest at Night true size.pixel-16bit.png”, copied unchanged into the project.
+`public/art/card-kit/assets/ui/forest-night.svg` was vectorized from the user's supplied “Enchanted Pixel Forest at Night true size.pixel-16bit.png”.
 
 # Active card artwork
 
-The approved `rummyforest-card-kit-v2` from the chat **Build Rummy Forest card mockup** is now used for all 52 ordinary faces, four mystical jokers, and the grimoire deck back. Its referenced PNG/SVG assets were copied unchanged into `public/art/card-kit/assets/`. Source metadata and the imported file list are in `public/art/card-kit/SOURCE.json`.
+The approved `rummyforest-card-kit-v2` from the chat **Build Rummy Forest card mockup** is now used for all 52 ordinary faces, four mystical jokers, and the grimoire deck back. Its referenced assets were copied into `public/art/card-kit/assets/` and later vectorized (see Vector artwork). Source metadata and the imported file list are in `public/art/card-kit/SOURCE.json`.
 
 `public/card-art.js` contains the imported card compositions. `public/card-art.css` preserves their sprite placement and adapts sizes to the game. The numeric game values remain unchanged; displayed ranks use A, 2–9, H, B, Q, E. Joker 0 is the dragon, 1 the unicorn, 2 the phoenix, and 3 the griffin. No new image generation was used for this import.
 
@@ -12,7 +24,7 @@ The approved `rummyforest-card-kit-v2` from the chat **Build Rummy Forest card m
 
 # Grimoire sprite
 
-File: `public/art/grimoire-book.png`
+File: `public/art/card-kit/assets/back/grimoire-book.svg`
 
 Generated with the built-in Imagegen tool on a transparent background, then copied unchanged into the project.
 
@@ -22,7 +34,7 @@ Final prompt:
 
 # Earlier background (retained, unused)
 
-File: `public/art/forest-pixel.png`
+File: `public/art/forest-pixel.svg`
 
 Generated with the built-in Imagegen tool using the user's fox/toad/hare card mockup as a style reference. Existing card artwork was retained.
 

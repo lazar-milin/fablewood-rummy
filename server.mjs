@@ -1,14 +1,18 @@
 import http from 'node:http';
 import {readFile} from 'node:fs/promises';
 import {randomBytes} from 'node:crypto';
-import {createGame,play,botAction,DEFAULT_RULES} from './public/engine.js';
+import {resolve} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {createGame,play,botAction,botDiscard,DEFAULT_RULES} from './public/engine.js';
 import {forestName} from './public/names.js';
-const rooms=new Map(),port=Number(process.env.PORT||3010),root=new URL('./public/',import.meta.url);
+const rooms=new Map(),port=Number(process.env.PORT||3010),publicDir=fileURLToPath(new URL('./public/',import.meta.url));
 const token=()=>randomBytes(16).toString('hex');
 const clean=(n,fallback=forestName())=>String(n||fallback).trim().slice(0,24)||fallback;
 const botName=(i,used=[])=>forestName(used);
 function view(r,t){const you=r.players.findIndex(p=>p.token===t);if(you<0)throw Error('Please join this table.');return {canUndo:!!(r.options.undo&&r.history.length&&r.state?.winner===null&&(r.mode==='hotseat'||r.history.at(-1).player===you)),code:r.code,phase:r.phase,mode:r.mode,host:0,you,players:r.players.map(p=>p.name||''),seatTypes:r.players.map(p=>p.type),seated:r.players.map(p=>!!p.token||p.type==='bot'||r.mode==='hotseat'),round:r.round,tinkering:r.tinkering,completedGames:r.completedGames,options:{...r.options,seats:r.players.length},revision:r.revision,totals:r.totals,state:r.state?{...r.state,hands:r.state.hands.map((h,i)=>r.mode==='hotseat'&&r.players[i].type!=='bot'||i===you?h:h.map(()=>({hidden:true}))),stock:r.state.stock.map(()=>({hidden:true}))}:null};}
-function bots(r){let guard=0;while(r.state?.winner===null&&r.players[r.state.turn].type==='bot'&&guard++<150)r.state=play(r.state,r.state.turn,botAction(r.state));}
+// Automatic moves (bots and timed-out turns) fall back to a plain discard, so a rejected plan can't leave the turn stuck.
+function botMove(s){try{return play(s,s.turn,botAction(s));}catch{return play(s,s.turn,botDiscard(s));}}
+function bots(r){let guard=0;while(r.state?.winner===null&&r.players[r.state.turn].type==='bot'&&guard++<150)r.state=botMove(r.state);}
 function needHost(r,you){if(you!==0)throw Error('Only the host can change this.');}
 function needLobby(r,you){needHost(r,you);if(r.phase!=='lobby')throw Error('Change this before starting the game.');}
 function control(r,you){return r.mode==='hotseat'&&you===0&&r.players[r.state.turn].type!=='bot'?r.state.turn:you;}
@@ -49,6 +53,8 @@ const server=http.createServer(async(req,res)=>{const url=new URL(req.url,'http:
    if(r.phase!=='game')throw Error('The game has not started.');const p=control(r,you),prior=r.state,priorBackup=r.turnBackup;
    if(prior.turn!==p||r.players[p].type==='bot')throw Error('It is not your turn.');
    const next=play(prior,p,body.action);r.history.push({state:prior,player:p,turnBackup:priorBackup});if(body.action.type==='draw')r.turnBackup={state:prior,player:p};r.state=next;
+   // Undo stays within the current turn and can't take back a draw that revealed a hidden card.
+   if(body.action.type==='draw'&&body.action.source!=='discard'||next.turn!==prior.turn||next.winner!==null)r.history=[];
    if(next.turn!==prior.turn||next.winner!==null)r.turnBackup=null;bots(r);scoreRound(r);
   }else if(endpoint==='cancel-draw'){
    const p=control(r,you);if(!r.turnBackup||r.turnBackup.player!==p||r.state.turn!==p||!r.state.mustOpen&&!r.state.mustHand)throw Error('Only a discard or cut-card draw that requires an opening can be cancelled.');r.state=r.turnBackup.state;r.turnBackup=null;r.history=[];
@@ -58,7 +64,8 @@ const server=http.createServer(async(req,res)=>{const url=new URL(req.url,'http:
    if(you===0||r.phase==='game'){rooms.delete(r.code);return send(200,{left:true});}r.players[you]={name:'',token:null,type:'human'};r.revision++;return send(200,{left:true});
   }else throw Error('Unknown request.');r.revision++;return send(200,view(r,auth));
  }
- const path=url.pathname==='/'?'index.html':decodeURIComponent(url.pathname.slice(1));if(path.split('/').includes('..')||path.startsWith('/')||path.includes('\\')){res.writeHead(403);return res.end();}let data;try{data=await readFile(new URL(path,root));}catch{res.writeHead(404);return res.end('Not found');}res.writeHead(200,{'Content-Type':path.endsWith('.js')?'text/javascript':path.endsWith('.css')?'text/css':path.endsWith('.ttf')?'font/ttf':path.endsWith('.png')?'image/png':path.endsWith('.svg')?'image/svg+xml':'text/html','Cache-Control':'no-cache'});res.end(data);
+ // Resolve as a plain file path (never a URL, which would honour file: and %2e%2e) and refuse anything outside public/.
+ const path=url.pathname==='/'?'index.html':decodeURIComponent(url.pathname.slice(1)),file=resolve(publicDir,path);if(!file.startsWith(publicDir)||path.includes('\0')){res.writeHead(403);return res.end();}let data;try{data=await readFile(file);}catch{res.writeHead(404);return res.end('Not found');}res.writeHead(200,{'Content-Type':path.endsWith('.js')?'text/javascript':path.endsWith('.css')?'text/css':path.endsWith('.ttf')?'font/ttf':path.endsWith('.png')?'image/png':path.endsWith('.svg')?'image/svg+xml':'text/html','Cache-Control':'no-cache'});res.end(data);
  }catch(e){send(400,{error:e.message});}});
-setInterval(()=>{for(const r of rooms.values()){if(r.phase!=='game'||r.state.winner!==null||!r.options.timer)continue;if(Date.now()-r.state.turnStarted>r.options.timer*1000){try{if(r.turnBackup){r.state=r.turnBackup.state;r.turnBackup=null;}let guard=0,p=r.state.turn;while(r.state.turn===p&&r.state.winner===null&&guard++<60)r.state=play(r.state,p,botAction(r.state));bots(r);scoreRound(r);r.history=[];r.revision++;}catch(e){r.state.turnStarted=Date.now();r.state.log.push('Timer could not finish the turn: '+e.message);r.revision++;}}}},1000).unref();
+setInterval(()=>{for(const r of rooms.values()){if(r.phase!=='game'||r.state.winner!==null||!r.options.timer)continue;if(Date.now()-r.state.turnStarted>r.options.timer*1000){try{if(r.turnBackup){r.state=r.turnBackup.state;r.turnBackup=null;}let guard=0,p=r.state.turn;while(r.state.turn===p&&r.state.winner===null&&guard++<60)r.state=botMove(r.state);bots(r);scoreRound(r);r.history=[];r.revision++;}catch(e){r.state.turnStarted=Date.now();r.state.log.push('Timer could not finish the turn: '+e.message);r.revision++;}}}},1000).unref();
 server.listen(port,'0.0.0.0',()=>console.log(`Fablewood Rummy: http://127.0.0.1:${port}`));

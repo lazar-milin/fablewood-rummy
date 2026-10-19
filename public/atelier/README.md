@@ -27,7 +27,7 @@ The gallery has four views: complete deck, evolution comparisons, downloadable c
 | Q | Queen | Rare or magical animal |
 | E | King | Mythic guardian |
 
-The Queen is displayed as uppercase **Q** throughout the gallery, standalone cards, filenames and manifests. Example: `fox-Q.html` uses `fox-Q.png`.
+The Queen is displayed as uppercase **Q** throughout the gallery, standalone cards, filenames and manifests. Example: `fox-Q.html` uses `fox-Q.svg`.
 
 ## The four evolution chains
 
@@ -67,19 +67,19 @@ Reusable card structure is in each standalone HTML page and in the gallery's `.f
 
 ## Asset naming examples
 
-- `/art/card-kit/assets/heads/fox-head.png` — top fox suit marker / favicon.
-- `/art/card-kit/assets/pips/fox-berries.png` — one counting pip, repeated on 2–H.
+- `/art/card-kit/assets/heads/fox-head.svg` — top fox suit marker / favicon.
+- `/art/card-kit/assets/pips/fox-berries.svg` — one counting pip, repeated on 2–H.
 - `/art/card-kit/assets/motifs/fox-side.svg` — complete side strip for reference.
 - `/art/card-kit/assets/motifs/fox-side-upper.svg` — upper border piece; mirror for the right side.
 - `/art/card-kit/assets/motifs/fox-side-lower.svg` — lower piece, used only on number cards.
-- `/art/card-kit/assets/motifs/source/fox-side.png` — original transparent generated strip.
+- `/art/card-kit/assets/motifs/source/fox-side.svg` — original transparent generated strip.
 - `/art/card-kit/assets/motifs/fox-footer.svg` — shaded flourish beside the rank, mirrored for the other side.
-- `/art/card-kit/assets/motifs/source/fox-footer.png` — original transparent generated rank flourish.
+- `/art/card-kit/assets/motifs/source/fox-footer.svg` — original transparent generated rank flourish.
 - `/art/card-kit/assets/frames/fox-capsule.svg` — blank four-ring card frame.
-- `/art/card-kit/assets/illustrations/fox-A.png` — Fox kit.
-- `/art/card-kit/assets/illustrations/fox-B.png` — Red Fox.
-- `/art/card-kit/assets/illustrations/fox-Q.png` — Silver Fox, displayed Q.
-- `/art/card-kit/assets/illustrations/fox-E.png` — Kitsune.
+- `/art/card-kit/assets/illustrations/fox-A.svg` — Fox kit.
+- `/art/card-kit/assets/illustrations/fox-B.svg` — Red Fox.
+- `/art/card-kit/assets/illustrations/fox-Q.svg` — Silver Fox, displayed Q.
+- `/art/card-kit/assets/illustrations/fox-E.svg` — Kitsune.
 - `cards/fox-H.html` — complete ten-berry card, labelled H.
 
 ## Sources and production

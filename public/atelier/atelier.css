@@ -1,7 +1,7 @@
 @font-face{font-family:Woodland;src:url('/art/card-kit/assets/fonts/vcr-osd-mono.ttf') format('truetype');font-display:swap}
 :root{--paper:#30233c;--ink:#efe6d9;--muted:#bfa7ca;--line:#93739f77;--forest:#d9b5eb;color-scheme:dark;font-synthesis:none}
 body{font-family:Woodland,monospace;font-size:13px;background:#04152d;color:var(--ink);min-height:100vh}
-body:before{content:'';position:fixed;inset:0;z-index:-2;background:linear-gradient(#09132a36,#11101f99),url('/art/card-kit/assets/ui/forest-night.png') center/cover no-repeat;image-rendering:pixelated}
+body:before{content:'';position:fixed;inset:0;z-index:-2;background:linear-gradient(#09132a36,#11101f99),url('/art/card-kit/assets/ui/forest-night.svg') center/cover no-repeat;image-rendering:pixelated}
 button,input,select{font-family:Woodland,monospace;font-weight:400}a{color:#dfbced;text-decoration-color:#b18fc980}a:hover{color:#fff0ff;text-decoration-color:currentColor}
 .masthead{height:82px;padding:0 5vw;background:#251d2de8;border-bottom:2px solid #72547f;justify-content:center;gap:20px}.brand{font:32px/1.1 Alagard;color:#ebd4ed}.brand span{display:inline-block;font:11px Woodland,monospace;color:#c7a6d4;margin-left:16px;letter-spacing:1px;text-transform:none;border-left:1px solid #93739f;padding-left:17px}
 main{max-width:1440px;margin:0 auto;padding:0 4vw 1px;background:#221a2be0;border-left:1px solid #72547f66;border-right:1px solid #72547f66}

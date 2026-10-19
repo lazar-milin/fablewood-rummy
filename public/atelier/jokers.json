@@ -8,7 +8,7 @@
     "rank": "JOKER",
     "type": "joker",
     "file": "cards/joker-dragon.html",
-    "art": "/art/card-kit/assets/jokers/dragon.png"
+    "art": "/art/card-kit/assets/jokers/dragon.svg"
   },
   {
     "id": "joker-unicorn",
@@ -19,7 +19,7 @@
     "rank": "JOKER",
     "type": "joker",
     "file": "cards/joker-unicorn.html",
-    "art": "/art/card-kit/assets/jokers/unicorn-equine.png"
+    "art": "/art/card-kit/assets/jokers/unicorn-equine.svg"
   },
   {
     "id": "joker-phoenix",
@@ -30,7 +30,7 @@
     "rank": "JOKER",
     "type": "joker",
     "file": "cards/joker-phoenix.html",
-    "art": "/art/card-kit/assets/jokers/phoenix.png"
+    "art": "/art/card-kit/assets/jokers/phoenix.svg"
   },
   {
     "id": "joker-griffin",
@@ -41,6 +41,6 @@
     "rank": "JOKER",
     "type": "joker",
     "file": "cards/joker-griffin.html",
-    "art": "/art/card-kit/assets/jokers/griffin.png"
+    "art": "/art/card-kit/assets/jokers/griffin.svg"
   }
 ]
