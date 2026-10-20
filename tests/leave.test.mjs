@@ -32,9 +32,9 @@ test('a guest leaving while another player is on turn leaves that turn alone',as
  room=(await api('action',{code,action:{type:'discard',ids:[ordinary(room.state.hands[0])]}},host)).value;room=(await waitForHumans(api,code,host,{value:room})).value;assert.equal(room.state.turn,0,'the bot plays the guest\'s turn');
  await api('leave',{code},host);
 });
-test('leaving a hot-seat game closes the table',async()=>{
+test('leaving a local game closes the table',async()=>{
  const created=await api('create',{name:'Host'}),code=created.value.room.code,host=created.value.token;
- await api('settings',{code,mode:'hotseat'},host);await api('start',{code},host);
+ await api('settings',{code,mode:'local'},host);await api('start',{code},host);
  await api('leave',{code},host);assert.equal((await api('join',{code,name:'Late'})).value.error,'Table not found.');
 });
 test('leaving on your own turn after a discard draw that needs an opening lets the bot play on',async()=>{

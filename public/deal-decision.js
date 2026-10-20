@@ -3,7 +3,7 @@ let dialog,notice;
 export function syncDealDecision(room,passed,decide){
  const decision=room?.dealDecision;
  if(!notice){notice=document.createElement('div');notice.id='deal-notice';notice.setAttribute('role','status');document.body.append(notice);}
- const canChoose=decision?.canDecide&&(room.mode!=='hotseat'||passed);
+ const canChoose=decision?.canDecide&&(room.mode!=='local'||passed);
  notice.hidden=!decision||canChoose;notice.textContent=decision&&!canChoose?room.state.names[decision.player]+' is deciding whether to re-deal duplicate cards.':'';
  if(!canChoose){dialog?.close();return;}
  if(!dialog){dialog=document.createElement('dialog');dialog.id='deal-decision';dialog.setAttribute('aria-labelledby','deal-decision-title');dialog.addEventListener('cancel',e=>e.preventDefault());document.body.append(dialog);}

@@ -1,6 +1,6 @@
 # Fablewood Rummy
 
-A magical-forest card game for online tables, hot-seat play, and practice against bots. Classic Rummy follows Serbian Remi 51 with configurable house rules. Rummikub and additional variants are not implemented yet.
+A magical-forest card game for online tables and local play with humans and bots. Classic Rummy follows Serbian Remi 51 with configurable house rules. Rummikub and additional variants are not implemented yet.
 
 ## Moving cards
 
@@ -28,7 +28,7 @@ Tables, scores, and games live in server memory. Restarting or redeploying the s
 
 ## Start a table
 
-Enter a name, or leave it blank for a forest-inspired name, and create a table. Choose online play, hot-seat play, or a practice game. Add human or bot seats in the player panels, up to six seats. Online players join using the eight-character table code or an open table on the landing page. Codes accept either case. If a player leaves a running game, a bot plays their seat for the rest of it, and if the host leaves, the next player becomes host. A table closes when its last player leaves.
+Enter a name, or leave it blank for a forest-inspired name, and create a table. Choose Online play for separate devices, or Local for humans and bots sharing this screen. Use the Player / Bot buttons in each seat to choose opponents. With several humans, a pass-screen cover hides the next hand until that player reveals it; with one human, bot turns keep your hand visible. Add human or bot seats in the player panels, up to six seats. Online players join using the eight-character table code or an open table on the landing page. Codes accept either case. If a player leaves a running game, a bot plays their seat for the rest of it, and if the host leaves, the next player becomes host. A table closes when its last player leaves.
 
 The host chooses the rules through the grimoire, then returns to the lobby and starts the game. Timer and Undo preferences are in the header controls. Results appear on the scoreboard after the first completed round. Win conditions are optional and configured in the grimoire.
 

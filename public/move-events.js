@@ -13,7 +13,7 @@ export function unseenMoves(previous,next){
  if(!previous?.state||previous.round!==next.round)return [];
  const last=previous.moves?.at(-1)?.id||0;
  return (next.moves||[]).filter(m=>m.id>last).flatMap(m=>{
-  const local=next.seatTypes[m.player]!=='bot'&&(next.mode==='hotseat'||m.player===next.you);
+  const local=next.seatTypes[m.player]!=='bot'&&(next.mode==='local'||m.player===next.you);
   if(!local)return [m];
   if(m.to.zone==='discard')return [{...m,from:{zone:'hand',index:m.player}}];
   if(m.to.zone==='player'&&['stock','discard','cut'].includes(m.from.zone)){

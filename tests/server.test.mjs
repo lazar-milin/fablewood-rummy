@@ -28,8 +28,10 @@ test('mixed seats, lowercase codes, host settings, online privacy and turn rollb
  await api('leave',{code},host);const kept=await api('state?code='+code,null,gt);assert.equal(kept.status,200);assert.equal(kept.value.host,1);
  await api('leave',{code},gt);assert.equal((await api('state?code='+code,null,gt)).status,400);
  const local=await api('create',{name:'Local'}),lc=local.value.room.code,lt=local.value.token;
- await api('settings',{code:lc,mode:'hotseat'},lt);await api('seat',{code:lc,operation:'name',index:1,name:'Friend'},lt);await api('seat',{code:lc,operation:'add',type:'bot'},lt);
+ assert.equal((await api('settings',{code:lc,mode:'local'},lt)).value.mode,'local');assert.equal((await api('join',{code:lc,name:'Remote'})).status,400);await api('seat',{code:lc,operation:'name',index:1,name:'Friend'},lt);await api('seat',{code:lc,operation:'add',type:'bot'},lt);
  const game=await api('start',{code:lc,names:{1:'New friend'}},lt);assert.equal(game.value.state.names[1],'New friend');assert.ok(game.value.state.hands[1][0].id);assert.deepEqual(game.value.state.hands[2][0],{hidden:true});
+ const localFirst=game.value.state.hands[0].find(c=>!c.joker);const nextLocal=await api('action',{code:lc,action:{type:'discard',ids:[localFirst.id]}},lt);assert.equal(nextLocal.value.state.turn,1);const localDraw=await api('action',{code:lc,action:{type:'draw',source:'stock'}},lt);assert.equal(localDraw.status,200);assert.equal(localDraw.value.state.hands[1].length,15);
+ const legacy=(await api('create',{name:'Legacy'})).value;for(const mode of ['bot','hotseat']){const mapped=await api('settings',{code:legacy.room.code,mode},legacy.token);assert.equal(mapped.value.mode,'local');assert.equal(mapped.value.seatTypes[1],'bot');}await api('leave',{code:legacy.room.code},legacy.token);
  const generated=await api('create',{name:''});assert.match(generated.value.room.players[0],/^[A-Za-z]+$/);assert.notEqual(generated.value.room.players[0],'Forest visitor');await api('leave',{code:generated.value.room.code},generated.value.token);
  }finally{child.kill();}
 });
