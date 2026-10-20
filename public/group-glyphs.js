@@ -4,6 +4,6 @@ export function capsuleGlyphs(width,height,id){
 }
 let observer;
 export function fitGlyphBorders(){
- observer?.disconnect();observer=new ResizeObserver(entries=>{for(const {target}of entries){const w=target.offsetWidth,h=target.offsetHeight,key=w+':'+h;if(target.dataset.glyphSize===key)continue;target.dataset.glyphSize=key;const old=target.querySelector(':scope>.sigil-border');if(old)old.outerHTML=capsuleGlyphs(w,h,'sigil-unit-'+target.dataset.unit);}});
+ observer?.disconnect();observer=new ResizeObserver(entries=>{for(const {target}of entries){const w=target.offsetWidth,h=target.offsetHeight,key=w+':'+h;if(target.dataset.glyphSize===key)continue;target.dataset.glyphSize=key;const old=target.querySelector(':scope>.sigil-border');if(old)old.outerHTML=capsuleGlyphs(w,h,'sigil-unit-'+(target.dataset.unit??'field-'+target.dataset.fieldGroup));}});
  document.querySelectorAll('.movement-game .pending-pack').forEach(e=>observer.observe(e));
 }

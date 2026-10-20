@@ -143,3 +143,21 @@ body.passing-screen .floating-panel{z-index:8200}
 .lobby .mode .mode-icon{flex:0 0 52px}
 .lobby .mode .mode-icon svg{width:52px;height:40px}
 .lobby .mode strong{min-height:40px;gap:12px}
+
+/* Field-building experiment: unfinished groups share the hand's geometry. */
+.movement-game .field-drafts.hand{display:flex;flex:1 0 100%;flex-wrap:wrap;align-content:flex-start;align-items:flex-start;gap:42px 28px;min-height:180px;width:100%;padding:16px 10px 30px;margin:0;border:0;border-radius:0;box-shadow:none;background:transparent;overflow:visible}
+.field-drafts .field-owner{position:absolute;top:calc(100% + 31px);left:50%;transform:translateX(-50%);font-size:9px;color:#ceb9dc;white-space:nowrap}
+.hand .hand-unit .eject-card{position:absolute;top:39px;left:50%;width:28px;height:28px;display:grid;place-items:center;transform:translateX(-50%);padding:0;box-sizing:border-box;border:1px dashed #e0b7f4;border-radius:50%;background-color:#805999;background-image:inherit;color:#ef738c;opacity:0;pointer-events:none;z-index:8;transition:opacity .12s}
+.hand .hand-unit .eject-card>span{position:absolute;inset:0;display:block;width:100%;height:100%;padding:0;font-size:0;pointer-events:none}
+.hand .hand-unit .eject-card svg{width:100%;height:100%;display:block}
+.hand .hand-card-shell:hover .eject-card,.hand .hand-card-shell:focus-within .eject-card{opacity:1;pointer-events:auto}
+.hand .hand-unit .eject-card:hover{transform:translateX(-50%);background-color:#9768ad;color:#ff9daf}
+.hand .hand-card-shell:has(.eject-card:hover){z-index:9}
+.returned-card-badge{top:-29px;background:#b9ddf0;color:#173d59;border-color:#71afd2}
+.hand-card-shell:has(.returned-card-badge){z-index:5}
+.field-drafts .hand-unit[aria-disabled="true"]{cursor:default}
+.field-drafts .hand-unit .pack-close{left:-18px!important}
+.field-drafts .drop-slot{border:1px dashed #b38acb;box-sizing:border-box;border-radius:40px;background:#805c9122}
+@media(max-width:650px){.movement-game .field-drafts.hand{gap:42px 24px;padding:16px 8px 30px;min-height:150px}.hand .hand-unit .eject-card{top:25px}.returned-card-badge{font-size:11px}}
+
+@media(max-width:650px){.movement-game .field-drafts.hand{padding:20px 20px 48px;overflow:auto;max-width:100%}}

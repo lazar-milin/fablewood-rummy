@@ -1,3 +1,4 @@
+import {fieldAction} from './field-building.js';
 import {duplicatePairs} from './duplicate-deals.js';
 // Errors meant for players; the server hides every other error's message.
 export class PlayerError extends Error{}
@@ -66,15 +67,19 @@ function dealGame(names,options={},random=Math.random){
  const count=options.handSize??14,first=options.first??0,cutter=(first+names.length-1)%names.length,hands=names.map(()=>[]);
  while(deck.at(-1)?.joker)hands[cutter].push(deck.pop());const cutCard=deck.pop();
  for(let i=0;i<names.length;i++)while(hands[i].length<count+(i===first?1:0))hands[i].push(deck.shift());
- return {names,hands,stock:deck,cutCard,discard:[],melds:[],turn:first,first,stage:'meld',turns:0,opened:names.map(()=>false),winner:null,log:[`Classic Rummy: opening ${options.opening}. The first player starts with one extra card and discards.`],scores:names.map(()=>0),turnStarted:Date.now(),options:{undo:true,timer:0,...options},mustOpen:false,mustHand:false,fromCut:false,handUsedJokers:false,openedThisTurn:false,laidOffThisTurn:false,pendingJokers:[],openingAttempt:[]};
+ return {names,hands,stock:deck,cutCard,discard:[],melds:[],turn:first,first,stage:'meld',turns:0,opened:names.map(()=>false),winner:null,log:[`Classic Rummy: opening ${options.opening}. The first player starts with one extra card and discards.`],scores:names.map(()=>0),turnStarted:Date.now(),options:{undo:true,timer:0,...options},mustOpen:false,mustHand:false,fromCut:false,handUsedJokers:false,openedThisTurn:false,laidOffThisTurn:false,pendingJokers:[],openingAttempt:[],fieldGroups:[],fieldNotice:null};
 }
 export function play(state,player,action,random=Math.random){
- const s=structuredClone(state);if(s.winner!==null)throw new PlayerError('The round has ended.');if(player!==s.turn)throw new PlayerError('It is not your turn.');
+ const s=structuredClone(state);s.fieldNotice=null;if(s.winner!==null)throw new PlayerError('The round has ended.');if(player!==s.turn)throw new PlayerError('It is not your turn.');
+ if(action.type?.startsWith('field-'))return fieldAction(s,player,action,{play,resolveMeld,PlayerError},random);
  const hand=s.hands[player],firstLap=s.turns<s.names.length,rules={...DEFAULT_RULES,...s.options};
  const pick=ids=>{if(!Array.isArray(ids)||new Set(ids).size!==ids.length)throw new PlayerError('Choose each card once.');const cs=ids.map(id=>hand.find(c=>c.id===id));if(cs.some(c=>!c))throw new PlayerError('Choose cards from your hand.');return cs;};
  const remove=cs=>{for(const c of cs){hand.splice(hand.findIndex(x=>x.id===c.id),1);s.pendingJokers=s.pendingJokers.filter(id=>id!==c.id);}};
  const reserve=cs=>{if(hand.length-cs.length<1)throw new PlayerError('Keep one card for the final discard.');};
  const log=t=>s.log.push(`${s.names[player]} ${t}`);
+ const drafted=new Set((s.fieldGroups||[]).flatMap(g=>g.ids));
+ if(['open','stage-open','meld','layoff','replace'].includes(action.type)&&(action.ids||action.groups?.flat()||[]).some(id=>drafted.has(id)))throw new PlayerError('Return those cards from the field before playing them.');
+ if(action.type==='discard'&&s.fieldGroups?.length){s.fieldGroups=[];try{return play(s,player,action,random);}catch(error){if(!(error instanceof PlayerError))throw error;s.fieldNotice=error.message;return s;}}
  if(action.type==='draw'){
   if(s.stage!=='draw')throw new PlayerError('You have already drawn, or hold the opening extra card.');
   if(!['stock','discard','cut'].includes(action.source))throw new PlayerError('Choose a draw pile.');
@@ -150,6 +155,7 @@ export function findOpening(hand,{finish=false,rules={}}={}){
 }
 export function botAction(s){
  const p=s.turn,hand=s.hands[p],firstLap=s.turns<s.names.length;
+ if(s.fieldGroups?.length)return {type:'field-return'};
  if(s.stage==='draw')return {type:'draw',source:'stock'};
  if(!firstLap){
   if(!s.opened[p]){const opening=findOpening(hand,{rules:s.options});if(opening)return {type:'open',groups:opening.groups};}

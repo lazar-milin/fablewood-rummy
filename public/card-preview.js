@@ -31,7 +31,7 @@ document.addEventListener('pointerout',event=>{
 // Touch and pen: hold a card for half a second. Moving the finger cancels, and the tap that ends the hold doesn't select the card.
 document.addEventListener('pointerdown',event=>{
  hide();cancelHold();swallowClick=false;
- if(event.target.closest('[data-unit],[data-stage]'))return;
+ if(event.target.closest('[data-unit],[data-stage],[data-field-group]'))return;
  const card=event.pointerType==='mouse'?null:cardAt(event.target,event.clientX,event.clientY);if(!card)return;
  hold={id:event.pointerId,x:event.clientX,y:event.clientY,timer:setTimeout(()=>{hold=null;swallowClick=true;open(card);},HOLD)};
 },true);

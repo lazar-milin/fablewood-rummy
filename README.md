@@ -1,3 +1,11 @@
+# Field-building playtest
+
+This isolated `experiment/field-building` build starts from the current main game. Run `./start-field.ps1` on Windows for http://127.0.0.1:3042, or set `PORT=3042` and run `npm start`.
+
+Drop loose cards or groups into the green field after drawing and after the first lap. Click field units to select and join them, drag onto groups to merge, or use gaps to reorder. Unfinished groups are visible to all players; only their owner can edit them. Complete groups lay automatically after opening; before opening, valid groups combine automatically at the configured threshold. Incomplete groups return to hand when you discard, and a legal discard then ends the turn. Invalid additions or joker exchanges return their source cards. Returned field cards carry a light-blue Returned badge until hovered, clicked or moved. The x on each card inside a hand or unfinished field group removes that card into its own hand unit; permanent melds do not get these controls.
+
+---
+
 # Fablewood Rummy
 
 A magical-forest card game for online tables and local play with humans and bots. Classic Rummy follows Serbian Remi 51 with configurable house rules. Rummikub and additional variants are not implemented yet.
