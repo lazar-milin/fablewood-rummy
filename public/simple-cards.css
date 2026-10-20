@@ -1,0 +1,9 @@
+/* Plain faces share the same capsule geometry and animal markers as the full art. */
+.card .forest-card.simple-card{background:var(--card-bg,#e4d4e8);box-shadow:inset 0 0 0 1px #30203855;color:var(--card-ink);container-type:inline-size}
+.card .simple-card .head-marker{position:absolute;display:block;top:6%;left:20%;width:60%;height:27%}
+.card .simple-card .simple-rank{position:absolute;inset:41% 3% 9%;display:flex;align-items:center;justify-content:center;font:normal 68cqw/1 Alagard,serif;color:var(--card-ink);letter-spacing:0}
+.card .simple-joker .simple-joker-marker{top:9%;height:24%}.card .simple-joker .simple-rank{font-size:29cqw;letter-spacing:-.025em}
+#header .simple-cards-toggle{flex:0 0 auto;min-width:47px;height:47px;padding:10px}#header .simple-cards-toggle.chosen{--control-bg:#b2d2a8;--control-border:#6d9369;--control-ink:#263d2a;background:var(--control-bg);border-color:var(--control-border);color:var(--control-ink)}
+#header .simple-cards-toggle.chosen .control-label{max-width:160px;opacity:1;margin-left:10px}#header .simple-cards-toggle[hidden]{display:none!important}
+.welcome>.atelier-button{display:table;margin:20px auto 0}
+@media(max-width:650px){body:not(.at-table) #header{flex-wrap:wrap;gap:12px}body:not(.at-table) .header-controls{flex:0 0 auto;flex-wrap:nowrap}}

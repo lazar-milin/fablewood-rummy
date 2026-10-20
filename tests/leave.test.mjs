@@ -1,3 +1,4 @@
+import {waitForHumans} from './wait-bots.mjs';
 import test,{before,after} from 'node:test';import assert from 'node:assert/strict';import {spawn} from 'node:child_process';import {once} from 'node:events';
 let child;
 const api=async(endpoint,body,token)=>{if(body&&token&&endpoint!=='state'&&endpoint!=='join'){const state=await fetch('http://127.0.0.1:3017/api/state?code='+body.code,{headers:{Authorization:'Bearer '+token}}).then(r=>r.json());body={revision:state.revision,...body};}const r=await fetch('http://127.0.0.1:3017/api/'+endpoint,{method:body?'POST':'GET',headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{})},...(body?{body:JSON.stringify(body)}:{})});return {status:r.status,value:await r.json()};};
@@ -16,19 +17,19 @@ test('a host leaving the lobby hands the first seat and host controls to the nex
 test('a host leaving a running game gives the seat to a bot and the host controls to a player',async()=>{
  const {code,host,guest}=await online();await api('start',{code},host);
  await api('leave',{code},host);
- const room=(await api('state?code='+code,null,guest));assert.equal(room.status,200);
+ const room=await waitForHumans(api,code,guest);assert.equal(room.status,200);
  assert.equal(room.value.host,1);assert.equal(room.value.seatTypes[0],'bot');assert.equal(room.value.state.names[0],'Host');
  assert.equal(room.value.state.turn,1,'the bot finishes the turn the host left');assert.match(room.value.state.log.join('\n'),/Host left the table/);
  const drawn=await api('action',{code,action:{type:'draw',source:'stock'}},guest);
- const next=await api('action',{code,action:{type:'discard',ids:[ordinary(drawn.value.state.hands[1])]}},guest);
- assert.equal(next.value.state.turn,1,'the bot keeps playing its seat');
+ let next=await api('action',{code,action:{type:'discard',ids:[ordinary(drawn.value.state.hands[1])]}},guest);
+ next=await waitForHumans(api,code,guest,next);assert.equal(next.value.state.turn,1,'the bot keeps playing its seat');
  await api('leave',{code},guest);assert.equal((await api('join',{code,name:'Late'})).value.error,'Table not found.');
 });
 test('a guest leaving while another player is on turn leaves that turn alone',async()=>{
  const {code,host,guest}=await online();await api('start',{code},host);
  await api('leave',{code},guest);
- let room=(await api('state?code='+code,null,host)).value;assert.equal(room.host,0);assert.equal(room.seatTypes[1],'bot');assert.equal(room.state.turn,0);assert.equal(room.state.stage,'meld');
- room=(await api('action',{code,action:{type:'discard',ids:[ordinary(room.state.hands[0])]}},host)).value;assert.equal(room.state.turn,0,'the bot plays the guest\'s turn');
+ let room=(await api('state?code='+code,null,host)).value;assert.equal(room.host,0);room=(await waitForHumans(api,code,host,{value:room})).value;assert.equal(room.seatTypes[1],'bot');assert.equal(room.state.turn,0);assert.equal(room.state.stage,'meld');
+ room=(await api('action',{code,action:{type:'discard',ids:[ordinary(room.state.hands[0])]}},host)).value;room=(await waitForHumans(api,code,host,{value:room})).value;assert.equal(room.state.turn,0,'the bot plays the guest\'s turn');
  await api('leave',{code},host);
 });
 test('leaving a hot-seat game closes the table',async()=>{
@@ -45,6 +46,6 @@ test('leaving on your own turn after a discard draw that needs an opening lets t
  room=(await api('action',{code,action:{type:'draw',source:'discard'}},guest)).value;assert.equal(room.state.mustOpen,true);
  assert.equal((await api('leave',{code},guest)).status,200);
  room=(await api('state?code='+code,null,host)).value;
- assert.equal(room.seatTypes[1],'bot');assert.equal(room.state.turn,0);assert.equal(room.state.mustOpen,false);
+ room=(await waitForHumans(api,code,host,{value:room})).value;assert.equal(room.seatTypes[1],'bot');assert.equal(room.state.turn,0);assert.equal(room.state.mustOpen,false);
  await api('leave',{code},host);
 });

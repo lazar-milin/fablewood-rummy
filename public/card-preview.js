@@ -15,7 +15,9 @@ function show(card){
 function open(card){hide();source=card;show(card);}
 function cancelHold(){if(hold){clearTimeout(hold.timer);hold=null;}}
 // Mouse: rest on a card for four seconds.
+document.addEventListener('card-movement-start',()=>{hide();cancelHold();});
 function trackMouse(event){
+ if(document.body.classList.contains('moving-cards'))return;
  if(event.pointerType!=='mouse')return;
  const card=cardAt(event.target,event.clientX,event.clientY);if(card===source)return;
  hide();if(!card)return;source=card;timer=setTimeout(()=>show(card),DELAY);
@@ -29,6 +31,7 @@ document.addEventListener('pointerout',event=>{
 // Touch and pen: hold a card for half a second. Moving the finger cancels, and the tap that ends the hold doesn't select the card.
 document.addEventListener('pointerdown',event=>{
  hide();cancelHold();swallowClick=false;
+ if(event.target.closest('[data-unit],[data-stage]'))return;
  const card=event.pointerType==='mouse'?null:cardAt(event.target,event.clientX,event.clientY);if(!card)return;
  hold={id:event.pointerId,x:event.clientX,y:event.clientY,timer:setTimeout(()=>{hold=null;swallowClick=true;open(card);},HOLD)};
 },true);
@@ -39,7 +42,7 @@ document.addEventListener('click',event=>{if(swallowClick){swallowClick=false;ev
 document.addEventListener('contextmenu',event=>{if(event.pointerType!=='mouse'&&cardAt(event.target,event.clientX,event.clientY))event.preventDefault();});
 // Keyboard: V shows the focused card large and hides it again; Escape or moving focus hides it.
 document.addEventListener('keydown',event=>{
- if(event.key==='Escape')return hide();
+ if(event.key==='Escape'){const wasOpen=!!preview;hide();if(wasOpen){event.preventDefault();event.stopPropagation();}return;}
  if(event.key.toLowerCase()!=='v'||event.ctrlKey||event.metaKey||event.altKey)return;
  const card=cardAt(document.activeElement);if(!card)return;
  event.preventDefault();if(preview&&source===card)hide();else open(card);

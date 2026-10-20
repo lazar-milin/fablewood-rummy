@@ -20,3 +20,5 @@ test('hidden cards and cards behind an unrelated surface are not inspected',()=>
  assert.equal(previewCardAt(surface([]),20,50),null);
  assert.equal(previewCardAt(null,20,50),null);
 });
+
+test('keyboard focus on a movable hand unit can preview its first card',()=>{const face=card(0,0),unit={closest:()=>null,matches:selector=>selector==='[data-unit]',querySelector:()=>face};assert.equal(previewCardAt(unit),face);});

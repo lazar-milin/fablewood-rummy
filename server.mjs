@@ -5,9 +5,13 @@ import {resolve,extname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {promisify} from 'node:util';
 import {gzip} from 'node:zlib';
-import {createGame,play,botAction,botDiscard,DEFAULT_RULES,PlayerError} from './public/engine.js';
+import {createGame,play,botAction,botDiscard,DEFAULT_RULES,PlayerError,resolveMeld} from './public/engine.js';
 import {forestName} from './public/names.js';
 import {rateLimiter,expireTables} from './limits.mjs';
+import {createBotScheduler} from './bot-scheduler.mjs';
+import {duplicatePairs,dealReview} from './public/duplicate-deals.js';
+import {DEFAULT_WIN_RULES,awardRound,resetMatch} from './public/win-conditions.js';
+import {describeMove} from './public/move-events.js';
 const rooms=new Map(),address=process.env.HOST||'127.0.0.1',port=Number(process.env.PORT||3010),publicDir=fileURLToPath(new URL('./public/',import.meta.url));
 // Only create adds a table, so it has a much smaller allowance than polling and moves.
 const limiter=rateLimiter(1800,60000),creates=rateLimiter(20,60000),trustProxy=process.env.TRUST_PROXY==='true',gzipAsync=promisify(gzip),zipped=new Map();
@@ -19,14 +23,25 @@ const clientAddress=req=>trustProxy&&req.headers['x-forwarded-for']?req.headers[
 const token=()=>randomBytes(16).toString('hex');
 const clean=(n,fallback=forestName([],random))=>String(n||fallback).trim().slice(0,24)||fallback;
 const botName=(i,used=[])=>forestName(used,random);
-function view(r,t){const you=r.players.findIndex(p=>p.token===t);if(you<0)throw new PlayerError('Please join this table.');return {canUndo:!!(r.options.undo&&r.history.length&&r.state?.winner===null&&(r.mode==='hotseat'||r.history.at(-1).player===you)),code:r.code,phase:r.phase,mode:r.mode,host:r.host,you,players:r.players.map(p=>p.name||''),seatTypes:r.players.map(p=>p.type),seated:r.players.map(p=>!!p.token||p.type==='bot'||r.mode==='hotseat'),round:r.round,tinkering:r.tinkering,completedGames:r.completedGames,options:{...r.options,seats:r.players.length},revision:r.revision,totals:r.totals,state:r.state?{...r.state,hands:r.state.hands.map((h,i)=>r.mode==='hotseat'&&r.players[i].type!=='bot'||i===you?h:h.map(()=>({hidden:true}))),stock:r.state.stock.map(()=>({hidden:true}))}:null};}
+function view(r,t){const you=r.players.findIndex(p=>p.token===t);if(you<0)throw new PlayerError('Please join this table.');return {canUndo:!!(r.options.undo&&r.history.length&&r.state?.winner===null&&(r.mode==='hotseat'||r.history.at(-1).player===you)),code:r.code,phase:r.phase,mode:r.mode,host:r.host,you,players:r.players.map(p=>p.name||''),seatTypes:r.players.map(p=>p.type),seated:r.players.map(p=>!!p.token||p.type==='bot'||r.mode==='hotseat'),round:r.round,dealNumber:r.dealNumber||0,tinkering:r.tinkering,completedGames:r.completedGames,roundResults:r.roundResults||[],matchWinners:r.matchWinners||[],nextRoundAt:r.nextRoundAt||null,dealDecision:r.dealReview?.pending.length?{player:r.dealReview.pending[0],canDecide:r.mode==='hotseat'?you===r.host:you===r.dealReview.pending[0],pairs:r.mode==='hotseat'||you===r.dealReview.pending[0]?duplicatePairs(r.state.hands[r.dealReview.pending[0]]):null}:null,moves:r.moves||[],options:{...r.options,seats:r.players.length},revision:r.revision,totals:r.totals,state:r.state?{...r.state,openingAttempt:(r.state.openingAttempt||[]).map(g=>({...resolveMeld(g.ids.map(id=>{const c=r.state.hands[r.state.turn].find(c=>c.id===id);return g.assignments?.[id]?{...c,as:g.assignments[id]}:c;}),{opening:true,rules:r.options}),owner:r.state.turn})),hands:r.state.hands.map((h,i)=>r.mode==='hotseat'&&r.players[i].type!=='bot'||i===you?h:h.map(()=>({hidden:true}))),stock:r.state.stock.map(()=>({hidden:true}))}:null};}
 // Automatic moves (bots and timed-out turns) fall back to a plain discard, so a rejected plan can't leave the turn stuck.
 function botMove(s){try{return play(s,s.turn,botAction(s),random);}catch{return play(s,s.turn,botDiscard(s),random);}}
-function bots(r){let guard=0;while(r.state?.winner===null&&r.players[r.state.turn].type==='bot'&&guard++<150)r.state=botMove(r.state);}
+function publicState(s){return {...s,openingAttempt:(s.openingAttempt||[]).map(g=>resolveMeld(g.ids.map(id=>{const c=s.hands[s.turn].find(c=>c.id===id);return g.assignments?.[id]?{...c,as:g.assignments[id]}:c;}),{opening:true,rules:s.options}))};}
+function recordMoves(r,before,after){const events=describeMove(publicState(before),publicState(after));r.moves=[...(r.moves||[]),...events.map(event=>({...event,id:r.moveID=(r.moveID||0)+1}))].slice(-80);}
+const botScheduler=createBotScheduler({isCurrent:r=>rooms.get(r.code)===r,isBot:r=>r.phase==='game'&&r.state?.winner===null&&!r.dealReview?.pending.length&&r.players[r.state.turn].type==='bot',advance:r=>{const before=r.state;r.state=botMove(before);recordMoves(r,before,r.state);r.history=[];r.turnBackup=null;scoreRound(r);},publish:r=>changed(r),onError:(r,error)=>{console.error(error);r.state.log.push('The woodland player could not complete this move.');}});
+function bots(r){if(r.dealReview?.pending.length){r.dealReview.pending=r.dealReview.pending.filter(i=>r.players[i].type==='human');if(r.dealReview.pending.length)return;r.state.turnStarted=Date.now();}botScheduler.queue(r);}
 function needHost(r,you){if(you!==r.host)throw new PlayerError('Only the host can change this.');}
 function needLobby(r,you){needHost(r,you);if(r.phase!=='lobby')throw new PlayerError('Change this before starting the game.');}
 function control(r,you){return r.mode==='hotseat'&&you===0&&r.players[r.state.turn].type!=='bot'?r.state.turn:you;}
-function scoreRound(r){if(r.state.winner===null||r.scored)return;r.totals=r.totals.map((n,i)=>n+r.state.scores[i]);r.scored=true;r.completedGames++;}
+function startRound(r,redeal=false){
+ const names=r.players.map((p,i)=>clean(p.name,p.type==='bot'?botName(i):forestName(r.players.map(p=>p.name),random)));
+ r.state=createGame(names,{...r.options,first:(r.round-(redeal?1:0))%names.length},random);r.phase='game';r.moves=[];r.moveID=0;r.history=[];r.turnBackup=null;r.scored=false;r.nextRoundAt=null;if(!redeal)r.round++;r.dealNumber=(r.dealNumber||0)+1;r.dealReview=dealReview(r.state,r.players,r.options.redealDuplicateLimit);bots(r);
+}
+function scoreRound(r){
+ if(!awardRound(r)||!r.nextRoundAt)return;
+ const deadline=r.nextRoundAt;
+ const timer=setTimeout(()=>{if(rooms.get(r.code)!==r||r.nextRoundAt!==deadline||r.state.winner===null)return;startRound(r);changed(r);},Math.max(0,deadline-Date.now()));timer.unref();
+}
 // Wake held state requests after every visible table change, including timers and departures.
 const waiting=new Map();
 function wake(r){for(const done of [...(waiting.get(r.code)||[])])done();}
@@ -42,7 +57,7 @@ const server=http.createServer(async(req,res)=>{res.setHeader('X-Content-Type-Op
   let body={};if(req.method==='POST'){let raw='';for await(const chunk of req){raw+=chunk;if(raw.length>24000)throw new PlayerError('Request too large.');}try{body=JSON.parse(raw||'{}');}catch{body=null;}if(!body||typeof body!=='object'||Array.isArray(body))throw new PlayerError('Bad request.');}
   const endpoint=url.pathname.slice(5),auth=req.headers.authorization?.replace('Bearer ','');
   if(endpoint==='tables')return send(200,[...rooms.values()].filter(r=>r.phase==='lobby'&&r.mode==='online'&&r.players.some(p=>p.type==='human'&&!p.token)).map(r=>({code:r.code,host:r.players[r.host].name,count:r.players.filter(p=>p.token||p.type==='bot').length,seats:r.players.length})));
-  if(endpoint==='create'){if(!creates.allow(ip))return send(429,{error:'Too many new tables. Try again shortly.'});let code;do{code=randomBytes(4).toString('hex');}while(rooms.has(code));const t=token();const r={code,host:0,touched:Date.now(),players:[{name:clean(body.name),token:t,type:'human'},{name:'',token:null,type:'human'}],mode:'online',phase:'lobby',options:{...DEFAULT_RULES,handSize:14,undo:true,timer:0,variant:'remi51'},revision:0,state:null,history:[],turnBackup:null,totals:[0,0],scored:false,completedGames:0,tinkering:false,round:0};rooms.set(code,r);return send(200,{token:t,room:view(r,t)});}
+  if(endpoint==='create'){if(!creates.allow(ip))return send(429,{error:'Too many new tables. Try again shortly.'});let code;do{code=randomBytes(4).toString('hex');}while(rooms.has(code));const t=token();const r={code,host:0,touched:Date.now(),players:[{name:clean(body.name),token:t,type:'human'},{name:'',token:null,type:'human'}],mode:'online',phase:'lobby',options:{...DEFAULT_RULES,...DEFAULT_WIN_RULES,handSize:14,undo:true,timer:0,variant:'remi51'},revision:0,state:null,history:[],turnBackup:null,totals:[0,0],scored:false,completedGames:0,tinkering:false,round:0};rooms.set(code,r);return send(200,{token:t,room:view(r,t)});}
   const r=rooms.get(String(body.code||url.searchParams.get('code')||'').toLowerCase());if(!r)throw new PlayerError('Table not found.');r.touched=Date.now();
   if(endpoint==='join'){const index=r.players.findIndex(p=>p.type==='human'&&!p.token);if(r.mode!=='online'||r.phase!=='lobby'||index<0)throw new PlayerError('This table is not open.');const t=token();r.players[index]={name:clean(body.name),token:t,type:'human'};changed(r);return send(200,{token:t,room:view(r,t)});}
   const you=r.players.findIndex(p=>p.token===auth);if(you<0)throw new PlayerError('Please join this table.');
@@ -61,9 +76,10 @@ const server=http.createServer(async(req,res)=>{res.setHeader('X-Content-Type-Op
    needLobby(r,you);
    const next={...r.options};
    if(body.handSize!==undefined){const n=Number(body.handSize);if(!Number.isInteger(n)||n<7||n>14)throw new PlayerError('Choose 7–14 starting cards.');next.handSize=n;}
-   const enums={opening:[31,51],aceMode:['both','low','high'],handBonus:[80,100],cutBonus:[120,140],timer:[0,30,60,120]};
+   const enums={dealDuplicateLimit:[0,3,4],redealDuplicateLimit:[0,3,4],winMode:['none','round','stacking','multi'],winTarget:[301,501],opening:[31,51],aceMode:['both','low','high'],handBonus:[80,100],cutBonus:[120,140],timer:[0,30,60,120]};
    for(const[key,allowed]of Object.entries(enums))if(body[key]!==undefined){const value=typeof allowed[0]==='number'?Number(body[key]):body[key];if(!allowed.includes(value))throw new PlayerError('Invalid '+key+' setting.');next[key]=value;}
-   for(const key of ['jokerEnds','handEnabled','handRequiresOpening','handJokers','handDouble','cutEnabled','undo'])if(body[key]!==undefined){if(typeof body[key]!=='boolean')throw new PlayerError('Invalid '+key+' setting.');next[key]=body[key];}
+   for(const key of ['winEnabled','jokerEnds','handEnabled','handRequiresOpening','handJokers','handDouble','cutEnabled','undo'])if(body[key]!==undefined){if(typeof body[key]!=='boolean')throw new PlayerError('Invalid '+key+' setting.');next[key]=body[key];}
+   if(next.dealDuplicateLimit){if(Number(body.redealDuplicateLimit)>0)throw new PlayerError('Turn off the dealing limit before choosing re-deal options.');next.redealDuplicateLimit=0;}
    if(body.tinkering!==undefined&&typeof body.tinkering!=='boolean')throw new PlayerError('Invalid rules panel state.');
    if(body.mode!==undefined){if(!['hotseat','bot','online'].includes(body.mode))throw new PlayerError('Unknown mode.');if(body.mode!=='online'&&r.players.slice(1).some(p=>p.token))throw new PlayerError('Your online friends are seated. They must leave before switching to local play.');r.mode=body.mode;if(r.mode==='bot')for(let i=1;i<r.players.length;i++)r.players[i]={name:botName(i,r.players.map(p=>p.name)),token:null,type:'bot'};}
    r.options=next;
@@ -78,11 +94,17 @@ const server=http.createServer(async(req,res)=>{res.setHeader('X-Content-Type-Op
    needHost(r,you);if(r.tinkering)throw new PlayerError('Return from the grimoire before starting.');if(endpoint==='start'&&r.phase!=='lobby')throw new PlayerError('The game has already started.');if(endpoint==='rematch'&&r.state?.winner===null)throw new PlayerError('Finish the round first.');
    if(r.mode==='online'&&r.players.some(p=>p.type==='human'&&!p.token))throw new PlayerError('Wait for a player in each human seat, or change an empty seat to a bot.');
    if(r.mode==='hotseat'&&body.names)r.players.forEach((p,i)=>{if(i>0&&p.type==='human'&&body.names[i]!==undefined)p.name=clean(body.names[i],forestName(r.players.map(p=>p.name),random));});
-   const names=r.players.map((p,i)=>clean(p.name,p.type==='bot'?botName(i):forestName(r.players.map(p=>p.name),random)));r.state=createGame(names,{...r.options,first:r.round%names.length},random);r.phase='game';r.history=[];r.turnBackup=null;r.scored=false;r.round++;bots(r);
+   if(r.nextRoundAt)throw new PlayerError('The next round is already starting.');if(r.matchWinners?.length)resetMatch(r);startRound(r);
+  }else if(endpoint==='deal-decision'){
+   if(r.phase!=='game'||!r.dealReview?.pending.length)throw new PlayerError('No redeal decision is pending.');
+   const deciding=r.dealReview.pending[0];if(!(r.mode==='hotseat'&&you===r.host)&&you!==deciding)throw new PlayerError('Another player is deciding.');
+   if(typeof body.redeal!=='boolean')throw new PlayerError('Choose whether to keep or re-deal.');
+   if(body.redeal)startRound(r,true);else{r.dealReview.pending.shift();r.state.turnStarted=Date.now();bots(r);}
   }else if(endpoint==='action'){
+   if(r.dealReview?.pending.length)throw new PlayerError('Wait for the duplicate redeal decision.');
    if(r.phase!=='game')throw new PlayerError('The game has not started.');const p=control(r,you),prior=r.state,priorBackup=r.turnBackup;
    if(prior.turn!==p||r.players[p].type==='bot')throw new PlayerError('It is not your turn.');
-   const next=play(prior,p,body.action,random);r.history.push({state:prior,player:p,turnBackup:priorBackup});if(body.action.type==='draw')r.turnBackup={state:prior,player:p};r.state=next;
+   const next=play(prior,p,body.action,random);r.history.push({state:prior,player:p,turnBackup:priorBackup});if(body.action.type==='draw')r.turnBackup={state:prior,player:p};r.state=next;recordMoves(r,prior,next);
    // Undo stays within the current turn and can't take back a draw that revealed a hidden card.
    if(body.action.type==='draw'&&body.action.source!=='discard'||next.turn!==prior.turn||next.winner!==null)r.history=[];
    if(next.turn!==prior.turn||next.winner!==null)r.turnBackup=null;bots(r);scoreRound(r);
@@ -92,7 +114,7 @@ const server=http.createServer(async(req,res)=>{res.setHeader('X-Content-Type-Op
    if(!r.options.undo||!r.history.length||r.state.winner!==null)throw new PlayerError('Nothing to undo.');const last=r.history.at(-1);if(r.mode!=='hotseat'&&last.player!==you)throw new PlayerError('Only your latest action can be undone.');r.history.pop();r.state=last.state;r.turnBackup=last.turnBackup;
   }else if(endpoint==='leave'){
    // The table closes only when its last player leaves. Hot-seat and practice tables have just the host.
-   const others=r.players.map((p,i)=>i).filter(i=>i!==you&&r.players[i].token);if(!others.length){rooms.delete(r.code);wake(r);return send(200,{left:true});}
+   const others=r.players.map((p,i)=>i).filter(i=>i!==you&&r.players[i].token);if(!others.length){botScheduler.stop(r);rooms.delete(r.code);wake(r);return send(200,{left:true});}
    // In the lobby the host keeps the first seat, so a leaving host's seat goes to the next player.
    if(r.phase==='lobby'){const seat=you===r.host?others[0]:you;r.players[you]=r.players[seat];r.players[seat]={name:'',token:null,type:'human'};}
    else{
@@ -118,7 +140,7 @@ const server=http.createServer(async(req,res)=>{res.setHeader('X-Content-Type-Op
   // Messages written for players pass through; anything else is a server fault and stays in the server log.
   if(e instanceof PlayerError)return send(400,{error:e.message});console.error(e);if(res.headersSent)return res.end();send(500,{error:'Something went wrong. Try again.'});
  }});
-setInterval(()=>{for(const r of rooms.values()){if(r.phase!=='game'||r.state.winner!==null||!r.options.timer)continue;if(Date.now()-r.state.turnStarted>r.options.timer*1000){try{if(r.turnBackup){r.state=r.turnBackup.state;r.turnBackup=null;}let guard=0,p=r.state.turn;while(r.state.turn===p&&r.state.winner===null&&guard++<60)r.state=botMove(r.state);bots(r);scoreRound(r);r.history=[];changed(r);}catch(e){console.error(e);r.state.turnStarted=Date.now();r.state.log.push('The timer could not finish the turn.');changed(r);}}}},1000).unref();
+setInterval(()=>{for(const r of rooms.values()){if(r.phase!=='game'||r.state.winner!==null||r.dealReview?.pending.length||!r.options.timer||r.players[r.state.turn].type==='bot')continue;if(Date.now()-r.state.turnStarted>r.options.timer*1000){try{if(r.turnBackup){r.state=r.turnBackup.state;r.turnBackup=null;}let guard=0,p=r.state.turn;while(r.state.turn===p&&r.state.winner===null&&guard++<60){const before=r.state;r.state=botMove(before);recordMoves(r,before,r.state);}bots(r);scoreRound(r);r.history=[];changed(r);}catch(e){console.error(e);r.state.turnStarted=Date.now();r.state.log.push('The timer could not finish the turn.');changed(r);}}}},1000).unref();
 // Tables live only in memory: one untouched for a day is removed, and so are request counts for quiet addresses.
 setInterval(()=>{expireTables(rooms);limiter.sweep();creates.sweep();},60000).unref();
 server.listen(port,address,()=>console.log(`Fablewood Rummy: http://${['0.0.0.0','::'].includes(address)?'127.0.0.1':address.includes(':')?`[${address}]`:address}:${port}`));

@@ -5,7 +5,7 @@ const selector='.card[data-card],#draw-stock';
 export function previewCardAt(target,x,y){
  if(typeof target?.closest!=='function')return null;
  const direct=target.closest(selector);if(direct)return direct;
- if(!Number.isFinite(x)||!Number.isFinite(y))return null;
+ if(!Number.isFinite(x)||!Number.isFinite(y))return target.matches?.('[data-unit]')?target.querySelector(selector):null;
  const cards=[...target.querySelectorAll(selector)].reverse();
  return cards.find(card=>{
   const rect=card.getBoundingClientRect();

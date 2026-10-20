@@ -1,0 +1,132 @@
+/* Experimental direct manipulation, loaded after the stable game's styles. */
+.hand .hand-unit{position:relative;display:inline-flex!important;flex:0 0 auto;flex-direction:column;align-items:center;vertical-align:top;isolation:isolate;overflow:visible;cursor:grab;touch-action:none;border-radius:42px;padding:0!important;transition:transform .12s,outline-color .12s}
+.hand .hand-unit.packed-hand,.hand .hand-unit.pending-pack{padding:0 0 27px!important}
+.hand .hand-unit .pack-cards{pointer-events:auto;gap:0}
+.hand .hand-unit .card{cursor:inherit;touch-action:none;pointer-events:auto}
+.hand .hand-unit .card.selected,.hand .hand-unit .card:hover{transform:none!important;outline:none!important}
+.hand .hand-unit.unit-selected{outline:2px solid #e4a9ff;outline-offset:5px;transform:translateY(-8px)!important;box-shadow:0 0 12px #bd85e066}
+.hand .hand-unit .movement-pack-footer{position:absolute;bottom:7px;left:5px;right:5px;text-align:center;font-size:11px;line-height:1.2;color:#f3d9ff;white-space:nowrap}
+.hand .hand-unit .pack-close{display:grid;place-items:center;position:absolute;left:-17px!important;right:auto!important;top:65px!important;bottom:auto!important;width:32px!important;height:32px!important;padding:0!important;border:1px dashed #e0b3f4!important;border-radius:50%!important;background:#725087!important;color:#f794a9!important;z-index:8;transform:none!important;opacity:0;pointer-events:none}
+.hand .hand-unit:hover .pack-close,.hand .hand-unit:focus-within .pack-close,.hand .hand-unit.unit-selected .pack-close{opacity:1;pointer-events:auto}
+.hand .hand-unit .pack-close span,.hand .hand-unit .pack-close svg{width:26px;height:26px;display:block;line-height:26px;font-family:Alagard;text-align:center}
+.hand .hand-unit .sigil-border{inset:-2px;width:calc(100% + 4px);height:calc(100% + 4px);z-index:2}
+.hand .hand-cards{padding:20px!important;gap:20px 22px!important;align-items:flex-start;min-height:220px!important;overflow:auto}
+.hand .hand-title{height:auto;max-height:none;min-height:36px;grid-template-columns:minmax(0,1fr) auto}
+.hand-sorts{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px}.hand-sorts button{font-size:11px;white-space:nowrap}
+.opening-meter{display:inline-flex;align-items:center;justify-content:center;min-height:35px;padding:7px 10px;border:2px solid #9874b8;border-radius:3px;background:#d9c7ed;color:#5c427a;font-size:11px;white-space:nowrap}
+.movement-game .meld-area{min-height:260px;border:2px dashed #a47dbd70;border-radius:12px;padding:16px;position:relative;overflow:visible}
+.field-drop-caption{font-size:11px;color:#d7b7e4;margin-bottom:14px}.movement-game .melds{min-height:160px;align-items:flex-start}
+.movement-game .meld{cursor:pointer;position:relative;border:2px solid transparent;border-radius:12px;padding:8px}
+.movement-game .meld.table-meld-selected{border-color:#d7a0ef;box-shadow:0 0 8px #c88ee14d}
+.movement-game .table-meld-controls{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin-top:8px;max-width:380px}
+.provisional-meld{background:#784b9366;border:2px dashed #bb8fce!important;cursor:grab!important;touch-action:none}
+.drop-hover:not([data-drop-hand]):not([data-drop-discard]){outline:3px dashed #dcb0fa!important;outline-offset:5px}
+.being-held{display:none!important}.moving-cards,.moving-cards *{cursor:grabbing!important}
+.drag-ghost.hand{position:fixed;left:0;top:0;z-index:10000;pointer-events:none!important;margin:0!important;padding:0!important;background:none!important;border:0!important;box-shadow:0 12px 24px #10081b55!important;zoom:1!important;opacity:1}
+.drag-ghost *{pointer-events:none!important}.drag-ghost .hand-unit{transform:none!important;outline:2px solid #e4a9ff;outline-offset:5px}.drag-ghost .pack-close{display:none!important}
+.drag-ghost .card{width:var(--held-card-width)!important;max-width:var(--held-card-width)!important;flex-basis:var(--held-card-width)!important;height:var(--held-card-height)!important}
+.drag-ghost .pack-cards>.card+.card{margin-left:var(--held-overlap,-14px)!important}
+@media(max-width:650px){.hand .hand-unit{border-radius:33px}.hand .hand-unit .pack-close{top:45px!important}.hand .hand-cards{min-height:180px!important;padding:18px!important}.hand .hand-title{grid-template-columns:1fr;gap:3px}.hand-sorts{justify-content:flex-start}.movement-game .meld-area{padding:8px;min-height:210px}.field-drop-caption{font-size:11px}.opening-meter{font-size:11px}.hand .hand-unit .movement-pack-footer{font-size:11px}}
+.hand .hand-unit .pack-close{visibility:visible!important}
+.movement-game .hand .hand-cards.packed-layout{gap:20px 22px!important}
+
+/* Full-width hand and turn strip; only the meld field owns the green surface. */
+body.game-screen{height:auto;min-height:100dvh;overflow:auto}
+body.game-screen main#app{width:100%;max-width:none;margin:0;padding:0}
+.game-screen .playing.movement-game{display:block;height:auto;padding-bottom:0}
+.game-screen .playing.movement-game>.board{display:grid;grid-template-columns:222px minmax(0,1fr)!important;gap:18px;margin:18px 16px;min-height:0;padding:0;background:none;border:0;border-radius:0;box-shadow:none;overflow:visible}
+.game-screen .movement-game>.board>.piles{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:16px;width:auto;padding:0;border:0;background:none}
+.game-screen .movement-game>.board>.meld-area{align-self:stretch;background:#24382edb;border:2px dashed #ac83c7;border-radius:12px;min-height:260px}
+.game-screen .movement-game>.hand-heading{width:100%;max-width:none;margin:14px 0 0;box-sizing:border-box;border-radius:0;background-color:#30233c;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='44' height='44'%3E%3Cg fill='%23dfbcf1' opacity='.3' font-family='monospace' font-size='11'%3E%3Ctext x='3' y='13'%3E%2B%3C/text%3E%3Ctext x='25' y='24'%3E*%3C/text%3E%3Ctext x='8' y='37'%3Ex%3C/text%3E%3Ctext x='32' y='8'%3E-%3C/text%3E%3C/g%3E%3C/svg%3E");border:1px solid #9474a2;box-shadow:none;padding:12px 22px}
+.game-screen .movement-game>.hand{width:100%;max-width:none;margin:0;box-sizing:border-box;border-radius:0;background:#30233c88;border:1px solid #72547f;box-shadow:none;padding:14px 22px!important;overflow:visible}
+@media(max-width:650px){
+ .game-screen .playing.movement-game>.board{grid-template-columns:150px minmax(0,1fr)!important;gap:10px;margin:14px 10px;padding:0}
+ .game-screen .movement-game>.hand-heading{padding:12px}
+ .game-screen .movement-game>.hand{padding:12px!important}
+ .game-screen .movement-game>.board>.meld-area{min-height:210px}
+}
+@media(orientation:landscape) and (max-height:500px){
+ .game-screen .playing.movement-game>.board{grid-template-columns:130px minmax(0,1fr)!important}
+}
+
+/* Drop targets change only their outlines, never the surface behind the cards. */
+.game-screen .movement-game>.hand,.game-screen .movement-game>.hand-heading{border-left:0;border-right:0}
+.movement-game [data-drop-discard] .empty-card{background:#101e3db8;border-color:#7b85b4aa}
+.drop-slot{flex:0 0 auto;box-sizing:border-box;border:2px dashed #cea3eb;border-radius:38px;background:transparent;pointer-events:auto;align-self:flex-start}
+.hand .hand-unit{will-change:translate}
+@media(prefers-reduced-motion:reduce){.hand .hand-unit{transition:none}}
+
+.hand .hand-unit.being-held,.movement-game .provisional-meld.being-held{display:none!important}
+
+/* Close-fitting group shells; their labels live outside the selection ring. */
+.game-screen .movement-game>.hand-heading{background-color:#30233c;background-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2228%22%20height%3D%2228%22%20viewBox%3D%220%200%2028%2028%22%3E%3Cg%20fill%3D%22%2346334d%22%20font-family%3D%22monospace%22%20font-size%3D%229%22%20text-anchor%3D%22middle%22%3E%3Ctext%20x%3D%227%22%20y%3D%2210%22%3E-%3C%2Ftext%3E%3Ctext%20x%3D%2221%22%20y%3D%2210%22%3Ex%3C%2Ftext%3E%3Ctext%20x%3D%227%22%20y%3D%2224%22%3E%2B%3C%2Ftext%3E%3Ctext%20x%3D%2221%22%20y%3D%2224%22%3EI%3C%2Ftext%3E%3C%2Fg%3E%3C%2Fsvg%3E");background-size:28px 28px}
+.hand .hand-unit.packed-hand,.hand .hand-unit.pending-pack{padding:0!important;border-radius:40px}
+.hand .hand-unit.pending-pack{outline:0}
+.hand .hand-unit.loose-unit{border-radius:50% / 25%}
+.hand .hand-unit{margin-bottom:30px}
+.hand .hand-unit.unit-selected{outline:3px solid #d7acec!important;outline-offset:5px;box-shadow:0 0 14px #bc80d966;z-index:4}
+.hand-card-shell{position:relative;display:block;flex:0 0 auto;line-height:0;isolation:isolate}
+.hand-card-shell+.hand-card-shell{margin-left:-14px}
+.hand .hand-card-shell .card{display:block;margin:0}
+.card-status-badge{display:block;position:absolute;left:50%;transform:translateX(-50%);width:max-content;max-width:none;box-sizing:border-box;border:1px dashed;border-radius:4px;padding:4px 7px;font-size:10px;line-height:1.2;white-space:nowrap;pointer-events:none;z-index:6}
+.hand .hand-unit .movement-pack-footer{top:calc(100% + 10px);bottom:auto;left:50%;right:auto;text-align:center;font-size:10px;line-height:1.2}
+.hand .hand-unit .meldable-badge{background:#294333;color:#c2e3ae;border-color:#96bf83}
+.hand .hand-unit .nonmeldable-badge{background:#35353d;color:#ceccd5;border-color:#96929e}
+.new-card-badge{top:-29px;background:#193f2d;color:#d2ffdc;border-color:#7dbb89}
+.hand-card-shell:has(.new-card-badge){z-index:5}
+.movement-game .hand .hand-cards.packed-layout{padding-top:38px!important;row-gap:38px!important}
+.drag-ghost .hand-card-shell+.hand-card-shell{margin-left:var(--held-overlap,-14px)!important}
+.drag-ghost .card-status-badge{display:none}
+@media(max-width:650px){.hand .hand-unit.packed-hand,.hand .hand-unit.pending-pack{border-radius:31px}.hand-card-shell+.hand-card-shell{margin-left:-11px}.hand .hand-unit .movement-pack-footer,.new-card-badge{font-size:11px}}
+.drop-slot{margin-bottom:30px}.drag-ghost .hand-unit{margin-bottom:0}
+/* Always show the discard's artwork; legality is conveyed by interaction alone. */
+.movement-game .inactive-pile{opacity:1!important;filter:none!important}
+.movement-game .discard-stack>small{display:block;width:max-content;margin:0 auto;padding:3px 5px;background:#2c2637;border-radius:3px;color:#f0dfed;font-size:10px;line-height:1.3;white-space:nowrap}
+.movement-game .hand-name,.movement-game .field-drop-caption{font-family:Alagard,Woodland,monospace;font-size:24px;line-height:1.25}
+.movement-game .field-drop-caption{margin-bottom:14px;opacity:1}
+.movement-game .magic-has-happened{animation:magic-caption-fade .65s ease-out forwards;pointer-events:none}
+@keyframes magic-caption-fade{to{opacity:0}}
+.game-screen .movement-game .opening-meter{border:1px dashed #aa89c2;background:transparent;color:#d9bde8;box-shadow:none;cursor:default}
+.hand .hand-unit .sigil-border{inset:-3px;width:calc(100% + 6px);height:calc(100% + 6px)}
+.hand .sigil-border text{font-family:monospace;font-size:7px!important;letter-spacing:0!important;fill:#d9b8e8}
+.player-card-flight{position:fixed;z-index:7000;pointer-events:none!important;margin:0;padding:0;filter:drop-shadow(0 4px 10px #1e102a66)}
+.group-insert-slot{display:block;flex:0 0 auto;height:100%;border:1px dashed #d5a8ed;border-radius:30px;background:#8b60a522;box-sizing:border-box;pointer-events:none;align-self:stretch;margin-left:-7px;margin-right:-7px}
+@media(max-width:650px){.movement-game .hand-name,.movement-game .field-drop-caption{font-size:21px}}
+@media(prefers-reduced-motion:reduce){.movement-game .magic-has-happened{animation:none;opacity:0}}
+
+.movement-game .field-drop-caption.magic-gone{opacity:0;pointer-events:none}
+
+.movement-game{--ungroup-red:#f16e7d}
+.hand .hand-unit .pack-close{color:var(--ungroup-red)!important}
+.hand-sorts .ungroup-all{color:var(--ungroup-red)!important}
+
+/* Win rules and the Birdcard-style result sheet, in the forest palette. */
+.win-condition-block{margin-top:16px}.win-rule-choices{display:flex;flex-wrap:wrap;align-items:center;gap:10px}.multi-round-choice{display:flex;align-items:center;gap:8px;padding:7px;border:1px dashed #a483bd;border-radius:5px}.multi-round-choice>span{font-size:12px}
+#victory{width:min(720px,92vw);max-height:90dvh;overflow:auto;padding:26px;background:#30233c;color:#f1dff8;border:2px solid #ae83c8;border-radius:10px;box-shadow:0 0 60px #ae66d666}
+#victory::backdrop{background:#0e1025bb}#victory h2{font:32px/1.2 Alagard,Woodland,monospace;margin:8px 0 12px}.victory-reason,.victory-meta{font-size:12px;line-height:1.6;color:#d3badf}.standings{list-style:none;padding:0;margin:20px 0}.standings li{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 0;border-top:1px dashed #9273a5}.standing-name{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.standings .winner{color:#efd389}.winner-tag{font-size:10px;border:1px dashed #c8b56d;padding:3px 5px}.victory-actions{display:flex;gap:10px;justify-content:flex-end;flex-wrap:wrap}.round-breakdown{max-width:100%;overflow:auto}.round-breakdown table{width:100%;border-collapse:collapse;font-size:12px;white-space:nowrap}.round-breakdown th,.round-breakdown td{padding:10px;border-bottom:1px dashed #80618d;text-align:right}.round-breakdown th:first-child{text-align:left}.win-condition-block>.rule-toggle{border:1px dashed #a483bd}
+@media(max-width:650px){#victory{padding:16px}#victory h2{font-size:27px}.multi-round-choice{flex-wrap:wrap}.standing-name{gap:6px}.standings li{font-size:12px}}
+
+.variant-setting-box{border:1px dashed #a483bd;border-radius:5px;margin-top:16px;padding:12px}.variant-setting-box h2{font-size:14px;margin:0 0 12px}.win-rule-choices>span{font-size:12px}.duplicate-options{display:flex;flex-wrap:wrap;gap:14px 22px}.duplicate-choice{display:flex;align-items:center;flex-wrap:wrap;gap:8px}.duplicate-choice>span{font-size:12px}.variant-setting-box .rule-choice{min-height:33px}.rule-choice:disabled.chosen{opacity:1;cursor:default}
+#deal-decision{width:min(500px,90vw);background:#30233c;color:#f1dff8;border:2px solid #ae83c8;border-radius:10px;padding:24px;box-shadow:0 0 45px #a263ba55}#deal-decision::backdrop{background:#0e1025aa}#deal-decision h2{font:28px/1.2 Alagard,Woodland,monospace}#deal-decision p{font-size:12px;line-height:1.7}.deal-decision-actions{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:10px;margin-top:20px}#deal-notice{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);z-index:15000;max-width:calc(100vw - 30px);padding:12px 18px;border:1px dashed #b28dce;border-radius:6px;background:#30233cf5;color:#f0d9fa;font-size:12px;line-height:1.5;box-shadow:0 3px 20px #09041588}
+
+/* A discard drop follows the capsule, never the stack's rectangular bounds. */
+.discard-stack.drop-hover{outline:none!important}.discard-stack.drop-hover #discard-pile>.card,.discard-stack.drop-hover>.empty-card{outline:3px dashed #dcb0fa!important;outline-offset:5px;border-radius:50% / 25%;box-shadow:0 0 18px #b984dc55;transform:none!important}
+.discard-stack #discard-pile{position:relative}.discard-stack #discard-pile>.card:hover{transform:none!important}.discard-stack .discard-history-button{display:inline-flex;align-items:center;justify-content:center;gap:5px;min-height:26px;margin:0 auto;padding:4px 7px;background:#2c2637;color:#f0dfed;border:1px solid transparent;border-radius:4px;box-shadow:none;font-size:10px;line-height:1.3;white-space:nowrap}.discard-stack .discard-history-button:hover,.discard-stack .discard-history-button[aria-expanded="true"]{background:#493254;border-color:#b08ac5;transform:none}.discard-count{color:#cfaddf}.discard-history-button:focus-visible,.discard-history .card:focus-visible{outline:2px solid #dfb2f5;outline-offset:4px}
+.discard-flight-underlay{position:fixed;z-index:6999;pointer-events:none!important;opacity:1!important;max-width:none!important;max-height:none!important;margin:0!important;transform:none!important;border-radius:50% / 25%}.empty-card.discard-flight-underlay{background:#101c39cc!important;border:1px dashed #8c6fa066!important}
+#floating.discard-panel{width:min(390px,calc(100vw - 24px));max-height:calc(100dvh - 100px);display:flex;flex-direction:column;overflow:hidden}#floating.discard-panel[hidden]{display:none}#floating.discard-panel .panel-head{flex:0 0 auto}#floating.discard-panel #panel-content{overflow-y:auto;overscroll-behavior:contain;scrollbar-gutter:stable;padding:4px 9px 12px}.discard-history-summary,.discard-history-order{font-size:11px;line-height:1.6}.discard-history-order{color:#d7b3e9;padding-bottom:12px;border-bottom:1px dashed #9170a5}.discard-history{list-style:none;margin:12px 0 0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px 12px}.discard-history li{display:flex;flex-direction:column;align-items:center;gap:9px;min-width:0}.discard-position{font-size:10px;color:#d2b5df;white-space:nowrap}.discard-history li:first-child .discard-position{color:#b3dfb7}.discard-history .card{width:min(88px,100%);height:auto;aspect-ratio:1/2;max-width:100%;flex:none;cursor:zoom-in}.discard-history .card:hover{transform:none!important}.discard-empty{font-size:12px;line-height:1.7;color:#cbb6d5;padding:18px 0}
+.hand .hand-unit:focus-visible{outline:2px solid #dfb2f5;outline-offset:5px}.hand .hand-unit .pack-close:focus-visible{outline:2px solid #f3c0cf;outline-offset:3px}
+@media(max-width:650px){#floating.discard-panel{top:74px;right:12px;max-height:calc(100dvh - 90px)}.discard-history{gap:18px 9px}.discard-history .card{width:min(80px,100%);height:auto}.discard-stack .discard-history-button{min-height:32px}}
+@media(prefers-reduced-motion:reduce){.hand .hand-unit,.hand .card,.group-insert-slot{transition:none!important}.magic-sentence{animation:none!important}}
+
+.discard-panel .discard-history li{padding:0;border:0}
+
+.hand-sorts .toolbar-placeholder{visibility:hidden;pointer-events:none}
+
+.hand .awaiting-discard{visibility:hidden!important}.drag-ghost.awaiting-drop .hand-unit{outline:none!important;box-shadow:none!important}
+
+.discard-stack .card:disabled{opacity:1!important;filter:none!important;cursor:default}
+@media(prefers-reduced-motion:reduce){#forest .lights{animation:none!important}}
+
+.discard-stack[data-incoming] #discard-pile{pointer-events:none}.discard-stack[data-incoming]{cursor:progress}.discard-stack .discard-history-button{cursor:pointer}
+
+.discard-panel #panel-content{scrollbar-color:#a47bb8 #261b30;scrollbar-width:thin}

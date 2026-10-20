@@ -1,3 +1,4 @@
+import {waitForHumans} from './wait-bots.mjs';
 import test from 'node:test';import assert from 'node:assert/strict';import {spawn} from 'node:child_process';import {once} from 'node:events';
 test('mixed seats, lowercase codes, host settings, online privacy and turn rollback',async()=>{
  const child=spawn(process.execPath,['server.mjs'],{cwd:new URL('..',import.meta.url),env:{...process.env,PORT:'3011'},stdio:['ignore','pipe','pipe']});
@@ -18,7 +19,9 @@ test('mixed seats, lowercase codes, host settings, online privacy and turn rollb
  const first=started.value.state.hands[0].find(c=>!c.joker);await api('action',{code,action:{type:'discard',ids:[first.id]}},host);
  const drawn=await api('action',{code,action:{type:'draw',source:'stock'}},gt);assert.equal(drawn.status,200);assert.equal(drawn.value.state.hands[1].length,10);
  assert.equal((await api('cancel-draw',{code},gt)).status,400);
- const guestCard=drawn.value.state.hands[1].find(c=>!c.joker);const afterGuest=await api('action',{code,action:{type:'discard',ids:[guestCard.id]}},gt);assert.equal(afterGuest.value.state.turn,0);
+ const guestCard=drawn.value.state.hands[1].find(c=>!c.joker);let afterGuest=await api('action',{code,action:{type:'discard',ids:[guestCard.id]}},gt);assert.equal(afterGuest.value.state.turn,2,'bot turn remains visible before its first phase');
+ const phaseStart=Date.now(),phase=await api('state?code='+code+'&since='+afterGuest.value.revision,null,gt);assert.ok(Date.now()-phaseStart>=1700,'the bot waits two seconds before drawing');assert.equal(phase.value.state.turn,2);assert.equal(phase.value.state.stage,'meld');assert.equal(phase.value.moves.at(-1).card,null,'stock draw animation has no private face');
+ afterGuest=await waitForHumans(api,code,gt,phase);assert.equal(afterGuest.value.state.turn,0);assert.equal(afterGuest.value.moves.at(-1).to.zone,'discard');
  const required=await api('action',{code,action:{type:'draw',source:'discard'}},host);assert.equal(required.value.state.mustOpen,true);
  const cancelled=await api('cancel-draw',{code},host);assert.equal(cancelled.value.state.hands[0].length,9);assert.equal(cancelled.value.state.stage,'draw');
  assert.equal((await api('undo',{code},gt)).status,400);

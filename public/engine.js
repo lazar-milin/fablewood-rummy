@@ -1,8 +1,9 @@
+import {duplicatePairs} from './duplicate-deals.js';
 // Errors meant for players; the server hides every other error's message.
 export class PlayerError extends Error{}
 export const SUITS=['fox','hare','toad','owl'];
 export const RULESETS={remi51:{name:'Classic Rummy',opening:51}};
-export const DEFAULT_RULES={opening:51,aceMode:'both',jokerEnds:true,handEnabled:true,handRequiresOpening:true,handJokers:true,handBonus:80,handDouble:true,cutEnabled:true,cutBonus:120};
+export const DEFAULT_RULES={opening:51,aceMode:'both',jokerEnds:true,handEnabled:true,handRequiresOpening:true,handJokers:true,handBonus:80,handDouble:true,cutEnabled:true,cutBonus:120,dealDuplicateLimit:0,redealDuplicateLimit:0};
 export const points=c=>c.joker?20:c.rank===1?10:Math.min(c.rank,10);
 const rankOf=c=>c.joker?c.as?.rank:c.rank;
 const suitOf=c=>c.joker?c.as?.suit:c.suit;
@@ -54,6 +55,10 @@ function declaredCards(cards,assignments={}){
 }
 export const validMeld=cards=>!!resolveMeld(cards);
 export function createGame(names,options={},random=Math.random){
+ for(let attempt=0;attempt<1000;attempt++){const state=dealGame(names,options,random);if(!options.dealDuplicateLimit||state.hands.every(hand=>duplicatePairs(hand)<options.dealDuplicateLimit))return state;}
+ throw new PlayerError('Could not deal within the duplicate limit. Please try again.');
+}
+function dealGame(names,options={},random=Math.random){
  options={...DEFAULT_RULES,...options};
  let deck=Array.from({length:2},(_,d)=>SUITS.flatMap(suit=>Array.from({length:13},(_,i)=>({id:`${d}-${suit}-${i+1}`,suit,rank:i+1})))).flat();
  deck.push(...Array.from({length:4},(_,i)=>({id:'joker-'+i,suit:'joker',rank:0,joker:true})));
@@ -61,7 +66,7 @@ export function createGame(names,options={},random=Math.random){
  const count=options.handSize??14,first=options.first??0,cutter=(first+names.length-1)%names.length,hands=names.map(()=>[]);
  while(deck.at(-1)?.joker)hands[cutter].push(deck.pop());const cutCard=deck.pop();
  for(let i=0;i<names.length;i++)while(hands[i].length<count+(i===first?1:0))hands[i].push(deck.shift());
- return {names,hands,stock:deck,cutCard,discard:[],melds:[],turn:first,first,stage:'meld',turns:0,opened:names.map(()=>false),winner:null,log:[`Classic Rummy: opening ${options.opening}. The first player starts with one extra card and discards.`],scores:names.map(()=>0),turnStarted:Date.now(),options:{undo:true,timer:0,...options},mustOpen:false,mustHand:false,fromCut:false,handUsedJokers:false,openedThisTurn:false,laidOffThisTurn:false,pendingJokers:[]};
+ return {names,hands,stock:deck,cutCard,discard:[],melds:[],turn:first,first,stage:'meld',turns:0,opened:names.map(()=>false),winner:null,log:[`Classic Rummy: opening ${options.opening}. The first player starts with one extra card and discards.`],scores:names.map(()=>0),turnStarted:Date.now(),options:{undo:true,timer:0,...options},mustOpen:false,mustHand:false,fromCut:false,handUsedJokers:false,openedThisTurn:false,laidOffThisTurn:false,pendingJokers:[],openingAttempt:[]};
 }
 export function play(state,player,action,random=Math.random){
  const s=structuredClone(state);if(s.winner!==null)throw new PlayerError('The round has ended.');if(player!==s.turn)throw new PlayerError('It is not your turn.');
@@ -84,8 +89,24 @@ export function play(state,player,action,random=Math.random){
   s.stage='meld';return s;
  }
  if(s.stage!=='meld')throw new PlayerError('Draw a card first.');
- if(['open','meld','layoff','replace'].includes(action.type)&&firstLap)throw new PlayerError('No opening or melding during the first lap.');
+ if(['open','stage-open','meld','layoff','replace'].includes(action.type)&&firstLap)throw new PlayerError('No opening or melding during the first lap.');
+ if(action.type==='reset-open'){
+  if(s.opened[player]||!s.openingAttempt?.length)throw new PlayerError('There is no opening attempt to reset.');s.openingAttempt=[];return s;
+ }
+ if(action.type==='unstage-open'){
+  if(s.opened[player]||!s.openingAttempt?.[action.index])throw new PlayerError('Choose a provisional meld.');s.openingAttempt.splice(action.index,1);return s;
+ }
+ if(action.type==='stage-open'){
+  if(s.opened[player])throw new PlayerError('You are already open.');
+  const prior=s.openingAttempt||[],used=prior.flatMap(g=>g.ids),cards=pick(action.ids);if(cards.some(c=>used.includes(c.id)))throw new PlayerError('That card is already in the opening attempt.');
+  reserve(pick([...used,...action.ids]));const declared=declaredCards(cards,action.assignments),meld=resolveMeld(declared,{opening:true,rules});if(!meld)throw new PlayerError('Drop a complete meld with at most one joker to try opening.');
+  s.openingAttempt=[...prior,{ids:cards.map(c=>c.id),assignments:Object.fromEntries(meld.cards.filter(c=>c.joker).map(c=>[c.id,c.as]))}];
+  const groups=s.openingAttempt.map(g=>g.ids),assignments=Object.assign({},...s.openingAttempt.map(g=>g.assignments)),sum=s.openingAttempt.reduce((n,g)=>n+resolveMeld(declaredCards(pick(g.ids),g.assignments),{opening:true,rules}).points,0);
+  const finishBypass=rules.handEnabled&&!rules.handRequiresOpening&&groups.flat().length===hand.length-1&&(rules.handJokers||!hand.some(c=>c.joker));
+  if(sum>=rules.opening||finishBypass){s.openingAttempt=[];return play(s,player,{type:'open',groups,assignments},random);}return s;
+ }
  if(action.type==='open'){
+  if(s.openingAttempt?.length)throw new PlayerError('Reset the provisional attempt before a manual opening.');
   if(s.opened[player])throw new PlayerError('You are already open.');
   const groups=action.groups||[],cards=pick(groups.flat());reserve(cards);if(!groups.length)throw new PlayerError('Stage your opening groups first.');
   const declared=declaredCards(cards,action.assignments);const resolved=groups.map(ids=>resolveMeld(ids.map(id=>declared.find(c=>c.id===id)),{opening:true,rules}));if(resolved.some(m=>!m))throw new PlayerError('Each group must follow the selected ace and joker rules, with at most one joker.');
@@ -101,6 +122,7 @@ export function play(state,player,action,random=Math.random){
  }else if(action.type==='replace'){
   if(!s.opened[player]||s.mustHand)throw new PlayerError('Open before reclaiming a joker.');const cards=pick(action.ids),m=s.melds[action.index],j=m?.cards.find(c=>c.id===action.jokerId&&c.joker);if(cards.length!==1||cards[0].joker||!j||cards[0].rank!==j.as.rank||(m.kind==='set'?m.cards.some(c=>!c.joker&&c.suit===cards[0].suit):cards[0].suit!==j.as.suit))throw new PlayerError('Select a missing animal of this rank for a set, or the exact card represented in a run.');m.cards[m.cards.indexOf(j)]=cards[0];const resolved=resolveMeld(m.cards,{kind:m.kind,rules});if(!resolved)throw new PlayerError('That card cannot replace this joker.');s.melds[action.index]={...resolved,owner:m.owner};remove(cards);delete j.as;hand.push(j);s.pendingJokers.push(j.id);s.laidOffThisTurn=true;log('reclaimed a joker, to use in a new meld this turn.');
  }else if(action.type==='discard'){
+  if(s.openingAttempt?.length)throw new PlayerError('Complete or reset your opening attempt before discarding.');
   if(s.mustOpen)throw new PlayerError(`This draw requires an opening of ${rules.opening} points. Cancel the draw to choose again.`);if(s.mustHand&&hand.length!==1)throw new PlayerError('You must finish from hand this turn.');
   const cards=pick(action.ids),jokers=cards.filter(c=>c.joker),ordinary=cards.filter(c=>!c.joker);
   // A reclaimed joker that can't go into a new meld may only leave the hand buried with an ordinary card.
