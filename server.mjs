@@ -12,7 +12,7 @@ import {createBotScheduler} from './bot-scheduler.mjs';
 import {duplicatePairs,dealReview} from './public/duplicate-deals.js';
 import {DEFAULT_WIN_RULES,awardRound,resetMatch} from './public/win-conditions.js';
 import {describeMove} from './public/move-events.js';
-const rooms=new Map(),address=process.env.HOST||'127.0.0.1',port=Number(process.env.PORT||3010),publicDir=fileURLToPath(new URL('./public/',import.meta.url));
+const rooms=new Map(),address=process.env.HOST||(process.env.RENDER==='true'?'0.0.0.0':'127.0.0.1'),port=Number(process.env.PORT||3010),publicDir=fileURLToPath(new URL('./public/',import.meta.url));
 // Only create adds a table, so it has a much smaller allowance than polling and moves.
 const limiter=rateLimiter(1800,60000),creates=rateLimiter(20,60000),trustProxy=process.env.TRUST_PROXY==='true',gzipAsync=promisify(gzip),zipped=new Map();
 const types={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.json':'application/json; charset=utf-8','.md':'text/plain; charset=utf-8','.csv':'text/plain; charset=utf-8','.txt':'text/plain; charset=utf-8','.svg':'image/svg+xml','.png':'image/png','.ico':'image/x-icon','.ttf':'font/ttf','.woff2':'font/woff2'},compressible=new Set(['.html','.js','.css','.json','.svg']);
@@ -143,4 +143,4 @@ const server=http.createServer(async(req,res)=>{res.setHeader('X-Content-Type-Op
 setInterval(()=>{for(const r of rooms.values()){if(r.phase!=='game'||r.state.winner!==null||r.dealReview?.pending.length||!r.options.timer||r.players[r.state.turn].type==='bot')continue;if(Date.now()-r.state.turnStarted>r.options.timer*1000){try{if(r.turnBackup){r.state=r.turnBackup.state;r.turnBackup=null;}let guard=0,p=r.state.turn;while(r.state.turn===p&&r.state.winner===null&&guard++<60){const before=r.state;r.state=botMove(before);recordMoves(r,before,r.state);}bots(r);scoreRound(r);r.history=[];changed(r);}catch(e){console.error(e);r.state.turnStarted=Date.now();r.state.log.push('The timer could not finish the turn.');changed(r);}}}},1000).unref();
 // Tables live only in memory: one untouched for a day is removed, and so are request counts for quiet addresses.
 setInterval(()=>{expireTables(rooms);limiter.sweep();creates.sweep();},60000).unref();
-server.listen(port,address,()=>console.log(`Fablewood Rummy: http://${['0.0.0.0','::'].includes(address)?'127.0.0.1':address.includes(':')?`[${address}]`:address}:${port}`));
+server.listen(port,address,()=>console.log(`Fablewood Rummy: http://${address.includes(':')?`[${address}]`:address}:${server.address().port}`));

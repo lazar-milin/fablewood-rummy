@@ -18,7 +18,9 @@ Use Node.js 22.9 or newer. There are no runtime dependencies or build step.
 npm start
 ```
 
-Open http://127.0.0.1:3010. `npm start` reads settings from a `.env` file if there is one; copy [.env.example](.env.example) to start. The server listens only on this computer (`HOST=127.0.0.1`). Set `HOST=0.0.0.0` to let other devices on your network join, or when your hosting provider requires it. `PORT` defaults to 3010. For hosting, run it as a Node web service with `npm start`.
+Open http://127.0.0.1:3010. `npm start` reads settings from a `.env` file if there is one; copy [.env.example](.env.example) to start. Locally, the server listens only on this computer (`127.0.0.1`). On Render (`RENDER=true`), it automatically listens on `0.0.0.0` and uses Render’s `PORT`. An explicit `HOST` overrides the default; use `HOST=0.0.0.0` for other hosting providers or to let devices on your network join. `PORT` defaults to 3010. For hosting, run it as a Node web service with `npm start`.
+
+For Render, choose a **Web Service** using branch `main`, build command `npm install`, start command `npm start`, and health check path `/`. Let Render supply `PORT`; no `.env` file is required. Leave `HOST` unset or set it to `0.0.0.0` (remove any `127.0.0.1` override). Set `TRUST_PROXY=true` for Render’s reverse proxy. Keep one instance because tables are held in memory.
 
 Each address may send 1,800 API requests a minute and create 20 tables a minute; more get `429 Too Many Requests`. Behind one reverse proxy, such as a hosting provider's, set `TRUST_PROXY=true` so these limits count each player's address instead of the proxy's. Card art and fonts are cached by the browser for a week, and text assets are sent gzip-compressed.
 
