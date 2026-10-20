@@ -5,7 +5,7 @@ function hide(){clearTimeout(timer);timer=null;source=null;preview?.remove();pre
 function show(card){
  if(!card.isConnected)return hide();
  const art=card.querySelector('.forest-card');if(!art)return;
- const label=card.id==='draw-stock'?'The Crescent Grimoire':(art.getAttribute('aria-label')||card.getAttribute('aria-label')||'Card').replace(/^JOKER:\s*/,'');
+ const label=card.id==='draw-stock'?(art.classList.contains('simple-back')?'The Crescent Moon':'The Crescent Grimoire'):(art.getAttribute('aria-label')||card.getAttribute('aria-label')||'Card').replace(/^JOKER:\s*/,'');
  preview=document.createElement('div');preview.id='card-magnifier';preview.setAttribute('role','tooltip');preview.setAttribute('aria-label',label);
  const body=document.createElement('div');body.className='magnifier-content';
  const face=document.createElement('div');face.className='card magnifier-card';face.innerHTML=art.outerHTML.replace(/curve-joker-[a-z0-9-]+/g,id=>id+'-magnifier');

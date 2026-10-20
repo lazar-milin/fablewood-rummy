@@ -42,7 +42,7 @@ With Win conditions off, the table keeps scores without victory popups or player
 
 ## Simple cards
 
-The launch-screen Simple cards button is a personal preference saved in this browser. It replaces face artwork with the animal suit marker and one large rank; all jokers share a plain star and JOKER label. It applies to the hand, table, discard history, previews and card flights. A Simple cards label follows the game mode while enabled. Card Atelier stays available below the launch panel and always shows the full artwork.
+The always-expanded, text-only launch-screen Simple cards button is a personal preference saved in this browser. It replaces face artwork with the animal suit marker and one large rank; jokers have JOKER written vertically without a marker. Simplified backs show only a small crescent moon. It applies to the hand, table, discard history, previews and card flights. A Simple cards label follows the game mode while enabled. Card Atelier stays available below the launch panel and always shows the full artwork.
 
 ## Duplicate starting cards
 
