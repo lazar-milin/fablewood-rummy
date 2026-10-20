@@ -55,3 +55,9 @@ The project uses GPL-3.0-only. Third-party fonts retain the separate author perm
 ## GitHub issues
 
 Use the repository's existing labels: `bug` for incorrect behavior, `enhancement` for new behavior, `documentation` for contributor/player documents, and `accessibility` for accessibility barriers. The repository also has standard triage labels such as `question`, `duplicate`, `help wanted`, and `good first issue`; do not assume area labels exist. Reference the issue numbers addressed by a commit or pull request and describe the final behavior plus validation. Only close an issue once its requested work is complete.
+
+## Field building
+
+`start-field.ps1` runs an optional local playtest on port 3042. `field-building.js` handles `field-*` actions through the engine. Drafts reserve IDs in their owner’s hand (`fieldGroups`) and are exposed separately as public card faces by the server; never expose other unplayed hand cards. Only the current owner may edit. Field groups can be incomplete, combined, reordered, returned or have one card ejected. Valid groups automatically open together at the threshold or lay individually after opening; the engine still enforces every meld rule and a final discard. Failed field-play actions release the source group and return a fieldNotice without changing the permanent meld. Discard first releases unfinished field groups; if its own validation fails it retains the turn and reports the error. Bots and timer fallback release drafts before planning plays.
+
+Returned badges are saved per hand in browser session storage, derived from public-field-to-private-hand transitions. They override New and clear on hover/click/drag. `ungroupCards()` makes single-card ejections and rejected returns loose; an entire draft dragged back to a hand gap remains grouped. Permanent table melds never have ejection controls. The baseline legacy opening-attempt actions remain available to bots/tests, but the UI uses field groups.

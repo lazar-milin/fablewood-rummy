@@ -16,6 +16,7 @@ export function selectUnit(layout,selected,index){
 export function moveUnit(layout,index,before){const out=layout.map(u=>[...u]),[unit]=out.splice(index,1);if(!unit)return layout;out.splice(Math.max(0,Math.min(out.length,before-(index<before?1:0))),0,unit);return out;}
 export function mergeUnits(layout,source,target,position=null){if(source===target||!layout[source]||!layout[target])return layout;const targetIds=[...layout[target]],at=position===null?targetIds.length:Math.max(0,Math.min(targetIds.length,position));targetIds.splice(at,0,...layout[source]);return layout.filter((_,i)=>i!==source).map((u,i)=>i===(target-(source<target?1:0))?targetIds:[...u]);}
 export function ungroupUnit(layout,index){return layout.flatMap((u,i)=>i===index?u.map(id=>[id]):[[...u]]);}
+export function ungroupCards(layout,ids){const loose=new Set(ids);return layout.flatMap(unit=>{const rest=unit.filter(id=>!loose.has(id));return [...(rest.length?[rest]:[]),...unit.filter(id=>loose.has(id)).map(id=>[id])];});}
 export function sortLayout(layout,hand,by,rules={}){
  const map=new Map(hand.map(c=>[c.id,c])),describe=ids=>{const cards=ids.map(id=>map.get(id)),meld=resolveMeld(cards,{rules}),real=cards.filter(c=>!c.joker);return {ids,kind:meld?.kind,animal:real.length?Math.min(...real.map(c=>SUITS.indexOf(c.suit))):4,value:real.length?Math.min(...real.map(c=>c.rank)):14};};
  return layout.map(describe).sort((a,b)=>{

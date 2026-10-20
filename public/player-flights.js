@@ -6,7 +6,7 @@ function nodeFor(place,card){
  if(place.zone==='stock')return document.getElementById('draw-stock');
  if(place.zone==='cut')return document.getElementById('draw-cut');
  if(place.zone==='discard')return document.querySelector('#discard-pile>.card')||document.querySelector('[data-drop-discard] .empty-card');
- const parent=document.querySelector(place.zone==='meld'?`[data-table-meld="${place.index}"]`:`[data-stage="${place.index}"]`);return parent?.querySelector(`[data-card="${card?.id}"]`)||parent;
+ const parent=document.querySelector(place.zone==='draft'?`[data-field-group="${place.index}"]`:place.zone==='meld'?`[data-table-meld="${place.index}"]`:`[data-stage="${place.index}"]`);return parent?.querySelector(`[data-card="${card?.id}"]`)||parent;
 }
 export function rememberDragDiscards(rects={}){const entries=Object.entries(rects);for(const [id,rect]of entries)dragOrigins.set(id,rect);return ()=>{for(const [id,rect]of entries)if(dragOrigins.get(id)===rect)dragOrigins.delete(id);};}
 export function prepareFlights(moves){return moves.map(move=>{const drag=move.from.zone==='hand'&&move.to.zone==='discard'?dragOrigins.get(move.card?.id):null;return {...move,start:drag||nodeFor(move.from,move.card)?.getBoundingClientRect(),dragged:!!drag,previousDiscard:move.to.zone==='discard'?nodeFor({zone:'discard'})?.querySelector('.forest-card')?.outerHTML:null};});}

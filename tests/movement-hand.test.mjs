@@ -1,6 +1,10 @@
 import test from 'node:test';import assert from 'node:assert/strict';
-import {reconcileLayout,selectUnit,moveUnit,mergeUnits,ungroupUnit,sortLayout} from '../public/movement-hand.js';
+import {reconcileLayout,selectUnit,moveUnit,mergeUnits,ungroupUnit,ungroupCards,sortLayout} from '../public/movement-hand.js';
 const c=(id,rank,suit='fox')=>({id,rank,suit});
+test('ejecting one card leaves the rest grouped and returns only that card as a loose unit',()=>{
+ const original=[['a','b','c'],['d']];assert.deepEqual(ungroupCards(original,['b']),[['a','c'],['b'],['d']]);assert.deepEqual(original,[['a','b','c'],['d']]);
+ assert.deepEqual(ungroupCards(original,['a','b','c']),[['a'],['b'],['c'],['d']]);
+});
 test('arbitrary selections group without requiring a meld and movement preserves selection',()=>{
  const layout=[['a'],['b'],['c'],['d']],first=selectUnit(layout,[],0),pair=selectUnit(first.layout,first.selected,2);assert.deepEqual(pair.layout,[['a','c'],['b'],['d']]);assert.deepEqual(pair.selected,['a','c']);assert.deepEqual(selectUnit(pair.layout,pair.selected,0).selected,[]);
  const moved=moveUnit(pair.layout,0,3);assert.deepEqual(moved,[['b'],['d'],['a','c']]);assert.deepEqual(pair.selected,['a','c']);assert.deepEqual(ungroupUnit(moved,2),[['b'],['d'],['a'],['c']]);

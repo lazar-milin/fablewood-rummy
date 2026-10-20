@@ -6,8 +6,8 @@
 .hand .hand-unit .card.selected,.hand .hand-unit .card:hover{transform:none!important;outline:none!important}
 .hand .hand-unit.unit-selected{outline:2px solid #e4a9ff;outline-offset:5px;transform:translateY(-8px)!important;box-shadow:0 0 12px #bd85e066}
 .hand .hand-unit .movement-pack-footer{position:absolute;bottom:7px;left:5px;right:5px;text-align:center;font-size:11px;line-height:1.2;color:#f3d9ff;white-space:nowrap}
-.hand .hand-unit .pack-close{display:grid;place-items:center;position:absolute;left:-17px!important;right:auto!important;top:65px!important;bottom:auto!important;width:32px!important;height:32px!important;padding:0!important;border:1px dashed #e0b3f4!important;border-radius:50%!important;background:#725087!important;color:#f794a9!important;z-index:8;transform:none!important;opacity:0;pointer-events:none}
-.hand .hand-unit:hover .pack-close,.hand .hand-unit:focus-within .pack-close,.hand .hand-unit.unit-selected .pack-close{opacity:1;pointer-events:auto}
+.hand .hand-unit .pack-close{display:grid;place-items:center;position:absolute;left:-17px!important;right:auto!important;top:50%!important;bottom:auto!important;width:32px!important;height:32px!important;padding:0!important;border:1px solid #e0b3f4!important;border-radius:50%!important;background-color:#805999!important;color:#f794a9!important;z-index:8;transform:translateY(-50%)!important;opacity:0;pointer-events:none}
+.hand .hand-unit:hover .pack-close,.hand .hand-unit:focus-within .pack-close{opacity:1;pointer-events:auto}
 .hand .hand-unit .pack-close span,.hand .hand-unit .pack-close svg{width:26px;height:26px;display:block;line-height:26px;font-family:Alagard;text-align:center}
 .hand .hand-unit .sigil-border{inset:-2px;width:calc(100% + 4px);height:calc(100% + 4px);z-index:2}
 .hand .hand-cards{padding:20px!important;gap:20px 22px!important;align-items:flex-start;min-height:220px!important;overflow:auto}
@@ -20,13 +20,13 @@
 .movement-game .meld.table-meld-selected{border-color:#d7a0ef;box-shadow:0 0 8px #c88ee14d}
 .movement-game .table-meld-controls{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin-top:8px;max-width:380px}
 .provisional-meld{background:#784b9366;border:2px dashed #bb8fce!important;cursor:grab!important;touch-action:none}
-.drop-hover:not([data-drop-hand]):not([data-drop-discard]){outline:3px dashed #dcb0fa!important;outline-offset:5px}
+.hand-unit.drop-hover,.meld.drop-hover{outline:3px dashed #dcb0fa!important;outline-offset:5px}
 .being-held{display:none!important}.moving-cards,.moving-cards *{cursor:grabbing!important}
 .drag-ghost.hand{position:fixed;left:0;top:0;z-index:10000;pointer-events:none!important;margin:0!important;padding:0!important;background:none!important;border:0!important;box-shadow:0 12px 24px #10081b55!important;zoom:1!important;opacity:1}
 .drag-ghost *{pointer-events:none!important}.drag-ghost .hand-unit{transform:none!important;outline:2px solid #e4a9ff;outline-offset:5px}.drag-ghost .pack-close{display:none!important}
 .drag-ghost .card{width:var(--held-card-width)!important;max-width:var(--held-card-width)!important;flex-basis:var(--held-card-width)!important;height:var(--held-card-height)!important}
 .drag-ghost .pack-cards>.card+.card{margin-left:var(--held-overlap,-14px)!important}
-@media(max-width:650px){.hand .hand-unit{border-radius:33px}.hand .hand-unit .pack-close{top:45px!important}.hand .hand-cards{min-height:180px!important;padding:18px!important}.hand .hand-title{grid-template-columns:1fr;gap:3px}.hand-sorts{justify-content:flex-start}.movement-game .meld-area{padding:8px;min-height:210px}.field-drop-caption{font-size:11px}.opening-meter{font-size:11px}.hand .hand-unit .movement-pack-footer{font-size:11px}}
+@media(max-width:650px){.hand .hand-unit{border-radius:33px}.hand .hand-cards{min-height:180px!important;padding:18px!important}.hand .hand-title{grid-template-columns:1fr;gap:3px}.hand-sorts{justify-content:flex-start}.movement-game .meld-area{padding:8px;min-height:210px}.field-drop-caption{font-size:11px}.opening-meter{font-size:11px}.hand .hand-unit .movement-pack-footer{font-size:11px}}
 .hand .hand-unit .pack-close{visibility:visible!important}
 .movement-game .hand .hand-cards.packed-layout{gap:20px 22px!important}
 
@@ -143,3 +143,28 @@ body.passing-screen .floating-panel{z-index:8200}
 .lobby .mode .mode-icon{flex:0 0 52px}
 .lobby .mode .mode-icon svg{width:52px;height:40px}
 .lobby .mode strong{min-height:40px;gap:12px}
+
+/* Field-building experiment: unfinished groups share the hand's geometry. */
+.movement-game .field-drafts.hand{display:flex;flex:1 0 100%;flex-wrap:wrap;align-content:flex-start;align-items:flex-start;gap:42px 28px;min-height:180px;width:100%;padding:16px 10px 30px;margin:0;border:0;border-radius:0;box-shadow:none;background:transparent;overflow:visible}
+.field-drafts .field-owner{position:absolute;top:calc(100% + 31px);left:50%;transform:translateX(-50%);font-size:9px;color:#ceb9dc;white-space:nowrap}
+.hand .hand-unit .eject-card{position:absolute;top:50%;left:50%;width:28px;height:28px;display:grid;place-items:center;transform:translate(-50%,-50%);padding:0;box-sizing:border-box;border:1px solid #e0b7f4;border-radius:50%;background-color:#805999;background-image:inherit;color:#ef738c;opacity:0;pointer-events:none;z-index:8;transition:opacity .12s}
+.hand .hand-unit .eject-card>span{position:absolute;inset:0;display:block;width:100%;height:100%;padding:0;font-size:0;pointer-events:none}
+.hand .hand-unit .eject-card svg{width:100%;height:100%;display:block}
+.hand .hand-card-shell:hover .eject-card,.hand .hand-card-shell:focus-within .eject-card{opacity:1;pointer-events:auto}
+.hand .hand-unit .eject-card:hover{transform:translate(-50%,-50%);background-color:#9768ad;color:#ff9daf}
+.hand .hand-card-shell:has(.eject-card:hover){z-index:9}
+.returned-card-badge{top:-29px;background:#b9ddf0;color:#173d59;border-color:#71afd2}
+.hand-card-shell:has(.returned-card-badge){z-index:5}
+.field-drafts .hand-unit[aria-disabled="true"]{cursor:default}
+.field-drafts .hand-unit .pack-close{left:-18px!important}
+.field-drafts .drop-slot{border:1px dashed #b38acb;box-sizing:border-box;border-radius:40px;background:#805c9122}
+@media(max-width:650px){.movement-game .field-drafts.hand{gap:42px 24px;padding:16px 8px 30px;min-height:150px}.returned-card-badge{font-size:11px}}
+
+@media(max-width:650px){.movement-game .field-drafts.hand{padding:20px 20px 48px;overflow:auto;max-width:100%}}
+
+/* Both remove controls use the same centered glyph and hover feedback. */
+.hand .hand-unit .pack-close>span{position:absolute;inset:0;width:100%;height:100%;padding:0;font-size:0;pointer-events:none}
+.hand .hand-unit .pack-close svg{display:block;width:100%;height:100%}
+.hand .hand-unit .pack-close:hover,.hand .hand-unit .pack-close:focus-visible{background-color:#9768ad!important;color:#ff9daf!important;border-color:#f2d9ff!important;transform:translateY(-50%)!important}
+.hand .hand-unit .hand-card-shell .eject-card{top:50%;transform:translate(-50%,-50%)}
+.hand .hand-unit .hand-card-shell .eject-card:hover,.hand .hand-unit .hand-card-shell .eject-card:focus-visible{background-color:#9768ad;color:#ff9daf;border-color:#f2d9ff;transform:translate(-50%,-50%)}
