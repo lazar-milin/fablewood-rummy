@@ -30,7 +30,7 @@ Tables, scores, and games live in server memory. Restarting or redeploying the s
 
 Enter a name, or leave it blank for a forest-inspired name, and create a table. Choose Online play for separate devices, or Local for humans and bots sharing this screen. Use the Player / Bot buttons in each seat to choose opponents. With several humans, a pass-screen cover hides the next hand until that player reveals it; with one human, bot turns keep your hand visible. Add human or bot seats in the player panels, up to six seats. Online players join using the eight-character table code or an open table on the landing page. Codes accept either case. If a player leaves a running game, a bot plays their seat for the rest of it, and if the host leaves, the next player becomes host. A table closes when its last player leaves.
 
-The host chooses the rules through the grimoire, then returns to the lobby and starts the game. Timer and Undo preferences are in the header controls. Results appear on the scoreboard after the first completed round. Win conditions are optional and configured in the grimoire.
+The host chooses the rules through the grimoire, then returns to the lobby and starts the game. Timer and Undo preferences are in the header controls. Undo can be configured only in the lobby. The host may change the timer during play; a changed duration restarts the current turn’s countdown. Results appear on the scoreboard after the first completed round. Win conditions are optional and configured in the grimoire.
 
 ## Win conditions
 

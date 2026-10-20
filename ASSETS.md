@@ -12,7 +12,7 @@ The active unicorn is `assets/jokers/unicorn-equine.svg`. The earlier unicorn an
 
 `public/art/card-kit/assets/ui/forest-night.svg` was vectorized from the project owner's supplied image, “Enchanted Pixel Forest at Night true size.pixel-16bit.png”. It is the active night-forest background.
 
-`assets/back/grimoire-book.svg` is the generated purple-and-gold book sprite used by the lobby's rule controls and the card back. `public/icons.js` contains the code-defined control icons shared with the author's Birdcard and Bugtile games. Layout, card frames, and decorative patterns are also defined in the project's CSS and SVG markup.
+`assets/back/grimoire-book.svg` is the generated purple-and-gold book sprite used by the lobby's rule controls and the card back. `public/icons.js` contains the code-defined control icons shared with the author's Birdcard and Bugtile games. The Online and Local mode buttons use original pixel night-sky and forest scenes defined in the same file. Layout, card frames, and decorative patterns are also defined in the project's CSS and SVG markup.
 
 ## Vector conversion and production records
 

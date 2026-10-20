@@ -72,6 +72,13 @@ const server=http.createServer(async(req,res)=>{res.setHeader('X-Content-Type-Op
   }
   if(req.method!=='POST')return send(405,{error:'Use POST to change the table.'});
   if(!Number.isInteger(body.revision)||body.revision!==r.revision)return send(409,{error:'The table changed. Review the latest position and try again.',room:view(r,auth)});
+  if(endpoint==='settings'&&r.phase!=='lobby'){
+   needHost(r,you);
+   if(body.timer===undefined||Object.keys(body).some(key=>!['code','revision','timer'].includes(key)))throw new PlayerError('Only the turn timer can be changed during a game.');
+   const timer=Number(body.timer);if(![0,30,60,120].includes(timer))throw new PlayerError('Invalid timer setting.');
+   if(timer!==r.options.timer){r.options={...r.options,timer};const now=Date.now();for(const state of [r.state,r.turnBackup?.state,...r.history.flatMap(entry=>[entry.state,entry.turnBackup?.state])])if(state)state.turnStarted=now;}
+   changed(r);return send(200,view(r,auth));
+  }
   if(endpoint==='settings'){
    needLobby(r,you);
    const next={...r.options};
