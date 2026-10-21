@@ -1,6 +1,6 @@
-# Fablewood Rummy — Rummikub experiment
+# Fablewood Rummy
 
-A magical-forest card game for online tables and local play with humans and bots. Classic Rummy follows Serbian Remi 51 with configurable house rules. This experimental branch also adds Rummikub, selected beside Classic Rummy in the lobby.
+A magical-forest card game for online tables and local play with humans and bots. Classic Rummy follows Serbian Remi 51 with configurable house rules. Rummikub is available beside Classic Rummy in the lobby.
 
 ## Moving cards
 
@@ -112,7 +112,7 @@ Table updates use one held HTTP request per client, waiting up to 25 seconds for
 
 ## Rummikub local playtest
 
-Branch: `experiment/rummikub`. Run `./start-rummikub.ps1` on Windows, or set `PORT=3044` and run `npm start`. Open http://127.0.0.1:3044, create a table, and choose **Rummikub** under **Choose game variant**. Local play supports human and bot seats; online play uses the same private-rack API. Two to four players are supported.
+Run `./start-rummikub.ps1` on Windows, or set `PORT=3044` and run `npm start`. Open http://127.0.0.1:3044, create a table, and choose **Rummikub** under **Choose game variant**. Local play supports human and bot seats; online play uses the same private-rack API. Two to four players are supported.
 
 The experiment uses 106 tiles (two copies of 1–13 for each forest animal, plus two jokers), 14 tiles per rack, a 30-point rack-only opening, and no discards. Numbers are always low; 13 cannot wrap to 1. Drawing resets the workspace and ends the turn. Use **Play turn** to commit a valid table with at least one newly played rack tile. Your rack can empty without a final discard. Table manipulation unlocks on your next turn after opening.
 
@@ -127,3 +127,5 @@ Rummikub always uses the shared Simple-card design with numeric 1–13 ranks, pl
 Drag an individual card’s X outside its stack to move only that card with the normal drop targets; a click still ungroups it. In Rummikub, shared tiles remain on the field. Group controls wait for arrival/packing animations to finish. Field origin labels sit left of the centered status badge.
 
 Rummikub’s grimoire offers 7–14 starting kubs and an opening of 30 or 31; dealing, human turns and bots all respect these settings. Both variant panels include a matching rules-summary box. Variant text glows only while selected: yellow for Classic and red for Rummikub.
+
+The in-game How to play button displays the same short, settings-aware rules summary as the selected variant’s grimoire panel. It is hidden on the launch screen and in the lobby.

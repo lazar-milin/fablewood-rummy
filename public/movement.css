@@ -221,3 +221,5 @@ body.passing-screen .floating-panel{z-index:8200}
 
 .lobby .variant-choices [data-variant="rummikub"].chosen :is(strong,small){text-shadow:0 0 3px #efaaa999,0 0 10px #d8737388,0 0 18px #d8737344}
 .variant-rules-summary p{font-size:11px;line-height:1.7;margin:10px 0}
+
+.tinkering-slide .variant-rules-summary+.starting-options{margin-top:16px}
