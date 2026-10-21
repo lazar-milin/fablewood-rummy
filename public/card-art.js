@@ -3,13 +3,19 @@ const faces={"fox-1": "<span class=\"forest-card picture suit-fox rank-A\" data-
 const fullCardBackMarkup="<span class=\"forest-card grimoire-back\" aria-label=\"Card back: crescent grimoire\"><img class=\"card-frame\" src=\"/art/card-kit/assets/back/capsule.svg\" alt=\"\"><img class=\"back-surround\" src=\"/art/card-kit/assets/back/botanical-surround.svg\" alt=\"\"><img class=\"back-grimoire\" src=\"/art/card-kit/assets/back/grimoire-book.svg\" alt=\"Purple and gold crescent grimoire\"></span>";
 const simpleCardBackMarkup='<span class="forest-card simple-card simple-back" aria-label="Card back: crescent moon" style="--card-bg:#382238;--card-ink:#f5d695"><img class="card-frame" src="/art/card-kit/assets/back/capsule.svg" alt=""><img class="simple-moon" src="/art/card-kit/assets/jokers/moon-pixel.svg" alt="Crescent moon"></span>';
 export let cardBackMarkup=fullCardBackMarkup;
-let simpleCards=false;const simpleFaces=new Map();
-export function setSimpleCards(enabled){simpleCards=!!enabled;cardBackMarkup=simpleCards?simpleCardBackMarkup:fullCardBackMarkup;}
+let simpleCards=false,cardVariant='remi51';const simpleFaces=new Map();
+const simplePalette={fox:['#F3DFC0','#2E1A14'],hare:['#DBE1BA','#29231C'],toad:['#C8DCD6','#222D26'],owl:['#CAD4E6','#20243D']};
+// Crops use the visible pixel bounds, so every animal occupies the same height.
+const markerBounds={fox:[1536,1024,322,131,890,769],hare:[1356,1159,220,88,916,996],toad:[1536,1024,263,203,1011,645],owl:[1536,1024,322,160,893,750]};
+function refreshBack(){cardBackMarkup=simpleCards||cardVariant==='rummikub'?simpleCardBackMarkup:fullCardBackMarkup;}
+export function setSimpleCards(enabled){simpleCards=!!enabled;refreshBack();}
+export function setCardVariant(variant='remi51'){cardVariant=variant;refreshBack();}
 function simpleMarkup(c,key){
- if(simpleFaces.has(key))return simpleFaces.get(key);
- const original=faces[key],rank=c.joker?'JOKER':({1:'A',10:'H',11:'B',12:'Q',13:'E'}[c.rank]||c.rank),style=c.joker?'--card-bg:#e4d4e8;--card-ink:#382238':original.match(/style="([^"]+)"/)[1],label=c.joker?'JOKER':original.match(/aria-label="([^"]+)"/)[1].split(':')[0];
- const marker=c.joker?'':`<img class="head-marker" src="/art/card-kit/assets/heads/${c.suit}-head.svg" alt="${c.suit[0].toUpperCase()+c.suit.slice(1)} suit">`;
+ const numeric=cardVariant==='rummikub',cacheKey=(numeric?'numeric:':'rummy:')+key;
+ if(simpleFaces.has(cacheKey))return simpleFaces.get(cacheKey);
+ const rank=c.joker?'JOKER':numeric?c.rank:({1:'A',10:'H',11:'B',12:'Q',13:'E'}[c.rank]||c.rank),[bg,ink]=c.joker?['#e4d4e8','#382238']:simplePalette[c.suit],style=`--card-bg:${bg};--card-ink:${ink}`,label=c.joker?'JOKER':c.suit[0].toUpperCase()+c.suit.slice(1)+' '+rank;
+ const bounds=markerBounds[c.suit],marker=c.joker?'':`<span class="simple-marker-slot"><img class="head-marker" src="/art/card-kit/assets/heads/${c.suit}-head.svg" alt="${c.suit[0].toUpperCase()+c.suit.slice(1)} suit" style="--marker-height:${bounds[1]/bounds[5]*100}%;--marker-top:${-bounds[3]/bounds[5]*100}%" draggable="false"></span>`;
  const character=c.joker?[...rank].map(letter=>`<span>${letter}</span>`).join(''):rank;
- const markup=`<span class="forest-card simple-card ${c.joker?'simple-joker':'suit-'+c.suit}" aria-label="${label}" style="${style}"><img class="card-frame" src="/art/card-kit/assets/frames/${c.joker?'joker':c.suit}-capsule.svg" alt="">${marker}<span class="simple-rank" ${c.joker?'aria-hidden="true"':''}>${character}</span></span>`;simpleFaces.set(key,markup);return markup;
+ const markup=`<span class="forest-card simple-card ${numeric?'numeric-card ':''}${c.joker?'simple-joker':'suit-'+c.suit}" aria-label="${label}" style="${style}"><img class="card-frame" src="/art/card-kit/assets/frames/${c.joker?'joker':c.suit}-capsule.svg" alt="">${marker}<span class="simple-rank" ${c.joker?'aria-hidden="true"':''}>${character}</span></span>`;simpleFaces.set(cacheKey,markup);return markup;
 }
-export function cardMarkup(c){const key=c.joker?'joker-'+Number(c.id.split('-').at(-1))%4:c.suit+'-'+c.rank;if(simpleCards)return simpleMarkup(c,key);return c.joker?faces[key].replace(/curve-joker-[a-z]+/g,id=>id+'-'+c.id):faces[key];}
+export function cardMarkup(c){const key=c.joker?'joker-'+Number(c.id.split('-').at(-1))%4:c.suit+'-'+c.rank;if(simpleCards||cardVariant==='rummikub')return simpleMarkup(c,key);return c.joker?faces[key].replace(/curve-joker-[a-z]+/g,id=>id+'-'+c.id):faces[key];}

@@ -170,13 +170,9 @@ body.passing-screen .floating-panel{z-index:8200}
 .hand .hand-unit .hand-card-shell .eject-card:hover,.hand .hand-unit .hand-card-shell .eject-card:focus-visible{background-color:#9768ad;color:#ff9daf;border-color:#f2d9ff;transform:translate(-50%,-50%)}
 
 /* Numeric forest tiles for the Rummikub experiment. */
-.rk-face{display:flex;position:absolute;inset:0;flex-direction:column;align-items:center;justify-content:center;gap:8%;border:3px double var(--rk-ink);border-radius:50% / 25%;background:var(--paper,#d6bfdd);color:var(--rk-ink);overflow:hidden;pointer-events:none}
-.rk-face img{width:46%;height:28%;object-fit:contain;image-rendering:pixelated}.rk-face b{font:48px/1 Alagard,serif;font-weight:normal}.rk-joker-star{font-size:28px}.rk-face+.joker-value{bottom:8%;font-size:9px}
 .rummikub-game .board{grid-template-columns:130px minmax(0,1fr)}.rummikub-game .piles{padding:12px}.rummikub-game .field-drafts.hand{min-height:230px}.rummikub-game .hand-heading .actions{flex-wrap:wrap}
 .rummikub-game .hand-heading .action-buttons{flex-wrap:wrap}.variant-row{flex-wrap:wrap}.variant-row button{min-width:160px}
-@media(max-width:650px){.rummikub-game .board{grid-template-columns:90px minmax(0,1fr)}.rk-face b{font-size:36px}.rummikub-game .piles{padding:8px}.rummikub-game .field-drafts.hand{overflow:visible}}
+@media(max-width:650px){.rummikub-game .board{grid-template-columns:90px minmax(0,1fr)}.rummikub-game .piles{padding:8px}.rummikub-game .field-drafts.hand{overflow:visible}}
 
 .game-screen .playing.movement-game.rummikub-game>.board{grid-template-columns:130px minmax(0,1fr)!important}
 @media(max-width:650px){.game-screen .playing.movement-game.rummikub-game>.board{grid-template-columns:80px minmax(0,1fr)!important}.rummikub-game .stock-stack{width:72px;min-width:0}}
-
-#card-magnifier .rk-face b{font-size:clamp(80px,15vh,160px)}

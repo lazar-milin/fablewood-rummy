@@ -1,6 +1,9 @@
 /* Simple cards reuse the original frames; the back frame includes its glyph background. */
 .card .forest-card.simple-card{background:var(--card-bg,#e4d4e8);box-shadow:none;color:var(--card-ink);container-type:inline-size}
-.card .simple-card .head-marker{position:absolute;display:block;top:6%;left:20%;width:60%;height:27%}
+.card .simple-card .simple-marker-slot{position:absolute;display:block;top:8%;left:20%;width:60%;height:18%;overflow:hidden}
+.card .simple-card .simple-marker-slot .head-marker{position:absolute;display:block;top:var(--marker-top);left:50%;height:var(--marker-height);width:auto;max-width:none;transform:translateX(-50%);object-fit:fill}
+.card .numeric-card .simple-rank{font-size:58cqw}
+.card .numeric-card.simple-joker .simple-rank{font-size:32cqw}
 .card .simple-card .simple-rank{position:absolute;inset:41% 3% 9%;display:flex;align-items:center;justify-content:center;font:normal 68cqw/1 Alagard,serif;color:var(--card-ink);letter-spacing:0;translate:.03125em 0}
 /* Alagard has a 1/16 em extra right side bearing; offset half of it to center the ink. */
 .card .simple-joker .simple-rank{inset:8% 0;flex-direction:column;font-size:32cqw;line-height:.98;letter-spacing:0}

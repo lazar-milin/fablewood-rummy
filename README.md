@@ -121,3 +121,5 @@ Click rack tiles to group, then drag them to the field or use **Place selected**
 Scoring follows this app’s lower-is-better scoreboard: rack tiles score their number, jokers 30, and the winner receives the negative sum of the other penalties. This reverses the sign of the official scoring convention. Timers are optional; timeout restores an unfinished workspace and draws up to three penalty tiles. With an empty pool, a complete lap of passes ends the game, with the lowest rack winning. Tied lowest racks use seat order in this first build.
 
 Rules reference: [manufacturer’s 2025 Classic rules](https://rummikub.com/wp-content/uploads/2025/06/4600-0236-0013-EN-_rummikub-Classic.pdf). This is a local experimental adaptation using Fablewood artwork, not an official Rummikub product.
+
+Rummikub always uses the shared Simple-card design with numeric 1–13 ranks, plain vertical JOKER lettering, and the crescent back. The personal Simple-cards toggle continues to control Classic Rummy only. All simple suit markers share a normalized visible height and top edge.
