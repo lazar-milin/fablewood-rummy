@@ -14,8 +14,9 @@ export function rummikubCards(s){return new Map([...s.melds.flatMap(g=>g.cards),
 export function resetRummikubTable(s){s.fieldGroups=s.melds.map(m=>({owner:s.opened[s.turn]?s.turn:-1,ids:m.cards.map(c=>c.id)}));}
 export function createRummikub(names,options,random,PlayerError){
  options=rummikubRules(options);if(!Number.isInteger(options.handSize)||options.handSize<7||options.handSize>14||![30,31].includes(options.opening))throw new PlayerError('Choose 7–14 starting kubs and an opening of 30 or 31.');
- if(names.length<2||names.length>4)throw new PlayerError('Rummikub supports two to four players.');
- const stock=Array.from({length:2},(_,copy)=>suits.flatMap(suit=>Array.from({length:13},(_,i)=>({id:`${copy}-${suit}-${i+1}`,suit,rank:i+1})))).flat();stock.push(...[0,1].map(i=>({id:'joker-'+i,suit:'joker',rank:0,joker:true})));
+ if(names.length<2||names.length>6)throw new PlayerError('Rummikub supports two to six players.');
+ const expanded=names.length>=5;
+ const stock=Array.from({length:expanded?3:2},(_,copy)=>suits.flatMap(suit=>Array.from({length:13},(_,i)=>({id:`${copy}-${suit}-${i+1}`,suit,rank:i+1})))).flat();stock.push(...Array.from({length:expanded?4:2},(_,i)=>i).map(i=>({id:'joker-'+i,suit:'joker',rank:0,joker:true})));
  for(let i=stock.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[stock[i],stock[j]]=[stock[j],stock[i]];}
  const first=options.first??0,s={names,hands:names.map(()=>stock.splice(0,options.handSize)),stock,cutCard:null,discard:[],melds:[],fieldGroups:[],openingAttempt:[],turn:first,first,stage:'meld',turns:0,opened:names.map(()=>false),winner:null,scores:names.map(()=>0),turnStarted:Date.now(),options,mustOpen:false,mustHand:false,pendingJokers:[],fieldNotice:null,rkPasses:0,log:[`Rummikub: play ${options.opening} points from your rack to open. Draw one to end a turn without playing.`]};return s;
 }

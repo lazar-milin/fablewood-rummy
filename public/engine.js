@@ -5,7 +5,7 @@ import {duplicatePairs} from './duplicate-deals.js';
 export class PlayerError extends Error{}
 export const SUITS=['fox','hare','toad','owl'];
 export const RULESETS={remi51:{name:'Classic Rummy',opening:51},rummikub:{name:'Rummikub',opening:30}};
-export const DEFAULT_RULES={opening:51,aceMode:'both',jokerEnds:true,handEnabled:true,handRequiresOpening:true,handJokers:true,handBonus:80,handDouble:true,cutEnabled:true,cutBonus:120,dealDuplicateLimit:0,redealDuplicateLimit:0};
+export const DEFAULT_RULES={opening:51,jokerCount:4,aceMode:'both',jokerEnds:true,handEnabled:true,handRequiresOpening:true,handJokers:true,handBonus:80,handDouble:true,cutEnabled:true,cutBonus:120,dealDuplicateLimit:0,redealDuplicateLimit:0};
 export const points=c=>c.joker?20:c.rank===1?10:Math.min(c.rank,10);
 const rankOf=c=>c.joker?c.as?.rank:c.rank;
 const suitOf=c=>c.joker?c.as?.suit:c.suit;
@@ -59,13 +59,14 @@ function declaredCards(cards,assignments={}){
 export const validMeld=cards=>!!resolveMeld(cards);
 export function createGame(names,options={},random=Math.random){
  if(options.variant==='rummikub')return createRummikub(names,options,random,PlayerError);
+ if(![4,8].includes(options.jokerCount??4))throw new PlayerError("Choose four or eight jokers.");
  for(let attempt=0;attempt<1000;attempt++){const state=dealGame(names,options,random);if(!options.dealDuplicateLimit||state.hands.every(hand=>duplicatePairs(hand)<options.dealDuplicateLimit))return state;}
  throw new PlayerError('Could not deal within the duplicate limit. Please try again.');
 }
 function dealGame(names,options={},random=Math.random){
  options={...DEFAULT_RULES,...options};
  let deck=Array.from({length:2},(_,d)=>SUITS.flatMap(suit=>Array.from({length:13},(_,i)=>({id:`${d}-${suit}-${i+1}`,suit,rank:i+1})))).flat();
- deck.push(...Array.from({length:4},(_,i)=>({id:'joker-'+i,suit:'joker',rank:0,joker:true})));
+ deck.push(...Array.from({length:options.jokerCount},(_,i)=>({id:'joker-'+i,suit:'joker',rank:0,joker:true})));
  for(let i=deck.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]];}
  const count=options.handSize??14,first=options.first??0,cutter=(first+names.length-1)%names.length,hands=names.map(()=>[]);
  while(deck.at(-1)?.joker)hands[cutter].push(deck.pop());const cutCard=deck.pop();

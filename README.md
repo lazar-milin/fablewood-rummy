@@ -112,9 +112,9 @@ Table updates use one held HTTP request per client, waiting up to 25 seconds for
 
 ## Rummikub local playtest
 
-Run `./start-rummikub.ps1` on Windows, or set `PORT=3044` and run `npm start`. Open http://127.0.0.1:3044, create a table, and choose **Rummikub** under **Choose game variant**. Local play supports human and bot seats; online play uses the same private-rack API. Two to four players are supported.
+Run `./start-rummikub.ps1` on Windows, or set `PORT=3044` and run `npm start`. Open http://127.0.0.1:3044, create a table, and choose **Rummikub** under **Choose game variant**. Local play supports human and bot seats; online play uses the same private-rack API. Two to six players are supported.
 
-The experiment uses 106 tiles (two copies of 1–13 for each forest animal, plus two jokers), 14 tiles per rack, a 30-point rack-only opening, and no discards. Numbers are always low; 13 cannot wrap to 1. Drawing resets the workspace and ends the turn. Use **Play turn** to commit a valid table with at least one newly played rack tile. Your rack can empty without a final discard. Table manipulation unlocks on your next turn after opening.
+With 2–4 players the pool contains 106 tiles (two copies of 1–13 for each forest animal, plus two jokers). With 5–6 players it automatically uses 160 tiles (three copies of each number and animal, plus four jokers). It uses 14 tiles per rack, a 30-point rack-only opening, and no discards. Numbers are always low; 13 cannot wrap to 1. Drawing resets the workspace and ends the turn. Use **Play turn** to commit a valid table with at least one newly played rack tile. Your rack can empty without a final discard. Table manipulation unlocks on your next turn after opening.
 
 Click rack tiles to group, then drag them to the field. Click field groups to combine them, or drag over groups to join them. The group X splits a group into loose tiles; a card X detaches one table tile into the workspace, or returns a staged rack tile. Shared table tiles can never enter a rack. Every run/set must be legal before the turn commits, including reused jokers. **Reset turn** restores the committed table. Bots play legal openings and additions, but do not search complex shared-table rearrangements.
 
@@ -129,3 +129,5 @@ Drag an individual card’s X outside its stack to move only that card with the 
 Rummikub’s grimoire offers 7–14 starting kubs and an opening of 30 or 31; dealing, human turns and bots all respect these settings. Both variant panels include a matching rules-summary box. Variant text glows only while selected: yellow for Classic and red for Rummikub.
 
 The in-game How to play button displays the same short, settings-aware rules summary as the selected variant’s grimoire panel. It is hidden on the launch screen and in the lobby.
+
+Classic defaults to four jokers. The grimoire’s **Jokers in deck:** setting also offers eight, adding a second copy of each mythical creature (112 cards total).
