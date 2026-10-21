@@ -75,3 +75,5 @@ Variant buttons use equal grid tracks sized by their widest natural content. Act
 Rummikub defaults to 14 kubs and opening 30, configurable to 7–14 kubs and opening 30/31. `rummikubRules()` preserves those two validated settings while enforcing the remaining variant-specific rules. Keep host settings, actual deals, bot opening searches, hints, summaries and opening meters consistent. Old port 3043 may still serve pre-update rules for existing tables; the current build runs on 3044.
 
 How to play appears only in the game phase, reusing `classicRules()` or `rummikubRulesSummary()` from the variant settings so the help and grimoire cannot drift. Rules summaries have a 16px gap before their starting-hand boxes; both opening selectors use `four-rule-controls` styling.
+
+Scroll surfaces hide their native scrollbars without disabling scrolling. Game body, main and playing section form a vertical flex chain; only the final hand surface grows to fill spare viewport height, so its translucent background reaches the page bottom in both variants. Keep board and action rows from shrinking.
