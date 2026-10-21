@@ -21,7 +21,7 @@ body:not(.at-table) #header{grid-template-columns:1fr auto}
 #copy small{font-size:8px}
 #copy .code-main>span{text-transform:none}
 /* Inline labels, with Both centered between the two ace sequences. */
-.core-rule-row.four-rule-controls{grid-template-columns:130px 170px minmax(260px,1.5fr) minmax(180px,1fr) 150px 150px}
+.core-rule-row.four-rule-controls{grid-template-columns:120px 150px minmax(235px,1.3fr) minmax(210px,1.1fr) 135px 130px}
 .four-rule-controls>.rule-choice-row{flex-direction:row;align-items:center;gap:8px;padding:0 10px;justify-content:center}
 .four-rule-controls>.rule-choice-row>span{min-width:0;white-space:nowrap}
 .four-rule-controls .rule-choice-row>div{align-items:center;justify-content:center;gap:5px}
@@ -188,3 +188,8 @@ img,svg,a{-webkit-user-drag:none}
 .lobby-title-row .back-button:hover{background:#ecdaf5;border-color:#b28bc8;color:#5c427a}
 .game-screen main{max-width:1800px;padding-left:clamp(14px,2vw,32px);padding-right:clamp(14px,2vw,32px)}
 @media(max-width:650px){.lobby-title-row{grid-template-columns:80px minmax(0,1fr);gap:8px}.lobby-title-row .back-button{font-size:10px;padding:8px 10px}}
+
+.core-rule-row.four-rule-controls>.ace-series-rule>div{flex-wrap:nowrap!important}
+.core-rule-row.four-rule-controls>.ace-series-rule .rule-choice{flex:0 0 auto;white-space:nowrap}
+.core-rule-row.four-rule-controls>.ace-series-rule .ace-sequence{white-space:nowrap}
+.core-rule-row.four-rule-controls>.ace-series-rule .ace-sequence{display:inline!important;vertical-align:baseline}
