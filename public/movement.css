@@ -196,14 +196,14 @@ body.passing-screen .floating-panel{z-index:8200}
 .lobby .variant-choices button{position:relative;isolation:isolate;overflow:hidden;min-width:0;width:100%;white-space:nowrap}
 .lobby .variant-choices strong{font:24px/1.2 Alagard,serif;margin-bottom:8px}
 .lobby .variant-choices button>*{position:relative;z-index:1}
-.lobby .variant-choices [data-variant="remi51"]{--variant-shine:#f1ce64;--variant-dark:#382600}
-.lobby .variant-choices [data-variant="rummikub"]{--variant-shine:#a23d58;--variant-dark:#300c1b}
+.lobby .variant-choices [data-variant="remi51"]{--variant-shine:#d5c38a;--variant-dark:#382600}
+.lobby .variant-choices [data-variant="rummikub"]{--variant-shine:#986c7c;--variant-dark:#300c1b}
 .lobby .variant-choices button.chosen,.lobby .variant-choices button.chosen:hover{color:var(--variant-dark)}
 .lobby .variant-choices button.chosen small{color:var(--variant-dark)}
-.lobby .variant-choices button.chosen::before{content:'';position:absolute;z-index:0;top:0;bottom:0;left:-20%;width:20%;pointer-events:none;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--variant-shine) 35%,transparent) 20%,var(--variant-shine) 49%,var(--variant-shine) 51%,color-mix(in srgb,var(--variant-shine) 35%,transparent) 80%,transparent);animation:variant-shine 5s linear infinite}
-@keyframes variant-shine{from{transform:translateX(0)}to{transform:translateX(600%)}}
+.lobby .variant-choices button.chosen::before{content:'';position:absolute;z-index:0;top:-50%;bottom:-50%;left:-60%;width:40%;pointer-events:none;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--variant-shine) 35%,transparent) 20%,var(--variant-shine) 49%,var(--variant-shine) 51%,color-mix(in srgb,var(--variant-shine) 35%,transparent) 80%,transparent);animation:variant-shine 5s linear infinite}
+@keyframes variant-shine{from{transform:translateX(0) skewX(-30deg)}to{transform:translateX(500%) skewX(-30deg)}}
 @media(max-width:650px){.variant-choices{grid-template-columns:1fr}.lobby .variant-choices button{white-space:normal}}
-@media(prefers-reduced-motion:reduce){.lobby .variant-choices button.chosen::before{animation:none;left:40%;opacity:.35}}
+@media(prefers-reduced-motion:reduce){.lobby .variant-choices button.chosen::before{animation:none;left:30%;opacity:.25;transform:skewX(-30deg)}}
 /* Keep the pool centered in the same initial field space used by Classic. */
 .game-screen .movement-game.rummikub-game>.board>.piles{justify-content:center}
 
@@ -215,3 +215,6 @@ body.passing-screen .floating-panel{z-index:8200}
 /* Reserve unscaled grid space as well: narrow field contents use zoom. */
 .game-screen .playing.movement-game.rummikub-game>.board{min-height:512px}
 @media(max-width:650px){.game-screen .playing.movement-game.rummikub-game>.board{min-height:410px}}
+
+.lobby .variant-row>p{font:22px/1.25 Alagard,serif}
+.lobby .variant-choices [data-variant="remi51"] :is(strong,small){text-shadow:0 0 3px #e5d59d99,0 0 10px #d5c38a88,0 0 18px #d5c38a44}
