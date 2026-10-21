@@ -30,6 +30,9 @@ export function refreshFlights(nextContext){
  if(nextContext!==undefined&&context!==nextContext){for(const record of active){record.animation?.cancel();record.ghost.remove();}active.clear();context=nextContext;}
  const targets=new Set();
  for(const record of active){if(record.started&&performance.now()>=record.deadline){finish(record);continue;}const target=nodeFor(record.move.to,record.move.card),end=target?.getBoundingClientRect();if(!end?.width)continue;if(record.move.to.zone!=='player')targets.add(target);animateTo(record,end);}
+ const arriving=new Set([...targets].map(target=>target.closest('.hand-unit')).filter(Boolean));
+ for(const unit of document.querySelectorAll('.hand-unit.flight-arriving'))if(!arriving.has(unit))unit.classList.remove('flight-arriving');
+ for(const unit of arriving)unit.classList.add('flight-arriving');
  for(const [target,visibility]of hidden)if(!targets.has(target)){if(target.isConnected)target.style.visibility=visibility;hidden.delete(target);}
  for(const target of targets){if(!hidden.has(target))hidden.set(target,target.style.visibility);target.style.visibility='hidden';}
  const discard=[...active].find(record=>record.move.to.zone==='discard'),pile=discard&&nodeFor(discard.move.to,discard.move.card),rect=pile?.getBoundingClientRect();
