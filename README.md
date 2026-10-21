@@ -1,6 +1,6 @@
-# Fablewood Rummy
+# Fablewood Rummy — Rummikub experiment
 
-A magical-forest card game for online tables and local play with humans and bots. Classic Rummy follows Serbian Remi 51 with configurable house rules. Rummikub and additional variants are not implemented yet.
+A magical-forest card game for online tables and local play with humans and bots. Classic Rummy follows Serbian Remi 51 with configurable house rules. This experimental branch also adds Rummikub, selected beside Classic Rummy in the lobby.
 
 ## Moving cards
 
@@ -109,3 +109,15 @@ The card illustrations and decorative sprites were generated with OpenAI's image
 The project is distributed under [GPL-3.0-only](LICENSE). Third-party fonts retain their authors' terms: Alagard by Hewett Tsoi (Pix3M), and VCR OSD Mono by Riciery Leal (MrManet). Their notices are included in [public/fonts/](public/fonts/).
 
 Table updates use one held HTTP request per client, waiting up to 25 seconds for a change. Unchanged tables return 204. Authenticated changes require the displayed `revision`; stale or missing revisions return 409 and the latest private table view. Creating or joining a table is an admission request and does not require a prior private revision. The entrance table list refreshes every 15 seconds only while visible.
+
+## Rummikub local playtest
+
+Branch: `experiment/rummikub`. Run `./start-rummikub.ps1` on Windows, or set `PORT=3043` and run `npm start`. Open http://127.0.0.1:3043, create a table, and choose **Rummikub** under **Choose game variant**. Local play supports human and bot seats; online play uses the same private-rack API. Two to four players are supported.
+
+The experiment uses 106 tiles (two copies of 1–13 for each forest animal, plus two jokers), 14 tiles per rack, a 30-point rack-only opening, and no discards. Numbers are always low; 13 cannot wrap to 1. Drawing resets the workspace and ends the turn. Use **Play turn** to commit a valid table with at least one newly played rack tile. Your rack can empty without a final discard. Table manipulation unlocks on your next turn after opening.
+
+Click rack tiles to group, then drag them to the field or use **Place selected**. Click field groups to combine them, or drag over groups to join them. The group X splits a group into loose tiles; a card X detaches one table tile into the workspace, or returns a staged rack tile. Shared table tiles can never enter a rack. Every run/set must be legal before the turn commits, including reused jokers. **Reset turn** restores the committed table. Bots play legal openings and additions, but do not search complex shared-table rearrangements.
+
+Scoring follows this app’s lower-is-better scoreboard: rack tiles score their number, jokers 30, and the winner receives the negative sum of the other penalties. This reverses the sign of the official scoring convention. Timers are optional; timeout restores an unfinished workspace and draws up to three penalty tiles. With an empty pool, a complete lap of passes ends the game, with the lowest rack winning. Tied lowest racks use seat order in this first build.
+
+Rules reference: [manufacturer’s 2025 Classic rules](https://rummikub.com/wp-content/uploads/2025/06/4600-0236-0013-EN-_rummikub-Classic.pdf). This is a local experimental adaptation using Fablewood artwork, not an official Rummikub product.

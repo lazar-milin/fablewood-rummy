@@ -4,11 +4,11 @@ let source=null,timer=null,preview=null,hold=null,swallowClick=false;
 function hide(){clearTimeout(timer);timer=null;source=null;preview?.remove();preview=null;}
 function show(card){
  if(!card.isConnected)return hide();
- const art=card.querySelector('.forest-card');if(!art)return;
+ const art=card.querySelector('.forest-card,.rk-face');if(!art)return;
  const label=card.id==='draw-stock'?(art.classList.contains('simple-back')?'The Crescent Moon':'The Crescent Grimoire'):(art.getAttribute('aria-label')||card.getAttribute('aria-label')||'Card').replace(/^JOKER:\s*/,'');
  preview=document.createElement('div');preview.id='card-magnifier';preview.setAttribute('role','tooltip');preview.setAttribute('aria-label',label);
  const body=document.createElement('div');body.className='magnifier-content';
- const face=document.createElement('div');face.className='card magnifier-card';face.innerHTML=art.outerHTML.replace(/curve-joker-[a-z0-9-]+/g,id=>id+'-magnifier');
+ const face=document.createElement('div');face.className='card magnifier-card';if(art.classList.contains('rk-face')){face.style.setProperty('--paper',card.style.getPropertyValue('--paper'));face.style.setProperty('--ink',card.style.getPropertyValue('--ink'));}face.innerHTML=art.outerHTML.replace(/curve-joker-[a-z0-9-]+/g,id=>id+'-magnifier');
  const title=document.createElement('h2');title.textContent=label;
  body.append(face,title);preview.append(body);document.body.append(preview);
 }

@@ -5,7 +5,7 @@ export function describeMove(before,after){
  for(const [id,location]of next)if(!old.has(id)||old.get(id).zone==='draft'&&location.zone!=='draft')out.push({player,from:old.has(id)?{zone:old.get(id).zone,index:old.get(id).index}:{zone:'player',index:player},to:{zone:location.zone,index:location.index},card:location.card});
  const discarded=new Set(before.discard.map(c=>c.id));for(const card of after.discard)if(!discarded.has(card.id))out.push({player,from:{zone:'player',index:player},to:{zone:'discard'},card});
  for(const [id,location]of old)if((location.card.joker||location.zone==='draft'||location.zone==='attempt')&&!next.has(id)&&after.hands[player].some(c=>c.id===id)&&!after.discard.some(c=>c.id===id))out.push({player,from:{zone:location.zone,index:location.index},to:{zone:'player',index:player},card:location.card});
- const draw=after.stage==='meld'&&before.stage==='draw'&&after.hands[player].length>before.hands[player].length;
+ const draw=(before.options?.variant==='rummikub'?after.stock.length<before.stock.length:after.stage==='meld'&&before.stage==='draw')&&after.hands[player].length>before.hands[player].length;
  if(draw){const fromCut=before.cutCard&&!after.cutCard,fromDiscard=!!before.discard.at(-1)&&!after.discard.some(c=>c.id===before.discard.at(-1).id)&&after.hands[player].some(c=>c.id===before.discard.at(-1).id);out.push({player,from:{zone:fromCut?'cut':fromDiscard?'discard':'stock'},to:{zone:'player',index:player},card:fromCut?before.cutCard:fromDiscard?before.discard.at(-1):null});}
  return out;
 }
