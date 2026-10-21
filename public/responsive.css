@@ -159,3 +159,5 @@
 /* Five Classic settings share the existing compact dashed treatment. */
 .core-rule-row.four-rule-controls{flex-wrap:wrap;overflow:visible}
 .core-rule-row.four-rule-controls>.ace-rules,.core-rule-row.four-rule-controls>.ace-series-rule{border:1px dashed #93739f!important;border-radius:4px}
+
+@media(max-width:850px){.core-rule-row.four-rule-controls>.ace-series-rule{grid-column:span 2}.core-rule-row.four-rule-controls>.ace-series-rule>div{display:flex;flex-wrap:nowrap!important;justify-content:flex-start!important}.core-rule-row.four-rule-controls>.ace-series-rule .rule-choice{flex:0 0 auto;white-space:nowrap}}
