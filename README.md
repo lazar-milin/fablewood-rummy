@@ -122,4 +122,4 @@ Scoring follows this app’s lower-is-better scoreboard: rack tiles score their 
 
 Rules reference: [manufacturer’s 2025 Classic rules](https://rummikub.com/wp-content/uploads/2025/06/4600-0236-0013-EN-_rummikub-Classic.pdf). This is a local experimental adaptation using Fablewood artwork, not an official Rummikub product.
 
-Rummikub always uses the shared Simple-card design with numeric 1–13 ranks, plain vertical JOKER lettering, and the crescent back. The personal Simple-cards toggle continues to control Classic Rummy only. All simple suit markers share a normalized visible height and top edge.
+Rummikub always uses the shared Simple-card design with numeric 1–13 ranks, plain vertical JOKER lettering, and the crescent back. The personal Simple-cards toggle continues to control Classic Rummy only. Simple suit markers keep their original sizes and share the hare’s original bottom baseline.

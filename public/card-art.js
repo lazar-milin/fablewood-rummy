@@ -5,7 +5,7 @@ const simpleCardBackMarkup='<span class="forest-card simple-card simple-back" ar
 export let cardBackMarkup=fullCardBackMarkup;
 let simpleCards=false,cardVariant='remi51';const simpleFaces=new Map();
 const simplePalette={fox:['#F3DFC0','#2E1A14'],hare:['#DBE1BA','#29231C'],toad:['#C8DCD6','#222D26'],owl:['#CAD4E6','#20243D']};
-// Crops use the visible pixel bounds, so every animal occupies the same height.
+// Preserve the original image boxes; offset only their vertical position to share the hare baseline.
 const markerBounds={fox:[1536,1024,322,131,890,769],hare:[1356,1159,220,88,916,996],toad:[1536,1024,263,203,1011,645],owl:[1536,1024,322,160,893,750]};
 function refreshBack(){cardBackMarkup=simpleCards||cardVariant==='rummikub'?simpleCardBackMarkup:fullCardBackMarkup;}
 export function setSimpleCards(enabled){simpleCards=!!enabled;refreshBack();}
@@ -14,7 +14,8 @@ function simpleMarkup(c,key){
  const numeric=cardVariant==='rummikub',cacheKey=(numeric?'numeric:':'rummy:')+key;
  if(simpleFaces.has(cacheKey))return simpleFaces.get(cacheKey);
  const rank=c.joker?'JOKER':numeric?c.rank:({1:'A',10:'H',11:'B',12:'Q',13:'E'}[c.rank]||c.rank),[bg,ink]=c.joker?['#e4d4e8','#382238']:simplePalette[c.suit],style=`--card-bg:${bg};--card-ink:${ink}`,label=c.joker?'JOKER':c.suit[0].toUpperCase()+c.suit.slice(1)+' '+rank;
- const bounds=markerBounds[c.suit],marker=c.joker?'':`<span class="simple-marker-slot"><img class="head-marker" src="/art/card-kit/assets/heads/${c.suit}-head.svg" alt="${c.suit[0].toUpperCase()+c.suit.slice(1)} suit" style="--marker-height:${bounds[1]/bounds[5]*100}%;--marker-top:${-bounds[3]/bounds[5]*100}%" draggable="false"></span>`;
+ const bounds=markerBounds[c.suit],bottom=b=>{const scale=Math.min(60/b[0],54/b[1]);return (54-b[1]*scale)/2+(b[3]+b[5])*scale;},markerTop=c.joker?0:6+(bottom(markerBounds.hare)-bottom(bounds))/2;
+ const marker=c.joker?'':`<img class="head-marker" src="/art/card-kit/assets/heads/${c.suit}-head.svg" alt="${c.suit[0].toUpperCase()+c.suit.slice(1)} suit" style="--marker-top:${markerTop}%" draggable="false">`;
  const character=c.joker?[...rank].map(letter=>`<span>${letter}</span>`).join(''):rank;
  const markup=`<span class="forest-card simple-card ${numeric?'numeric-card ':''}${c.joker?'simple-joker':'suit-'+c.suit}" aria-label="${label}" style="${style}"><img class="card-frame" src="/art/card-kit/assets/frames/${c.joker?'joker':c.suit}-capsule.svg" alt="">${marker}<span class="simple-rank" ${c.joker?'aria-hidden="true"':''}>${character}</span></span>`;simpleFaces.set(cacheKey,markup);return markup;
 }
