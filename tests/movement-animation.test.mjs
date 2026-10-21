@@ -1,6 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';
 import {captureHand,animateHand,layoutRect} from '../public/movement-animation.js';
-const unit=(id,left,width=80)=>({offsetWidth:80,translation:'none',rect:{left,top:100,right:left+width,bottom:260,width,height:160},calls:[],cancelled:0,querySelectorAll:()=>[{dataset:{card:id}}],getBoundingClientRect(){return this.rect;},getAnimations(){return [{cancel:()=>this.cancelled++}];},animate(frames,options){this.calls.push({frames,options});}});
+const unit=(id,left,width=80)=>{const flags=new Set();return {flags,classList:{add:name=>flags.add(name),remove:name=>flags.delete(name)},offsetWidth:80,translation:'none',rect:{left,top:100,right:left+width,bottom:260,width,height:160},calls:[],cancelled:0,querySelector:()=>null,querySelectorAll:()=>[{dataset:{card:id}}],getBoundingClientRect(){return this.rect;},getAnimations(){return [{cancel:()=>this.cancelled++}];},animate(frames,options){this.calls.push({frames,options});return {finished:new Promise(resolve=>{this.complete=resolve;})};}};};
+
 test('reordering across wrapped rows animates from the old visible position at the current zoom',()=>{
  globalThis.matchMedia=()=>({matches:false});
  const a=unit('a',0,40),b=unit('b',100,40),root={querySelectorAll:()=>[a,b]},before=captureHand(root);
@@ -14,3 +15,5 @@ test('drop geometry ignores animation offsets so shifting cards do not move the 
 test('reduced-motion preference skips movement animation',()=>{
  globalThis.matchMedia=()=>({matches:true});const a=unit('a',0),root={querySelectorAll:()=>[a]},before=captureHand(root);a.rect.left=100;animateHand(before,root);assert.equal(a.calls.length,0);assert.equal(a.cancelled,0);
 });
+
+test('packing keeps remove controls gated until its animation completes',async()=>{globalThis.matchMedia=()=>({matches:false});const a=unit('a',0),root={querySelectorAll:()=>[a]},before=captureHand(root);a.rect={...a.rect,left:100,right:180};animateHand(before,root);assert.ok(a.flags.has('unit-moving'));a.complete();await Promise.resolve();await Promise.resolve();await Promise.resolve();assert.equal(a.flags.has('unit-moving'),false);});

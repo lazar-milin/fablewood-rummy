@@ -22,7 +22,7 @@
 .provisional-meld{background:#784b9366;border:2px dashed #bb8fce!important;cursor:grab!important;touch-action:none}
 .hand-unit.drop-hover,.meld.drop-hover{outline:3px dashed #dcb0fa!important;outline-offset:5px}
 .being-held{display:none!important}.moving-cards,.moving-cards *{cursor:grabbing!important}
-.drag-ghost.hand{position:fixed;left:0;top:0;z-index:10000;pointer-events:none!important;margin:0!important;padding:0!important;background:none!important;border:0!important;box-shadow:0 12px 24px #10081b55!important;zoom:1!important;opacity:1}
+.drag-ghost.hand{position:fixed;left:0;top:0;z-index:10000;pointer-events:none!important;margin:0!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important;zoom:1!important;opacity:1}
 .drag-ghost *{pointer-events:none!important}.drag-ghost .hand-unit{transform:none!important;outline:2px solid #e4a9ff;outline-offset:5px}.drag-ghost .pack-close{display:none!important}
 .drag-ghost .card{width:var(--held-card-width)!important;max-width:var(--held-card-width)!important;flex-basis:var(--held-card-width)!important;height:var(--held-card-height)!important}
 .drag-ghost .pack-cards>.card+.card{margin-left:var(--held-overlap,-14px)!important}
@@ -168,3 +168,58 @@ body.passing-screen .floating-panel{z-index:8200}
 .hand .hand-unit .pack-close:hover,.hand .hand-unit .pack-close:focus-visible{background-color:#9768ad!important;color:#ff9daf!important;border-color:#f2d9ff!important;transform:translateY(-50%)!important}
 .hand .hand-unit .hand-card-shell .eject-card{top:50%;transform:translate(-50%,-50%)}
 .hand .hand-unit .hand-card-shell .eject-card:hover,.hand .hand-unit .hand-card-shell .eject-card:focus-visible{background-color:#9768ad;color:#ff9daf;border-color:#f2d9ff;transform:translate(-50%,-50%)}
+
+/* Numeric forest tiles for the Rummikub experiment. */
+.rummikub-game .board{grid-template-columns:130px minmax(0,1fr)}.rummikub-game .piles{padding:12px}.rummikub-game .field-drafts.hand{min-height:230px}.rummikub-game .hand-heading .actions{flex-wrap:wrap}
+.rummikub-game .hand-heading .action-buttons{flex-wrap:wrap}.variant-row{flex-wrap:wrap}.variant-row button{min-width:160px}
+@media(max-width:650px){.rummikub-game .board{grid-template-columns:90px minmax(0,1fr)}.rummikub-game .piles{padding:8px}.rummikub-game .field-drafts.hand{overflow:visible}}
+
+.game-screen .playing.movement-game.rummikub-game>.board{grid-template-columns:130px minmax(0,1fr)!important}
+@media(max-width:650px){.game-screen .playing.movement-game.rummikub-game>.board{grid-template-columns:80px minmax(0,1fr)!important}.rummikub-game .stock-stack{width:72px;min-width:0}}
+
+/* Variant selection uses the same palette and feedback as game modes. */
+.lobby .variant-row button{background:#4a345b;border-color:#8d69a0;color:#f1dff5}
+.lobby .variant-row button small{color:#bda4cd}
+.lobby .variant-row button.chosen{background:#684778;border-color:#c3a0d7;color:#f1dff5;box-shadow:inset 0 0 0 1px #c3a0d7}
+.lobby .variant-row button:hover:not(:disabled){background:#684c78;color:#f4e2fa;border-color:#c6a2d9}
+
+/* Origin sits beside the badge without moving the centered status text. */
+.field-drafts .field-owner{position:absolute;top:50%;left:auto;right:calc(100% + 8px);transform:translateY(-50%);font-size:9px;line-height:1.2;color:#ceb9dc;white-space:nowrap}
+.drag-ghost .hand-unit{box-shadow:none!important;background:transparent!important}
+.drag-ghost .eject-card{display:none!important}.drag-ghost .forest-card{filter:drop-shadow(0 5px 7px #10081b55)}
+.hand .hand-unit.flight-arriving .pack-close,.hand .hand-unit.flight-arriving .eject-card,.hand .hand-unit.unit-moving .pack-close,.hand .hand-unit.unit-moving .eject-card{opacity:0!important;pointer-events:none!important}
+.hand .hand-unit .eject-card{touch-action:none}
+
+/* Variant cards share their widest natural width; shine stays inside the border. */
+.lobby .variant-row{flex-wrap:wrap;gap:18px 26px}
+.variant-choices{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;width:max-content;max-width:100%}
+.lobby .variant-choices button{position:relative;isolation:isolate;overflow:hidden;min-width:0;width:100%;white-space:nowrap}
+.lobby .variant-choices strong{font:24px/1.2 Alagard,serif;margin-bottom:8px}
+.lobby .variant-choices button>*{position:relative;z-index:1}
+.lobby .variant-choices [data-variant="remi51"]{--variant-shine:#d5c38a;--variant-dark:#382600}
+.lobby .variant-choices [data-variant="rummikub"]{--variant-shine:#cb7272;--variant-dark:#3d1010}
+.lobby .variant-choices button.chosen,.lobby .variant-choices button.chosen:hover{color:var(--variant-dark)}
+.lobby .variant-choices button.chosen small{color:var(--variant-dark)}
+.lobby .variant-choices button.chosen::before{content:'';position:absolute;z-index:0;top:-50%;bottom:-50%;left:-60%;width:40%;pointer-events:none;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--variant-shine) 35%,transparent) 20%,var(--variant-shine) 49%,var(--variant-shine) 51%,color-mix(in srgb,var(--variant-shine) 35%,transparent) 80%,transparent);animation:variant-shine 5s linear infinite}
+@keyframes variant-shine{from{transform:translateX(0) skewX(-30deg)}to{transform:translateX(500%) skewX(-30deg)}}
+@media(max-width:650px){.variant-choices{grid-template-columns:1fr}.lobby .variant-choices button{white-space:normal}}
+@media(prefers-reduced-motion:reduce){.lobby .variant-choices button.chosen::before{animation:none;left:30%;opacity:.25;transform:skewX(-30deg)}}
+/* Keep the pool centered in the same initial field space used by Classic. */
+.game-screen .movement-game.rummikub-game>.board>.piles{justify-content:center}
+
+.game-screen .movement-game.rummikub-game>.board>.meld-area{min-height:512px}
+.rummikub-game .board .stock-stack{min-height:0;padding-bottom:0}
+.rummikub-game .board .stock-stack>.deck-count{top:calc(100% + 8px);bottom:auto}
+@media(max-width:650px){.game-screen .movement-game.rummikub-game>.board>.meld-area{min-height:410px}}
+
+/* Reserve unscaled grid space as well: narrow field contents use zoom. */
+.game-screen .playing.movement-game.rummikub-game>.board{min-height:512px}
+@media(max-width:650px){.game-screen .playing.movement-game.rummikub-game>.board{min-height:410px}}
+
+.lobby .variant-row>p{font:22px/1.25 Alagard,serif}
+.lobby .variant-choices [data-variant="remi51"].chosen :is(strong,small){text-shadow:0 0 3px #e5d59d99,0 0 10px #d5c38a88,0 0 18px #d5c38a44}
+
+.lobby .variant-choices [data-variant="rummikub"].chosen :is(strong,small){text-shadow:0 0 3px #efaaa999,0 0 10px #d8737388,0 0 18px #d8737344}
+.variant-rules-summary p{font-size:11px;line-height:1.7;margin:10px 0}
+
+.tinkering-slide .variant-rules-summary+.starting-options{margin-top:16px}

@@ -1,6 +1,6 @@
 # Fablewood Rummy
 
-A magical-forest card game for online tables and local play with humans and bots. Classic Rummy follows Serbian Remi 51 with configurable house rules. Rummikub and additional variants are not implemented yet.
+A magical-forest card game for online tables and local play with humans and bots. Classic Rummy follows Serbian Remi 51 with configurable house rules. Rummikub is available beside Classic Rummy in the lobby.
 
 ## Moving cards
 
@@ -109,3 +109,23 @@ The card illustrations and decorative sprites were generated with OpenAI's image
 The project is distributed under [GPL-3.0-only](LICENSE). Third-party fonts retain their authors' terms: Alagard by Hewett Tsoi (Pix3M), and VCR OSD Mono by Riciery Leal (MrManet). Their notices are included in [public/fonts/](public/fonts/).
 
 Table updates use one held HTTP request per client, waiting up to 25 seconds for a change. Unchanged tables return 204. Authenticated changes require the displayed `revision`; stale or missing revisions return 409 and the latest private table view. Creating or joining a table is an admission request and does not require a prior private revision. The entrance table list refreshes every 15 seconds only while visible.
+
+## Rummikub local playtest
+
+Run `./start-rummikub.ps1` on Windows, or set `PORT=3044` and run `npm start`. Open http://127.0.0.1:3044, create a table, and choose **Rummikub** under **Choose game variant**. Local play supports human and bot seats; online play uses the same private-rack API. Two to four players are supported.
+
+The experiment uses 106 tiles (two copies of 1–13 for each forest animal, plus two jokers), 14 tiles per rack, a 30-point rack-only opening, and no discards. Numbers are always low; 13 cannot wrap to 1. Drawing resets the workspace and ends the turn. Use **Play turn** to commit a valid table with at least one newly played rack tile. Your rack can empty without a final discard. Table manipulation unlocks on your next turn after opening.
+
+Click rack tiles to group, then drag them to the field. Click field groups to combine them, or drag over groups to join them. The group X splits a group into loose tiles; a card X detaches one table tile into the workspace, or returns a staged rack tile. Shared table tiles can never enter a rack. Every run/set must be legal before the turn commits, including reused jokers. **Reset turn** restores the committed table. Bots play legal openings and additions, but do not search complex shared-table rearrangements.
+
+Scoring follows this app’s lower-is-better scoreboard: rack tiles score their number, jokers 30, and the winner receives the negative sum of the other penalties. This reverses the sign of the official scoring convention. Timers are optional; timeout restores an unfinished workspace and draws up to three penalty tiles. With an empty pool, a complete lap of passes ends the game, with the lowest rack winning. Tied lowest racks use seat order in this first build.
+
+Rules reference: [manufacturer’s 2025 Classic rules](https://rummikub.com/wp-content/uploads/2025/06/4600-0236-0013-EN-_rummikub-Classic.pdf). This is a local experimental adaptation using Fablewood artwork, not an official Rummikub product.
+
+Rummikub always uses the shared Simple-card design with numeric 1–13 ranks, plain vertical JOKER lettering, and the crescent back. The personal Simple-cards toggle continues to control Classic Rummy only. Simple suit markers keep their original sizes and share the hare’s original bottom baseline.
+
+Drag an individual card’s X outside its stack to move only that card with the normal drop targets; a click still ungroups it. In Rummikub, shared tiles remain on the field. Group controls wait for arrival/packing animations to finish. Field origin labels sit left of the centered status badge.
+
+Rummikub’s grimoire offers 7–14 starting kubs and an opening of 30 or 31; dealing, human turns and bots all respect these settings. Both variant panels include a matching rules-summary box. Variant text glows only while selected: yellow for Classic and red for Rummikub.
+
+The in-game How to play button displays the same short, settings-aware rules summary as the selected variant’s grimoire panel. It is hidden on the launch screen and in the lobby.

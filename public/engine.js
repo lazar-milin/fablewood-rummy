@@ -1,15 +1,17 @@
+import {resolveRummikub,createRummikub,playRummikub} from './rummikub.js';
 import {fieldAction} from './field-building.js';
 import {duplicatePairs} from './duplicate-deals.js';
 // Errors meant for players; the server hides every other error's message.
 export class PlayerError extends Error{}
 export const SUITS=['fox','hare','toad','owl'];
-export const RULESETS={remi51:{name:'Classic Rummy',opening:51}};
+export const RULESETS={remi51:{name:'Classic Rummy',opening:51},rummikub:{name:'Rummikub',opening:30}};
 export const DEFAULT_RULES={opening:51,aceMode:'both',jokerEnds:true,handEnabled:true,handRequiresOpening:true,handJokers:true,handBonus:80,handDouble:true,cutEnabled:true,cutBonus:120,dealDuplicateLimit:0,redealDuplicateLimit:0};
 export const points=c=>c.joker?20:c.rank===1?10:Math.min(c.rank,10);
 const rankOf=c=>c.joker?c.as?.rank:c.rank;
 const suitOf=c=>c.joker?c.as?.suit:c.suit;
 // Run jokers keep their declared positions; set jokers cover any missing animal.
 export function resolveMeld(cards,{opening=false,kind=null,rules={}}={}){
+ if(rules.variant==='rummikub')return resolveRummikub(cards);
  const options={...DEFAULT_RULES,...rules};
  if(cards.length<3||new Set(cards.map(c=>c.id)).size!==cards.length)return null;
  const wild=cards.filter(c=>c.joker&&!c.as),fixed=cards.filter(c=>!c.joker||c.as);
@@ -56,6 +58,7 @@ function declaredCards(cards,assignments={}){
 }
 export const validMeld=cards=>!!resolveMeld(cards);
 export function createGame(names,options={},random=Math.random){
+ if(options.variant==='rummikub')return createRummikub(names,options,random,PlayerError);
  for(let attempt=0;attempt<1000;attempt++){const state=dealGame(names,options,random);if(!options.dealDuplicateLimit||state.hands.every(hand=>duplicatePairs(hand)<options.dealDuplicateLimit))return state;}
  throw new PlayerError('Could not deal within the duplicate limit. Please try again.');
 }
@@ -70,6 +73,7 @@ function dealGame(names,options={},random=Math.random){
  return {names,hands,stock:deck,cutCard,discard:[],melds:[],turn:first,first,stage:'meld',turns:0,opened:names.map(()=>false),winner:null,log:[`Classic Rummy: opening ${options.opening}. The first player starts with one extra card and discards.`],scores:names.map(()=>0),turnStarted:Date.now(),options:{undo:true,timer:0,...options},mustOpen:false,mustHand:false,fromCut:false,handUsedJokers:false,openedThisTurn:false,laidOffThisTurn:false,pendingJokers:[],openingAttempt:[],fieldGroups:[],fieldNotice:null};
 }
 export function play(state,player,action,random=Math.random){
+ if(state.options.variant==='rummikub')return playRummikub(state,player,action,{PlayerError,candidateMelds},random);
  const s=structuredClone(state);s.fieldNotice=null;if(s.winner!==null)throw new PlayerError('The round has ended.');if(player!==s.turn)throw new PlayerError('It is not your turn.');
  if(action.type?.startsWith('field-'))return fieldAction(s,player,action,{play,resolveMeld,PlayerError},random);
  const hand=s.hands[player],firstLap=s.turns<s.names.length,rules={...DEFAULT_RULES,...s.options};
@@ -154,6 +158,7 @@ export function findOpening(hand,{finish=false,rules={}}={}){
  }visit(0,new Set(),[],0);return best;
 }
 export function botAction(s){
+ if(s.options.variant==='rummikub')return {type:'rk-auto'};
  const p=s.turn,hand=s.hands[p],firstLap=s.turns<s.names.length;
  if(s.fieldGroups?.length)return {type:'field-return'};
  if(s.stage==='draw')return {type:'draw',source:'stock'};
@@ -168,6 +173,7 @@ export function botAction(s){
 }
 // The least useful legal discard; also the server's fallback when any other automatic move is rejected.
 export function botDiscard(s){
+ if(s.options.variant==='rummikub')return {type:'draw',source:'stock'};
  const hand=s.hands[s.turn],pending=hand.filter(c=>s.pendingJokers.includes(c.id));
  const potential=c=>hand.reduce((n,o)=>n+(o.id!==c.id&&!o.joker?(o.rank===c.rank?4:0)+(o.suit===c.suit&&Math.abs(o.rank-c.rank)<=2?2:0):0),0);
  const ordinary=hand.filter(c=>!c.joker).sort((a,b)=>potential(a)-potential(b)||points(b)-points(a));
