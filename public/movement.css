@@ -176,3 +176,9 @@ body.passing-screen .floating-panel{z-index:8200}
 
 .game-screen .playing.movement-game.rummikub-game>.board{grid-template-columns:130px minmax(0,1fr)!important}
 @media(max-width:650px){.game-screen .playing.movement-game.rummikub-game>.board{grid-template-columns:80px minmax(0,1fr)!important}.rummikub-game .stock-stack{width:72px;min-width:0}}
+
+/* Variant selection uses the same palette and feedback as game modes. */
+.lobby .variant-row button{background:#4a345b;border-color:#8d69a0;color:#f1dff5}
+.lobby .variant-row button small{color:#bda4cd}
+.lobby .variant-row button.chosen{background:#684778;border-color:#c3a0d7;color:#f1dff5;box-shadow:inset 0 0 0 1px #c3a0d7}
+.lobby .variant-row button:hover:not(:disabled){background:#684c78;color:#f4e2fa;border-color:#c6a2d9}
