@@ -5,7 +5,7 @@ import {duplicatePairs} from './duplicate-deals.js';
 export class PlayerError extends Error{}
 export const SUITS=['fox','hare','toad','owl'];
 export const RULESETS={remi51:{name:'Classic Rummy',opening:51},rummikub:{name:'Rummikub',opening:30}};
-export const DEFAULT_RULES={opening:51,jokerCount:4,aceMode:'both',jokerEnds:true,handEnabled:true,handRequiresOpening:true,handJokers:true,handBonus:80,handDouble:true,cutEnabled:true,cutBonus:120,dealDuplicateLimit:0,redealDuplicateLimit:0};
+export const DEFAULT_RULES={opening:51,jokerCount:4,aceMode:'both',aceSeriesValue:'ten',jokerEnds:true,handEnabled:true,handRequiresOpening:true,handJokers:true,handBonus:80,handDouble:true,cutEnabled:true,cutBonus:120,dealDuplicateLimit:0,redealDuplicateLimit:0};
 export const points=c=>c.joker?20:c.rank===1?10:Math.min(c.rank,10);
 const rankOf=c=>c.joker?c.as?.rank:c.rank;
 const suitOf=c=>c.joker?c.as?.suit:c.suit;
@@ -33,7 +33,8 @@ export function resolveMeld(cards,{opening=false,kind=null,rules={}}={}){
    const resolved=[...fixed,...wild.map((c,i)=>({...c,as:{suit,rank:missing[i]===14?1:missing[i]}}))].sort((a,b)=>value(a)-value(b));
    if(!highAce&&options.aceMode==='high'&&resolved.some(c=>rankOf(c)===1))continue;
    if(!options.jokerEnds&&(resolved[0].joker||resolved.at(-1).joker))continue;
-   return {kind:'run',cards:resolved,points:resolved.reduce((n,c)=>n+points({rank:rankOf(c)}),0)};
+   const runPoints=resolved.reduce((n,c)=>n+(rankOf(c)===1&&!highAce&&options.aceSeriesValue==='one'?1:points({rank:rankOf(c)})),0);
+   return {kind:'run',cards:resolved,points:runPoints};
   }
  }
  return null;

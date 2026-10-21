@@ -131,3 +131,5 @@ Rummikub’s grimoire offers 7–14 starting kubs and an opening of 30 or 31; de
 The in-game How to play button displays the same short, settings-aware rules summary as the selected variant’s grimoire panel. It is hidden on the launch screen and in the lobby.
 
 Classic defaults to four jokers. The grimoire’s **Jokers in deck:** setting also offers eight, adding a second copy of each mythical creature (112 cards total).
+
+Classic Rummy has a host setting for Ace values in a low series: Aces score 10 points by default, or 1 point in a sequence such as A–2–3. This affects meld and opening totals; Aces in sets and leftover hands continue to score 10.
