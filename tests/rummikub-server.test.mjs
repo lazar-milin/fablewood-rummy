@@ -3,6 +3,13 @@ test('Rummikub selection, private racks, public staged tiles, turn ownership and
  const child=spawn(process.execPath,['server.mjs'],{cwd:new URL('..',import.meta.url),env:{...process.env,PORT:'0',HOST:'127.0.0.1'},stdio:['ignore','pipe','pipe']});
  try{const [line]=await Promise.race([once(child.stdout,'data'),new Promise((_,reject)=>setTimeout(()=>reject(Error('Startup timed out')),7000).unref())]),base=String(line).match(/http:\/\/127\.0\.0\.1:\d+/)[0];
  const api=async(endpoint,body,token)=>{if(body?.code&&token){const state=await fetch(base+'/api/state?code='+body.code,{headers:{Authorization:'Bearer '+token}}).then(r=>r.json());body={revision:state.revision,...body};}const r=await fetch(base+'/api/'+endpoint,{method:body?'POST':'GET',headers:{'Content-Type':'application/json',...(token?{Authorization:'Bearer '+token}:{})},...(body?{body:JSON.stringify(body)}:{})});return {status:r.status,value:await r.json()};};
+ const expanded=(await api('create',{name:'Oak'})).value,ec=expanded.room.code,et=expanded.token;
+ assert.equal((await api('settings',{code:ec,jokerCount:8},et)).value.options.jokerCount,8);
+ assert.equal((await api('settings',{code:ec,jokerCount:6},et)).status,400);
+ for(let i=2;i<6;i++)assert.equal((await api('seat',{code:ec,operation:'add',type:'human'},et)).status,200);
+ assert.equal((await api('seat',{code:ec,operation:'add'},et)).status,400);
+ assert.equal((await api('settings',{code:ec,variant:'rummikub',mode:'local'},et)).status,200);
+ const six=await api('start',{code:ec},et);assert.equal(six.status,200);assert.equal(six.value.state.stock.length,76);assert.deepEqual(six.value.state.hands.map(h=>h.length),Array(6).fill(14));
  const host=(await api('create',{name:'Fern'})).value,code=host.room.code,token=host.token,guest=(await api('join',{code,name:'Moss'})).value;
  assert.equal((await api('settings',{code,variant:'rummikub'},guest.token)).status,400);
  let r=await api('settings',{code,variant:'rummikub'},token);assert.equal(r.value.options.opening,30);

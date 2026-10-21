@@ -97,9 +97,9 @@
  .core-rule-row.four-rule-controls>.rule-choice-row>span{min-width:0!important;white-space:normal;line-height:1.3;font-size:10px}
  .core-rule-row.four-rule-controls .rule-choice-row>div{display:flex;min-width:0;flex-wrap:wrap;justify-content:flex-start;gap:4px}
  .core-rule-row.four-rule-controls .rule-choice{min-width:0;min-height:30px;flex:1 1 58px;padding:5px 4px;white-space:normal;font-size:9px;line-height:1.25}
- .core-rule-row.four-rule-controls>.rule-choice-row:nth-child(2)>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}
- .core-rule-row.four-rule-controls>.rule-choice-row:nth-child(2) .rule-choice{width:100%;font-size:8px;padding:4px 2px}
- .core-rule-row.four-rule-controls>.rule-choice-row:nth-child(2) .ace-sequence{font-size:clamp(11px,3vw,14px)}
+ .core-rule-row.four-rule-controls>.ace-rules>div{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch}
+ .core-rule-row.four-rule-controls>.ace-rules .rule-choice{width:100%;font-size:8px;padding:4px 2px}
+ .core-rule-row.four-rule-controls>.ace-rules .ace-sequence{font-size:clamp(11px,3vw,14px)}
  .core-rule-row.four-rule-controls>.direct-rule>.rule-toggle{width:100%;min-height:36px;padding:5px 4px;white-space:normal;font-size:9px;line-height:1.3}
 }
 
@@ -155,3 +155,7 @@
 .game-screen .hand-heading .action-buttons{display:contents}
 .game-screen .hand-heading .actions button{flex:0 0 auto;width:auto;height:35px;min-height:35px;max-height:35px}
 .game-screen .hand-heading .selection-count{display:block;flex:0 0 auto;width:auto;min-width:0;max-width:none;text-align:center;white-space:nowrap;font-size:10px!important}
+
+/* Five Classic settings share the existing compact dashed treatment. */
+.core-rule-row.four-rule-controls{flex-wrap:wrap;overflow:visible}
+.core-rule-row.four-rule-controls>.ace-rules{border:1px dashed #93739f!important;border-radius:4px}
