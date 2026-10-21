@@ -6,13 +6,14 @@ test('Rummikub selection, private racks, public staged tiles, turn ownership and
  const host=(await api('create',{name:'Fern'})).value,code=host.room.code,token=host.token,guest=(await api('join',{code,name:'Moss'})).value;
  assert.equal((await api('settings',{code,variant:'rummikub'},guest.token)).status,400);
  let r=await api('settings',{code,variant:'rummikub'},token);assert.equal(r.value.options.opening,30);
- r=await api('settings',{code,opening:51,handSize:7},token);assert.equal(r.value.options.opening,30);assert.equal(r.value.options.handSize,14);
+ r=await api('settings',{code,opening:51,handSize:7},token);assert.equal(r.status,400);r=await api('settings',{code,opening:31,handSize:7},token);assert.equal(r.value.options.opening,31);assert.equal(r.value.options.handSize,7);
  r=await api('settings',{code,variant:'remi51'},token);assert.equal(r.value.options.opening,51);r=await api('settings',{code,variant:'rummikub'},token);
- r=await api('start',{code},token);assert.equal(r.status,200);assert.deepEqual(r.value.state.hands.map(h=>h.length),[14,14]);assert.ok(r.value.state.hands[1].every(c=>c.hidden));assert.ok(r.value.state.stock.every(c=>c.hidden));assert.equal(r.value.state.stock.length,78);
+ r=await api('settings',{code,opening:31,handSize:7},token);r=await api('settings',{code,timer:0},token);assert.equal(r.value.options.opening,31);assert.equal(r.value.options.handSize,7);
+ r=await api('start',{code},token);assert.equal(r.status,200);assert.deepEqual(r.value.state.hands.map(h=>h.length),[7,7]);assert.ok(r.value.state.hands[1].every(c=>c.hidden));assert.ok(r.value.state.stock.every(c=>c.hidden));assert.equal(r.value.state.stock.length,92);
  const tile=r.value.state.hands[0][0];r=await api('action',{code,action:{type:'field-stage',ids:[tile.id]}},token);assert.equal(r.status,200);assert.equal(r.value.state.fieldGroups[0].cards[0].id,tile.id);
  r=await api('state?code='+code,null,guest.token);assert.equal(r.value.state.fieldGroups[0].cards[0].id,tile.id);assert.equal(r.value.state.fieldGroups[0].ids,undefined);assert.ok(r.value.state.hands[0].every(c=>c.hidden));
  assert.equal((await api('action',{code,action:{type:'field-eject',index:0,id:tile.id}},guest.token)).status,400);
  assert.equal((await api('action',{code,action:{type:'rk-end'}},token)).status,400);
- r=await api('action',{code,action:{type:'draw',source:'stock'}},token);assert.equal(r.value.state.turn,1);assert.equal(r.value.state.hands[0].length,15);assert.equal(r.value.state.fieldGroups.length,0);
+ r=await api('action',{code,action:{type:'draw',source:'stock'}},token);assert.equal(r.value.state.turn,1);assert.equal(r.value.state.hands[0].length,8);assert.equal(r.value.state.fieldGroups.length,0);
  }finally{child.kill();}
 });

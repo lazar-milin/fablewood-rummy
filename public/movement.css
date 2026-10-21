@@ -197,7 +197,7 @@ body.passing-screen .floating-panel{z-index:8200}
 .lobby .variant-choices strong{font:24px/1.2 Alagard,serif;margin-bottom:8px}
 .lobby .variant-choices button>*{position:relative;z-index:1}
 .lobby .variant-choices [data-variant="remi51"]{--variant-shine:#d5c38a;--variant-dark:#382600}
-.lobby .variant-choices [data-variant="rummikub"]{--variant-shine:#986c7c;--variant-dark:#300c1b}
+.lobby .variant-choices [data-variant="rummikub"]{--variant-shine:#cb7272;--variant-dark:#3d1010}
 .lobby .variant-choices button.chosen,.lobby .variant-choices button.chosen:hover{color:var(--variant-dark)}
 .lobby .variant-choices button.chosen small{color:var(--variant-dark)}
 .lobby .variant-choices button.chosen::before{content:'';position:absolute;z-index:0;top:-50%;bottom:-50%;left:-60%;width:40%;pointer-events:none;background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--variant-shine) 35%,transparent) 20%,var(--variant-shine) 49%,var(--variant-shine) 51%,color-mix(in srgb,var(--variant-shine) 35%,transparent) 80%,transparent);animation:variant-shine 5s linear infinite}
@@ -217,4 +217,7 @@ body.passing-screen .floating-panel{z-index:8200}
 @media(max-width:650px){.game-screen .playing.movement-game.rummikub-game>.board{min-height:410px}}
 
 .lobby .variant-row>p{font:22px/1.25 Alagard,serif}
-.lobby .variant-choices [data-variant="remi51"] :is(strong,small){text-shadow:0 0 3px #e5d59d99,0 0 10px #d5c38a88,0 0 18px #d5c38a44}
+.lobby .variant-choices [data-variant="remi51"].chosen :is(strong,small){text-shadow:0 0 3px #e5d59d99,0 0 10px #d5c38a88,0 0 18px #d5c38a44}
+
+.lobby .variant-choices [data-variant="rummikub"].chosen :is(strong,small){text-shadow:0 0 3px #efaaa999,0 0 10px #d8737388,0 0 18px #d8737344}
+.variant-rules-summary p{font-size:11px;line-height:1.7;margin:10px 0}

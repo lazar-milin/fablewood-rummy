@@ -1,4 +1,4 @@
-param([int]$Port = 3043)
+param([int]$Port = 3044)
 $rummikubPortBefore = $env:PORT
 $rummikubHostBefore = $env:HOST
 Push-Location $PSScriptRoot

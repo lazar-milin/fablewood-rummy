@@ -1,4 +1,4 @@
-import {RUMMIKUB_RULES,rummikubCards} from './public/rummikub.js';
+import {RUMMIKUB_RULES,rummikubRules,rummikubCards} from './public/rummikub.js';
 import http from 'node:http';
 import {readFile,stat} from 'node:fs/promises';
 import {randomBytes,randomInt} from 'node:crypto';
@@ -85,13 +85,13 @@ const server=http.createServer(async(req,res)=>{res.setHeader('X-Content-Type-Op
    const next={...r.options};
    if(body.variant!==undefined){if(!['remi51','rummikub'].includes(body.variant))throw new PlayerError('Unknown variant.');if(body.variant==='rummikub'&&r.players.length>4)throw new PlayerError('Rummikub supports up to four seats.');Object.assign(next,body.variant==='rummikub'?RUMMIKUB_RULES:{...DEFAULT_RULES,variant:'remi51',handSize:14});}
    if(body.handSize!==undefined){const n=Number(body.handSize);if(!Number.isInteger(n)||n<7||n>14)throw new PlayerError('Choose 7–14 starting cards.');next.handSize=n;}
-   const enums={dealDuplicateLimit:[0,3,4],redealDuplicateLimit:[0,3,4],winMode:['none','round','stacking','multi'],winTarget:[301,501],opening:[31,51],aceMode:['both','low','high'],handBonus:[80,100],cutBonus:[120,140],timer:[0,30,60,120]};
+   const enums={dealDuplicateLimit:[0,3,4],redealDuplicateLimit:[0,3,4],winMode:['none','round','stacking','multi'],winTarget:[301,501],opening:next.variant==='rummikub'?[30,31]:[31,51],aceMode:['both','low','high'],handBonus:[80,100],cutBonus:[120,140],timer:[0,30,60,120]};
    for(const[key,allowed]of Object.entries(enums))if(body[key]!==undefined){const value=typeof allowed[0]==='number'?Number(body[key]):body[key];if(!allowed.includes(value))throw new PlayerError('Invalid '+key+' setting.');next[key]=value;}
    for(const key of ['winEnabled','jokerEnds','handEnabled','handRequiresOpening','handJokers','handDouble','cutEnabled','undo'])if(body[key]!==undefined){if(typeof body[key]!=='boolean')throw new PlayerError('Invalid '+key+' setting.');next[key]=body[key];}
    if(next.dealDuplicateLimit){if(Number(body.redealDuplicateLimit)>0)throw new PlayerError('Turn off the dealing limit before choosing re-deal options.');next.redealDuplicateLimit=0;}
    if(body.tinkering!==undefined&&typeof body.tinkering!=='boolean')throw new PlayerError('Invalid rules panel state.');
    if(body.mode!==undefined){if(!['local','hotseat','bot','online'].includes(body.mode))throw new PlayerError('Unknown mode.');if(body.mode!=='online'&&r.players.slice(1).some(p=>p.token))throw new PlayerError('Your online friends are seated. They must leave before switching to local play.');r.mode=body.mode==='online'?'online':'local';if(body.mode==='bot')for(let i=1;i<r.players.length;i++)r.players[i]={name:botName(i,r.players.map(p=>p.name)),token:null,type:'bot'};}
-   if(next.variant==='rummikub')Object.assign(next,RUMMIKUB_RULES);
+   if(next.variant==='rummikub')Object.assign(next,rummikubRules(next));
    r.options=next;
    if(body.tinkering!==undefined)r.tinkering=body.tinkering;
    if(r.mode==='local')r.players.forEach((p,i)=>{if(i&&p.type==='human'&&!p.name)p.name=forestName(r.players.map(p=>p.name),random);});
