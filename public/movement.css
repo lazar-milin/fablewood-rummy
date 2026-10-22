@@ -17,7 +17,7 @@
 .movement-game .meld-area{min-height:260px;border:2px dashed #a47dbd70;border-radius:12px;padding:16px;position:relative;overflow:visible}
 .field-drop-caption{font-size:11px;color:#d7b7e4;margin-bottom:14px}.movement-game .melds{min-height:160px;align-items:flex-start}
 .movement-game .meld{cursor:pointer;position:relative;border:2px solid transparent;border-radius:12px;padding:8px}
-.movement-game .meld.compact-natural-set .meld-cards{padding-right:0}.movement-game .meld.compact-natural-set .mini-card{margin-right:-clamp(22px,2.4vw,32px)}.movement-game .meld.compact-natural-set .mini-card:last-child{margin-right:0}
+.movement-game .meld.compact-natural-set .meld-cards{padding-right:0}.movement-game .meld.compact-natural-set .mini-card{margin-right:clamp(-40px,-3vw,-28px)}.movement-game .meld.compact-natural-set .mini-card:last-child{margin-right:0}
 .movement-game .meld.table-meld-selected{border-color:#d7a0ef;box-shadow:0 0 8px #c88ee14d}
 .movement-game .table-meld-controls{display:flex;flex-wrap:wrap;justify-content:center;gap:7px;margin-top:8px;max-width:380px}
 .movement-game .joker-reclaim-hint{align-self:center;color:#e8d8ef;font:9px Woodland,monospace;text-align:center}
