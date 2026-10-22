@@ -29,6 +29,8 @@ test('online continuation restores the saved turn privately and waits for exact 
   assert.match(continuation,/^FWR1\./);
   assert.ok(continuation.length<22000);
   assert.equal(continuation.includes('Host'),false,'the opaque code does not expose player names');
+  assert.equal((await request('validate-resume',{snapshot:continuation})).value.valid,true,'valid continuation codes can be identified on the launch page');
+  assert.equal((await request('validate-resume',{snapshot:'FWR1.invalid'})).value.valid,false,'invalid continuation codes do not offer Resume game');
   assert.equal((await request('resume',{snapshot:continuation,name:'host'})).status,400,'names must match exactly');
 
   const restoredHost=await request('resume',{snapshot:continuation,name:'Host'});
@@ -46,12 +48,12 @@ test('online continuation restores the saved turn privately and waits for exact 
   assert.equal(restoredGuest.status,200);
   assert.equal(restoredGuest.value.room.code,roomCode);
   assert.equal(restoredGuest.value.room.resumePending,true,'all players see the reunion countdown before play restarts');
-  assert.ok(restoredGuest.value.room.resumeCountdownAt>Date.now());
+  assert.ok(restoredGuest.value.room.resumeCountdownAt>Date.now()+9000,'the full ten-second countdown starts after the last player returns');
   assert.deepEqual(restoredGuest.value.room.players,['Host','Guest']);
   assert.equal(restoredGuest.value.room.state.turn,1);
   assert.equal(restoredGuest.value.room.state.stage,guestAtTurnStart.value.state.stage,'the continuation resumes at the beginning of the saved turn');
   assert.deepEqual(restoredGuest.value.room.state.hands.map(hand=>hand[0]),[{hidden:true},{hidden:true}]);
-  await new Promise(resolve=>setTimeout(resolve,3150));
+  await new Promise(resolve=>setTimeout(resolve,10150));
   const guestView=await request(`state?code=${roomCode}`,null,restoredGuest.value.token);
   assert.equal(guestView.value.resumePending,false);
   assert.deepEqual(guestView.value.state.hands[1],guestAtTurnStart.value.state.hands[1],'a draw made during the interrupted turn is rolled back');

@@ -20,7 +20,7 @@
 #header .icon-control{transition:color .15s ease}
 #header .icon-control:hover:not(:disabled),#header .icon-control:focus-visible{color:#f1ddfa;background:transparent!important;border:0!important;outline:0!important;box-shadow:none!important}
 #header .simple-style-letter{font:700 29px/1 Alagard,serif;text-shadow:0 1px 0 #392543;translate:0 -1px}
-#header .lower-volume-toggle .simple-style-letter{font-style:italic;translate:0 4px}
+#header .lower-volume-toggle .simple-style-letter{font-style:normal;transform:translate(15%,4px) skewX(-12deg)}
 #header .game-style-toggle .cross-mark{position:absolute;top:50%;left:50%;width:24px;height:24px;transform:translate(-50%,-50%);pointer-events:none}
 #header .pixel-eye{width:24px;height:24px;shape-rendering:crispEdges;image-rendering:pixelated}
 .game-screen #header .header-indicators{gap:4px;padding:0;margin:0}
@@ -35,7 +35,7 @@ body.better-visibility .card .simple-card:not(.simple-back) .head-marker{filter:
 .board .stock-stack:has(.cut-card-button) .cut-card-button{overflow:visible}
 .board .cut-card-button .card,.board .cut-card-button:hover:not(:disabled) .card{box-sizing:border-box;aspect-ratio:1/2;transform-origin:center center;backface-visibility:hidden}
 .board .cut-card-button .card .forest-card{position:relative;width:100%;height:100%;min-width:100%;min-height:100%;aspect-ratio:1/2;border-radius:50%/25%;overflow:hidden}.board .cut-card-button .card .card-frame{position:absolute;inset:0;width:100%;height:100%;max-width:none;max-height:none;object-fit:fill;transform:none}
-@media(max-width:650px){.board .stock-stack:has(.cut-card-button){min-height:210px}.board .stock-stack:has(.cut-card-button) .cut-card-button{top:108px}.board .cut-card-button .card,.board .cut-card-button:hover:not(:disabled) .card{width:72px;height:144px}}
+@media(max-width:650px){.board .stock-stack:has(.cut-card-button){min-height:210px}.board .stock-stack:has(.cut-card-button) .cut-card-button{top:108px}.board .cut-card-button .card,.board .cut-card-button:hover:not(:disabled) .card{width:72px;height:144px;max-width:none}}
 
 /* The text kick action has the same small, stable footprint as a seat control. */
 #header-players .seat-actions .kick-player{width:64px;min-width:64px;max-width:64px;height:22px;min-height:22px;white-space:nowrap;font-size:8px;line-height:1}
