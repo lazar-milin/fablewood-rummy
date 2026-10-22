@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Card workbench</title>
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/remi.css">
+  <link rel="stylesheet" href="/fablewood.css">
+  <link rel="stylesheet" href="/refinements.css">
+  <link rel="stylesheet" href="/table-layout.css">
+  <link rel="stylesheet" href="/card-art.css">
+  <link rel="stylesheet" href="/card-preview.css">
+  <link rel="stylesheet" href="/responsive.css">
+  <link rel="stylesheet" href="/movement.css">
+  <link rel="stylesheet" href="/simple-cards.css?v=hivis-official-3">
+  <style>
+    @font-face{font-family:Alagard;src:url('/fonts/alagard.ttf') format('truetype')}
+    *{box-sizing:border-box}
+    html,body{width:100%;min-height:100%;margin:0}
+    body{background:#777b7b;color:#171717;font-family:Woodland,monospace;user-select:none;-webkit-user-select:none;overflow-x:hidden;overflow-y:auto;scrollbar-width:none}
+    body::-webkit-scrollbar{display:none}
+    #field{position:relative;display:flex;flex-direction:column;gap:30px;width:100%;max-width:none;margin:0;padding:22px clamp(10px,2vw,28px) 40px;overflow:hidden;background:#777b7b;touch-action:pan-y}
+    .edition{display:flex;flex-direction:column;gap:12px}
+    .edition-title{margin:0;color:#e5e0d5;font:16px Alagard,serif;letter-spacing:.04em}
+    .suit-row{display:flex;flex-direction:column;gap:7px;min-width:0}
+    .suit-title{margin:0;color:#e5e0d5;font:12px Alagard,serif}
+    .card-row{display:flex;align-items:flex-start;gap:clamp(5px,.8vw,12px);min-height:148px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;touch-action:pan-x}
+    .card-row::-webkit-scrollbar{display:none}
+    .card-slot{position:relative;flex:0 0 clamp(54px,4.3vw,78px);width:clamp(54px,4.3vw,78px);aspect-ratio:1/2}
+    .sample-card.card{position:relative;display:block;width:100%;height:100%;margin:0;max-width:none;pointer-events:auto;cursor:grab;touch-action:none;z-index:0}
+    .sample-card.card:hover:not(:disabled),.sample-card.card.is-dragging{transform:none!important;transition:none!important}
+    .sample-card.card.is-dragging{cursor:grabbing;z-index:1}
+    .edition[data-edition="rummikub"]{padding-top:26px;border-top:1px dashed #d6c6dd}
+    @media(max-width:520px){#field{gap:24px;padding:14px 10px 28px}.edition-title{font-size:14px}.suit-title{font-size:11px}.card-row{min-height:124px}.card-slot{flex-basis:clamp(48px,14vw,64px);width:clamp(48px,14vw,64px)}}
+  </style>
+</head>
+<body>
+  <main id="field" aria-label="Draggable card workbench"></main>
+  <script type="module">
+    import {cardMarkup,cardBackMarkup,setCardVariant,setSimpleCards} from '/card-art.js?v=hivis-official-3';
+    import {animals} from '/art.js';
+    setSimpleCards(true);
+    const field=document.querySelector('#field'),suits=['fox','hare','toad','owl'],ranks=Array.from({length:13},(_,i)=>i+1);
+    const makeEdition=(variant,title)=>{
+      setCardVariant(variant);
+      const suitRows=suits.map(suit=>{
+        const cards=ranks.map(rank=>({id:`${variant}-${suit}-${rank}`,suit,rank}));
+        return `<section class="suit-row" aria-label="${suit} cards"><h3 class="suit-title">${suit[0].toUpperCase()+suit.slice(1)}</h3><div class="card-row">${cards.map(card=>makeCard(card,variant)).join('')}</div></section>`;
+      }).join('');
+      const jokerCount=variant==='rummikub'?2:4;
+      const jokers=Array.from({length:jokerCount},(_,i)=>makeCard({id:`joker-${i}`,joker:true},variant)).join('');
+      return `<section class="edition" data-edition="${variant}" aria-label="${title}"><h2 class="edition-title">${title}</h2>${suitRows}<section class="suit-row" aria-label="Joker cards"><h3 class="suit-title">Jokers</h3><div class="card-row">${jokers}</div></section></section>`;
+    };
+    const makeCard=(card,variant)=>{
+      const info=animals[card.suit]||{color:'#382238',pale:'#e4d4e8'},label=card.joker?'Joker':`${card.suit} ${variant==='rummikub'?card.rank:({1:'A',10:'H',11:'B',12:'Q',13:'E'}[card.rank]||card.rank)}`;
+      return `<div class="card-slot"><button type="button" class="card sample-card" data-card="${card.id}" aria-label="${variant==='rummikub'?'Rummikub':'Classic Rummy'} · ${label}" aria-pressed="false" style="--ink:${info.color};--paper:${info.pale}">${cardMarkup(card)}</button></div>`;
+    };
+    field.innerHTML=makeEdition('remi51','Classic Rummy')+makeEdition('rummikub','Rummikub')+`<section class="suit-row" aria-label="Card back"><h3 class="suit-title">Card back</h3><div class="card-row"><div class="card-slot"><button type="button" class="card sample-card card-back-sample" data-card="card-back" aria-label="Card back · Crescent moon" aria-pressed="false">${cardBackMarkup}</button></div></div></section>`;
+    // Restore Classic as the active context after building both editions.
+    setCardVariant('remi51');
+    field.addEventListener('dragstart',event=>event.preventDefault());
+    let z=1,activeDrags=0,layoutFrozen=false;
+    const freezeLayout=()=>{if(layoutFrozen)return;const area=field.getBoundingClientRect(),positions=[...field.querySelectorAll('.sample-card')].map(card=>({card,bounds:card.getBoundingClientRect()}));field.style.minHeight=`${field.scrollHeight}px`;field.querySelectorAll('.card-slot').forEach(slot=>slot.style.position='static');for(const {card,bounds} of positions){card.style.position='absolute';card.style.flex='none';card.style.width=`${bounds.width}px`;card.style.height=`${bounds.height}px`;card.style.left=`${bounds.left-area.left}px`;card.style.top=`${bounds.top-area.top}px`;}layoutFrozen=true;};
+    for(const item of field.querySelectorAll('.sample-card')){
+      item.addEventListener('pointerdown',event=>{
+        if(event.button!==undefined&&event.button!==0)return;
+        freezeLayout();
+        const bounds=item.getBoundingClientRect(),area=field.getBoundingClientRect();
+        item.style.zIndex=String(++z);item.classList.add('is-dragging');activeDrags++;document.body.classList.add('moving-cards');item.setPointerCapture(event.pointerId);
+        item._drag={x:event.clientX,y:event.clientY,left:bounds.left-area.left,top:bounds.top-area.top};event.preventDefault();
+      });
+      item.addEventListener('pointermove',event=>{const drag=item._drag;if(!drag)return;const maxLeft=Math.max(0,field.clientWidth-item.offsetWidth),maxTop=Math.max(0,field.scrollHeight-item.offsetHeight);item.style.left=`${Math.min(maxLeft,Math.max(0,drag.left+event.clientX-drag.x))}px`;item.style.top=`${Math.min(maxTop,Math.max(0,drag.top+event.clientY-drag.y))}px`;});
+      const finish=event=>{if(!item._drag)return;item._drag=null;item.classList.remove('is-dragging');activeDrags=Math.max(0,activeDrags-1);if(!activeDrags)document.body.classList.remove('moving-cards');if(item.hasPointerCapture(event.pointerId))item.releasePointerCapture(event.pointerId);};
+      item.addEventListener('pointerup',finish);item.addEventListener('pointercancel',finish);
+    }
+  </script>
+  <script type="module" src="/card-preview.js"></script>
+</body>
+</html>

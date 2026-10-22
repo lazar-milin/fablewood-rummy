@@ -1,4 +1,5 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {prepareFlights,flyCards,refreshFlights,rememberDragDiscards} from '../public/player-flights.js';
+import {setSimpleCards} from '../public/card-art.js?v=hivis-official-3';
 function fixture(){
  let groupEnabled=false;const flags=new Set(),unit={classList:{add:value=>flags.add(value),remove:value=>flags.delete(value)}};
  const saved={document:globalThis.document,matchMedia:globalThis.matchMedia,innerWidth:globalThis.innerWidth,innerHeight:globalThis.innerHeight},nodes=[],animations=[];
@@ -8,6 +9,7 @@ function fixture(){
  return {nodes,animations,flags,enableGroup(){groupEnabled=true;},get target(){return target;},replaceTarget(){target.isConnected=false;target={...target,style:{visibility:''},isConnected:true};},restore(){refreshFlights(null);for(const [k,v]of Object.entries(saved)){if(v===undefined)delete globalThis[k];else globalThis[k]=v;}}};
 }
 const move=(id=1)=>({id,from:{zone:'player',index:1},to:{zone:'discard'},card:{id:'a'+id,rank:2,suit:'fox'}}),settle=async()=>{await Promise.resolve();await Promise.resolve();};
+test('flight ghosts share the live HI-VIS simple-card renderer',()=>{const f=fixture();try{setSimpleCards(true);flyCards(prepareFlights([move()]));assert.match(f.nodes[0].innerHTML,/simple-card/);assert.match(f.nodes[0].innerHTML,/heads\/hivis\/fox-head-hivis\.svg/);}finally{setSimpleCards(false);f.restore();}});
 test('card flights stay opaque, full sized and visible for more than a second',async()=>{
  const f=fixture();try{flyCards(prepareFlights([move()]));const a=f.animations[0];assert.ok(a.options.duration>=1200);assert.ok(a.frames.every(frame=>frame.opacity===1));assert.doesNotMatch(a.frames[0].transform,/scale\(0\.[0-5]/);assert.equal(f.target.style.visibility,'hidden');assert.equal(f.target.incoming,true);const underlay=f.nodes.find(n=>n.className.includes('discard-flight-underlay'));assert.match(underlay.innerHTML,/previous top/);a.resolve();await settle();assert.equal(f.target.style.visibility,'');assert.equal(f.target.incoming,false);assert.equal(underlay.removed,true);}finally{f.restore();}
 });

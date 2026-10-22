@@ -1,4 +1,4 @@
-import {cardMarkup,cardBackMarkup} from './card-art.js';
+import {cardMarkup,cardBackMarkup} from './card-art.js?v=hivis-official-3';
 const active=new Set(),hidden=new Map(),dragOrigins=new Map();let underlay=null,underlayFace='',underlayMarkup=null,context,refreshFrame=0;
 function nodeFor(place,card){
  if(place.zone==='hand')return document.querySelector(`.hand [data-card="${card?.id}"]`);

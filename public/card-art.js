@@ -13,9 +13,9 @@ export function setCardVariant(variant='remi51'){cardVariant=variant;refreshBack
 function simpleMarkup(c,key){
  const numeric=cardVariant==='rummikub',cacheKey=(numeric?'numeric:':'rummy:')+key;
  if(simpleFaces.has(cacheKey))return simpleFaces.get(cacheKey);
- const rank=c.joker?'JOKER':numeric?c.rank:({1:'A',10:'H',11:'B',12:'Q',13:'E'}[c.rank]||c.rank),[bg,ink,accent]=c.joker?['#e4d4e8','#382238','#A77594']:simplePalette[c.suit],style=`--card-bg:${bg};--card-ink:${ink};--card-accent:${accent}`,label=c.joker?'JOKER':c.suit[0].toUpperCase()+c.suit.slice(1)+' '+rank;
+ const rank=c.joker?'JOKER':numeric?c.rank:({1:'A',10:'H',11:'B',12:'Q',13:'E'}[c.rank]||c.rank),[bg,ink,accent]=c.joker?['#E5CBD9','#382238','#A77594']:simplePalette[c.suit],style=`--card-bg:${bg};--card-ink:${ink};--card-accent:${accent}`,label=c.joker?'JOKER':c.suit[0].toUpperCase()+c.suit.slice(1)+' '+rank;
  const bounds=markerBounds[c.suit],bottom=b=>{const scale=Math.min(60/b[0],54/b[1]);return (54-b[1]*scale)/2+(b[3]+b[5])*scale;},markerTop=c.joker?0:6+(bottom(markerBounds.hare)-bottom(bounds))/2;
- const marker=c.joker?'':`<img class="head-marker" src="/art/card-kit/assets/heads/${c.suit}-head.svg" alt="${c.suit[0].toUpperCase()+c.suit.slice(1)} suit" style="--marker-top:${markerTop}%" draggable="false">`;
+ const marker=c.joker?'':`<img class="head-marker" src="/art/card-kit/assets/heads/hivis/${c.suit}-head-hivis.svg?v=contour-stroke-7" alt="${c.suit[0].toUpperCase()+c.suit.slice(1)} suit" style="--marker-top:${markerTop}%" draggable="false">`;
  const character=c.joker?[...rank].map(letter=>`<span>${letter}</span>`).join(''):rank;
  const markup=`<span class="forest-card simple-card ${numeric?'numeric-card ':''}${c.joker?'simple-joker':'suit-'+c.suit}" aria-label="${label}" style="${style}"><img class="card-frame" src="/art/card-kit/assets/frames/${c.joker?'joker':c.suit}-capsule.svg" alt=""><span class="simple-face-fill" aria-hidden="true"></span>${marker}<span class="simple-rank" ${c.joker?'aria-hidden="true"':''}>${character}</span></span>`;simpleFaces.set(cacheKey,markup);return markup;
 }
