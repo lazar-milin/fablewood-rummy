@@ -30,7 +30,7 @@ body:not(.at-table) #header{grid-template-columns:1fr auto}
 .four-rule-controls .rule-choice[data-rule="aceMode"][data-rule-value="both"]{align-self:center}
 /* Stock and cut card share one stack; discard is below it. */
 .board{grid-template-columns:145px minmax(0,1fr);gap:24px;min-height:365px;padding:20px}
-.board .piles{display:flex;flex-direction:column;flex-wrap:nowrap;align-items:center;justify-content:flex-start;gap:16px;border-right:2px dashed #a583b4;border-bottom:0;padding:0 24px 0 0}
+.board .piles{display:flex;align-self:stretch;flex-direction:column;flex-wrap:nowrap;align-items:center;justify-content:center;gap:16px;border-right:2px dashed #a583b4;border-bottom:0;padding:0 24px 0 0}
 .board .piles>div{gap:8px}
 .board .stock-stack{position:relative;padding-bottom:30px;min-height:168px}
 .board #draw-stock{z-index:2;position:relative}
@@ -75,7 +75,7 @@ body:not(.at-table) #header{grid-template-columns:1fr auto}
 @font-face{font-family:Alagard;src:url('/fonts/alagard.ttf') format('truetype');font-display:swap}
 .core-rule-row.four-rule-controls{display:flex;flex-wrap:nowrap;align-items:center;justify-content:flex-start;gap:9px;border:0;margin-top:17px;padding:0;overflow-x:auto}
 .core-rule-row.four-rule-controls>.rule-choice-row{flex:0 0 auto;min-width:0;width:auto;padding:6px 8px!important;gap:7px;flex-direction:row;align-items:center;justify-content:flex-start;border:0!important}
-.core-rule-row.four-rule-controls>.rule-choice-row:nth-child(-n+2),.core-rule-row.four-rule-controls>.ace-rules,.core-rule-row.four-rule-controls>.ace-series-rule{border:1px dashed #93739f!important;border-radius:4px}
+.core-rule-row.four-rule-controls>.rule-choice-row:nth-child(-n+2),.core-rule-row.four-rule-controls>.ace-rules,.core-rule-row.four-rule-controls>.ace-series-rule,.core-rule-row.four-rule-controls>.first-lap-discard-rule{border:1px dashed #93739f!important;border-radius:4px}
 .core-rule-row.four-rule-controls>.rule-choice-row>div{display:flex;flex-wrap:nowrap;align-items:center;gap:4px}
 .core-rule-row.four-rule-controls>.rule-choice-row>span{min-width:0;white-space:nowrap;font-size:10px}
 .core-rule-row.four-rule-controls .rule-choice{font-size:10px;padding:5px 7px;line-height:1.4;min-height:28px;white-space:nowrap}

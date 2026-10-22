@@ -5,6 +5,10 @@ export function reconcileLayout(layout,hand){
  for(const unit of Array.isArray(layout)?layout:[]){if(!Array.isArray(unit))continue;const ids=unit.filter(id=>available.has(id)&&!seen.has(id)&&(seen.add(id),true));if(ids.length)out.push(ids);}
  for(const card of hand)if(!seen.has(card.id))out.push([card.id]);return out;
 }
+export function snapSeries(layout,hand,rules={}){
+ const map=new Map(hand.map(card=>[card.id,card]));
+ return layout.map(ids=>{const cards=ids.map(id=>map.get(id)).filter(Boolean),meld=resolveMeld(cards,{rules});return meld?.kind==='run'?meld.cards.map(card=>card.id):[...ids];});
+}
 export function selectUnit(layout,selected,index){
  const unit=layout[index];if(!unit)return {layout,selected};
  if(unit.every(id=>selected.includes(id)))return {layout,selected:[]};

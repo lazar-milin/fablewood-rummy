@@ -22,7 +22,7 @@ npm start
 
 Open http://127.0.0.1:3010. `npm start` reads settings from a `.env` file if there is one; copy [.env.example](.env.example) to start. Locally, the server listens only on this computer (`127.0.0.1`). On Render (`RENDER=true`), it automatically listens on `0.0.0.0` and uses Render’s `PORT`. An explicit `HOST` overrides the default; use `HOST=0.0.0.0` for other hosting providers or to let devices on your network join. `PORT` defaults to 3010. For hosting, run it as a Node web service with `npm start`.
 
-For Render, choose a **Web Service** using branch `main`, build command `npm install`, start command `npm start`, and health check path `/`. Let Render supply `PORT`; no `.env` file is required. Leave `HOST` unset or set it to `0.0.0.0` (remove any `127.0.0.1` override). Set `TRUST_PROXY=true` for Render’s reverse proxy. Keep one instance because tables are held in memory.
+For Render, choose a **Web Service** using branch `main`, build command `npm install`, start command `npm start`, and health check path `/`. Let Render supply `PORT`; no `.env` file is required. Leave `HOST` unset or set it to `0.0.0.0` (remove any `127.0.0.1` override). Set `TRUST_PROXY=true` for Render’s reverse proxy. Keep one instance because tables are held in memory. Online-game continuation codes encrypt the saved hands and are valid across server restarts when `TABLE_RESUME_SECRET` is configured to the same private value; without it, codes are tied to the current server process.
 
 Each address may send 1,800 API requests a minute and create 20 tables a minute; more get `429 Too Many Requests`. Behind one reverse proxy, such as a hosting provider's, set `TRUST_PROXY=true` so these limits count each player's address instead of the proxy's. Card art and fonts are cached by the browser for a week, and text assets are sent gzip-compressed.
 
@@ -40,7 +40,7 @@ With Win conditions off, the table keeps scores without victory popups or player
 
 - **Round victories:** each completed round shows its scores, and the last round winner holds the cup.
 - **Stacking point scores:** each round shows the cumulative leaderboard, with the cup beside the lowest total.
-- **Multi-round scoring (≥301 or ≥501):** rounds continue automatically after a shared five-second countdown. No cup is awarded until someone reaches the selected cumulative limit. The lowest total then wins; tied lowest totals share victory. The final screen includes every round’s points. Starting a new match clears those totals and the breakdown.
+- **Multi-round scoring (≥101, ≥151, ≥301, or ≥501):** rounds continue automatically after a shared five-second countdown. No cup is awarded until someone reaches the selected cumulative limit. The lowest total then wins; tied lowest totals share victory. The final screen includes every round’s points. Starting a new match clears those totals and the breakdown.
 
 ## Simple cards
 
@@ -48,7 +48,7 @@ The always-expanded, text-only launch-screen Simple cards button is a personal p
 
 ## Duplicate starting cards
 
-Dealing duplicates counts pairs of identical animal-and-rank cards; jokers are excluded. Both settings may be off. Enabling a hard dealing limit clears and disables optional redeal choices. A chosen **Do not deal more than** threshold of 3 or 4 rejects every starting deal where any player has that many pairs or more. A chosen **Choice to re-deal** threshold gives each qualifying human a Keep hand / Re-deal cards decision before play. Everyone else sees who is deciding; their cards and pair counts remain private. A redeal replaces the entire starting deal, keeps the same round and first player, and checks the settings again. Bots keep their deals. Turn timers begin after the last decision.
+Dealing duplicates counts pairs of identical animal-and-rank cards; jokers are excluded. **Do not deal more than** defaults to 3, while **Choice to re-deal** defaults off. The two settings are mutually exclusive: choosing a threshold in one row clears any selection in the other, and all four buttons remain available. A chosen **Do not deal more than** threshold of 3 or 4 rejects every starting deal where any player has that many pairs or more. A chosen **Choice to re-deal** threshold gives each qualifying human a Keep hand / Re-deal cards decision before play. Everyone else sees who is deciding; their cards and pair counts remain private. A redeal replaces the entire starting deal, keeps the same round and first player, and checks the settings again. Bots keep their deals. Turn timers begin after the last decision.
 
 ## Rules as implemented
 
@@ -133,3 +133,5 @@ The in-game How to play button displays the same short, settings-aware rules sum
 Classic defaults to four jokers. The grimoire’s **Jokers in deck:** setting also offers eight, adding a second copy of each mythical creature (112 cards total).
 
 Classic Rummy has a host setting for Ace values in a low series: Aces score 10 points by default, or 1 point in a sequence such as A–2–3. This affects meld and opening totals; Aces in sets and leftover hands continue to score 10.
+
+Classic Rummy first-lap discard rule: by default a player may take the top discard but cannot open until the first lap is over. The host can instead disable discard pickups during that lap.

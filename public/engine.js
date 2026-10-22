@@ -5,21 +5,28 @@ import {duplicatePairs} from './duplicate-deals.js';
 export class PlayerError extends Error{}
 export const SUITS=['fox','hare','toad','owl'];
 export const RULESETS={remi51:{name:'Classic Rummy',opening:51},rummikub:{name:'Rummikub',opening:30}};
-export const DEFAULT_RULES={opening:51,jokerCount:4,aceMode:'both',aceSeriesValue:'ten',jokerEnds:true,handEnabled:true,handRequiresOpening:true,handJokers:true,handBonus:80,handDouble:true,cutEnabled:true,cutBonus:120,dealDuplicateLimit:0,redealDuplicateLimit:0};
+export const DEFAULT_RULES={opening:51,jokerCount:4,aceMode:'both',aceSeriesValue:'ten',firstLapDiscard:'take-no-open',jokerEnds:true,handEnabled:true,handRequiresOpening:true,handJokers:true,handBonus:80,handDouble:true,cutEnabled:true,cutBonus:120,dealDuplicateLimit:3,redealDuplicateLimit:0,turnOver4Sets:false,publicDiscardPile:true};
 export const points=c=>c.joker?20:c.rank===1?10:Math.min(c.rank,10);
 const rankOf=c=>c.joker?c.as?.rank:c.rank;
 const suitOf=c=>c.joker?c.as?.suit:c.suit;
-// Run jokers keep their declared positions; set jokers cover any missing animal.
+// Run jokers keep their declared positions. A set joker stays undeclared until
+// the remaining animals identify exactly which card it represents.
 export function resolveMeld(cards,{opening=false,kind=null,rules={}}={}){
  if(rules.variant==='rummikub')return resolveRummikub(cards);
  const options={...DEFAULT_RULES,...rules};
  if(cards.length<3||new Set(cards.map(c=>c.id)).size!==cards.length)return null;
  const wild=cards.filter(c=>c.joker&&!c.as),fixed=cards.filter(c=>!c.joker||c.as);
  const setWild=cards.filter(c=>c.joker),setFixed=cards.filter(c=>!c.joker);
- if(!fixed.length||opening&&cards.filter(c=>c.joker).length>1)return null;
+ const jokerCount=cards.filter(c=>c.joker).length;
+ if(!fixed.length||jokerCount>1&&kind!=='run')return null;
  if(kind!=='run'&&setFixed.length&&cards.length<=4&&new Set(setFixed.map(rankOf)).size===1&&new Set(setFixed.map(suitOf)).size===setFixed.length){
   const rank=rankOf(setFixed[0]),missing=SUITS.filter(s=>!setFixed.some(c=>suitOf(c)===s));
-  if(missing.length>=setWild.length){const resolved=[...setFixed,...setWild.map((c,i)=>({...c,as:{suit:missing[i],rank}}))];return {kind:'set',cards:resolved,points:resolved.reduce((n,c)=>n+points({rank:rankOf(c)}),0)};}
+  if(missing.length>=setWild.length){
+   const resolved=missing.length===setWild.length
+    ?[...setFixed,...setWild.map((c,i)=>({...c,as:{suit:missing[i],rank}}))]
+    :[...setFixed,...setWild.map(({as,...c})=>c)];
+   return {kind:'set',cards:resolved,points:cards.length*points({rank})};
+  }
  }
  if(kind==='set'||new Set(fixed.map(suitOf)).size!==1||cards.length>13)return null;
  const suit=suitOf(fixed[0]);
@@ -32,6 +39,7 @@ export function resolveMeld(cards,{opening=false,kind=null,rules={}}={}){
    const missing=Array.from({length:cards.length},(_,i)=>start+i).filter(n=>!values.includes(n));if(missing.length!==wild.length)continue;
    const resolved=[...fixed,...wild.map((c,i)=>({...c,as:{suit,rank:missing[i]===14?1:missing[i]}}))].sort((a,b)=>value(a)-value(b));
    if(!highAce&&options.aceMode==='high'&&resolved.some(c=>rankOf(c)===1))continue;
+   if(resolved.some((c,i)=>c.joker&&resolved[i-1]?.joker))continue;
    if(!options.jokerEnds&&(resolved[0].joker||resolved.at(-1).joker))continue;
    const runPoints=resolved.reduce((n,c)=>n+(rankOf(c)===1&&!highAce&&options.aceSeriesValue==='one'?1:points({rank:rankOf(c)})),0);
    return {kind:'run',cards:resolved,points:runPoints};
@@ -41,6 +49,7 @@ export function resolveMeld(cards,{opening=false,kind=null,rules={}}={}){
 }
 export function meldChoices(cards,{opening=false,rules={}}={}){
  const results=[],seen=new Set(),add=m=>{if(!m)return;const key=m.kind+'|'+m.cards.map(c=>c.id+':'+(c.as?.rank||c.rank)).join('|');if(!seen.has(key)){seen.add(key);results.push(m);}};
+ if(cards.filter(c=>c.joker).length>1)return results;
  add(resolveMeld(cards,{opening,rules}));
  const real=cards.filter(c=>!c.joker),wild=cards.filter(c=>c.joker);
  if(!wild.length||!real.length||new Set(real.map(c=>c.suit)).size!==1)return results;
@@ -89,6 +98,7 @@ export function play(state,player,action,random=Math.random){
  if(action.type==='draw'){
   if(s.stage!=='draw')throw new PlayerError('You have already drawn, or hold the opening extra card.');
   if(!['stock','discard','cut'].includes(action.source))throw new PlayerError('Choose a draw pile.');
+  if(action.source==='discard'&&firstLap&&rules.firstLapDiscard==='blocked')throw new PlayerError('Taking from the discard pile is disabled during the first lap.');
   if(action.source==='cut'){
    if(firstLap||s.opened[player]||!s.cutCard||!rules.handEnabled||!rules.cutEnabled)throw new PlayerError('The cut card is only for an enabled finish from a closed hand.');
    hand.push(s.cutCard);s.cutCard=null;s.mustHand=true;s.mustOpen=true;s.fromCut=true;log('took the cut card and must finish from hand.');
@@ -129,9 +139,11 @@ export function play(state,player,action,random=Math.random){
  }else if(action.type==='meld'){
   if(!s.opened[player])throw new PlayerError(`Group ${rules.opening} points to open first.`);const cards=pick(action.ids);reserve(cards);const m=resolveMeld(declaredCards(cards,action.assignments),{opening:false,rules});if(!m)throw new PlayerError('Choose a valid run or set under this table’s rules.');s.handUsedJokers ||= cards.some(c=>c.joker);s.melds.push({...m,owner:player});remove(cards);log('laid a meld.');
  }else if(action.type==='layoff'){
-  if(!s.opened[player]||s.mustHand)throw new PlayerError('Open before adding to melds. A hand-only finish must use your own groups.');const cards=pick(action.ids);reserve(cards);const m=s.melds[action.index];if(!m||!cards.length||m.kind==='set'&&cards.some(c=>c.joker))throw new PlayerError('You cannot add those cards to this meld.');const result=resolveMeld([...m.cards,...cards],{kind:m.kind,rules});if(!result)throw new PlayerError('Those cards do not extend this meld under the selected rules.');s.melds[action.index]={...result,owner:m.owner};remove(cards);s.laidOffThisTurn=true;log('extended a meld.');
+  if(!s.opened[player]||s.mustHand)throw new PlayerError('Open before adding to melds. A hand-only finish must use your own groups.');const cards=pick(action.ids);reserve(cards);const m=s.melds[action.index];if(!m||!cards.length||cards.filter(c=>c.joker).length>1||m.kind==='set'&&cards.some(c=>c.joker))throw new PlayerError('You cannot add those cards to this meld.');const result=resolveMeld([...m.cards,...cards],{kind:m.kind,rules});if(!result)throw new PlayerError('Those cards do not extend this meld under the selected rules.');s.melds[action.index]={...result,owner:m.owner};remove(cards);s.laidOffThisTurn=true;log('extended a meld.');
  }else if(action.type==='replace'){
-  if(!s.opened[player]||s.mustHand)throw new PlayerError('Open before reclaiming a joker.');const cards=pick(action.ids),m=s.melds[action.index],j=m?.cards.find(c=>c.id===action.jokerId&&c.joker);if(cards.length!==1||cards[0].joker||!j||cards[0].rank!==j.as.rank||(m.kind==='set'?m.cards.some(c=>!c.joker&&c.suit===cards[0].suit):cards[0].suit!==j.as.suit))throw new PlayerError('Select a missing animal of this rank for a set, or the exact card represented in a run.');m.cards[m.cards.indexOf(j)]=cards[0];const resolved=resolveMeld(m.cards,{kind:m.kind,rules});if(!resolved)throw new PlayerError('That card cannot replace this joker.');s.melds[action.index]={...resolved,owner:m.owner};remove(cards);delete j.as;hand.push(j);s.pendingJokers.push(j.id);s.laidOffThisTurn=true;log('reclaimed a joker, to use in a new meld this turn.');
+  if(!s.opened[player]||s.mustHand)throw new PlayerError('Open before reclaiming a joker.');const cards=pick(action.ids),m=s.melds[action.index],j=m?.cards.find(c=>c.id===action.jokerId&&c.joker),setRank=m?.kind==='set'?m.cards.find(c=>!c.joker)?.rank:null,representedRank=m?.kind==='set'?setRank:j?.as?.rank;
+  if(m?.kind==='set'&&(m.cards.length!==4||!j?.as))throw new PlayerError('A set joker can only be reclaimed from a complete four-card set.');
+  if(cards.length!==1||cards[0].joker||!j||!Number.isInteger(representedRank)||cards[0].rank!==representedRank||(m.kind==='set'?m.cards.some(c=>!c.joker&&c.suit===cards[0].suit):cards[0].suit!==j.as?.suit))throw new PlayerError('Select a missing animal of this rank for a set, or the exact card represented in a run.');m.cards[m.cards.indexOf(j)]=cards[0];const resolved=resolveMeld(m.cards,{kind:m.kind,rules});if(!resolved)throw new PlayerError('That card cannot replace this joker.');s.melds[action.index]={...resolved,owner:m.owner};remove(cards);delete j.as;hand.push(j);s.pendingJokers.push(j.id);s.laidOffThisTurn=true;log('reclaimed a joker, to use in a new meld this turn.');
  }else if(action.type==='discard'){
   if(s.openingAttempt?.length)throw new PlayerError('Complete or reset your opening attempt before discarding.');
   if(s.mustOpen)throw new PlayerError(`This draw requires an opening of ${rules.opening} points. Cancel the draw to choose again.`);if(s.mustHand&&hand.length!==1)throw new PlayerError('You must finish from hand this turn.');

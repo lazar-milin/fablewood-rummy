@@ -6,7 +6,7 @@ export const rummikubRules=(options={})=>({...options,...RUMMIKUB_RULES,handSize
 export function resolveRummikub(cards){
  if(!Array.isArray(cards)||cards.length<3||cards.length>13||new Set(cards.map(c=>c.id)).size!==cards.length)return null;
  const real=cards.filter(c=>!c.joker),wild=cards.filter(c=>c.joker);if(!real.length||real.some(c=>!suits.includes(c.suit)||!Number.isInteger(c.rank)||c.rank<1||c.rank>13))return null;
- if(cards.length<=4&&new Set(real.map(c=>c.rank)).size===1&&new Set(real.map(c=>c.suit)).size===real.length){const missing=suits.filter(s=>!real.some(c=>c.suit===s)),rank=real[0].rank,resolved=[...real,...wild.map((c,i)=>({...c,as:{suit:missing[i],rank}}))];return {kind:'set',cards:resolved,points:rank*cards.length};}
+ if(cards.length<=4&&new Set(real.map(c=>c.rank)).size===1&&new Set(real.map(c=>c.suit)).size===real.length){const missing=suits.filter(s=>!real.some(c=>c.suit===s)),rank=real[0].rank,resolved=missing.length===wild.length?[...real,...wild.map((c,i)=>({...c,as:{suit:missing[i],rank}}))]:[...real,...wild.map(({as,...c})=>c)];if(missing.length>=wild.length)return {kind:'set',cards:resolved,points:rank*cards.length};}
  if(new Set(real.map(c=>c.suit)).size!==1||new Set(real.map(c=>c.rank)).size!==real.length)return null;
  for(let start=1;start+cards.length-1<=13;start++){const range=Array.from({length:cards.length},(_,i)=>start+i);if(real.some(c=>!range.includes(c.rank)))continue;const missing=range.filter(n=>!real.some(c=>c.rank===n));const resolved=[...real,...wild.map((c,i)=>({...c,as:{suit:real[0].suit,rank:missing[i]}}))].sort((a,b)=>(a.as?.rank||a.rank)-(b.as?.rank||b.rank));return {kind:'run',cards:resolved,points:range.reduce((a,b)=>a+b,0)};}return null;
 }

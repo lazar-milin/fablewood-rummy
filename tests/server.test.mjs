@@ -13,8 +13,13 @@ test('mixed seats, lowercase codes, host settings, online privacy and turn rollb
  assert.equal((await api('settings',{code,handSize:9,timer:60,undo:false},host)).status,200);assert.equal((await api('settings',{code,handSize:15},host)).status,400);
  assert.equal((await api('settings',{code,handSize:6},host)).status,400);
  assert.equal((await api('seat',{code,operation:'add',type:'bot'},host)).value.seatTypes[2],'bot');
- const guest=await api('join',{code:code.toUpperCase(),name:'Guest'}),gt=guest.value.token;
+ const guest=await api('join',{code:code.toUpperCase(),name:'Guest'});let gt=guest.value.token;
  assert.equal((await api('settings',{code,timer:30},gt)).status,400);assert.equal((await api('seat',{code,operation:'add',type:'bot'},gt)).status,400);
+ assert.equal((await api('settings',{code,mode:'local'},host)).status,400,'host cannot switch to local while another human is connected');
+ assert.equal((await api('seat',{code,operation:'kick',index:1},gt)).status,400,'guest cannot kick another seat');
+ assert.equal((await api('seat',{code,operation:'kick',index:1},host)).status,200,'host can kick a connected online guest in the lobby');
+ assert.equal((await api('state?code='+code,null,gt)).status,400,'a kicked guest loses table access');
+ gt=(await api('join',{code,name:'Guest'})).value.token;
  const started=await api('start',{code},host);assert.equal(started.value.state.hands[0].length,10);assert.equal(started.value.state.hands[1].length,9);assert.deepEqual(started.value.state.hands[1][0],{hidden:true});assert.deepEqual(started.value.state.hands[2][0],{hidden:true});
  const first=started.value.state.hands[0].find(c=>!c.joker);await api('action',{code,action:{type:'discard',ids:[first.id]}},host);
  const drawn=await api('action',{code,action:{type:'draw',source:'stock'}},gt);assert.equal(drawn.status,200);assert.equal(drawn.value.state.hands[1].length,10);
@@ -28,7 +33,7 @@ test('mixed seats, lowercase codes, host settings, online privacy and turn rollb
  await api('leave',{code},host);const kept=await api('state?code='+code,null,gt);assert.equal(kept.status,200);assert.equal(kept.value.host,1);
  await api('leave',{code},gt);assert.equal((await api('state?code='+code,null,gt)).status,400);
  const local=await api('create',{name:'Local'}),lc=local.value.room.code,lt=local.value.token;
- assert.equal((await api('settings',{code:lc,mode:'local'},lt)).value.mode,'local');assert.equal((await api('join',{code:lc,name:'Remote'})).status,400);await api('seat',{code:lc,operation:'name',index:1,name:'Friend'},lt);await api('seat',{code:lc,operation:'add',type:'bot'},lt);
+ assert.equal((await api('settings',{code:lc,mode:'local'},lt)).value.mode,'local');assert.equal((await api('join',{code:lc,name:'Remote'})).status,400);assert.equal((await api('tables')).value.some(table=>table.code===lc),false,'local tables are never listed as open rooms');await api('seat',{code:lc,operation:'name',index:1,name:'Friend'},lt);await api('seat',{code:lc,operation:'add',type:'bot'},lt);
  const game=await api('start',{code:lc,names:{1:'New friend'}},lt);assert.equal(game.value.state.names[1],'New friend');assert.ok(game.value.state.hands[1][0].id);assert.deepEqual(game.value.state.hands[2][0],{hidden:true});
  const localFirst=game.value.state.hands[0].find(c=>!c.joker);const nextLocal=await api('action',{code:lc,action:{type:'discard',ids:[localFirst.id]}},lt);assert.equal(nextLocal.value.state.turn,1);const localDraw=await api('action',{code:lc,action:{type:'draw',source:'stock'}},lt);assert.equal(localDraw.status,200);assert.equal(localDraw.value.state.hands[1].length,15);
  const legacy=(await api('create',{name:'Legacy'})).value;for(const mode of ['bot','hotseat']){const mapped=await api('settings',{code:legacy.room.code,mode},legacy.token);assert.equal(mapped.value.mode,'local');assert.equal(mapped.value.seatTypes[1],'bot');}await api('leave',{code:legacy.room.code},legacy.token);

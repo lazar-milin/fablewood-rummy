@@ -1,8 +1,9 @@
 import test from 'node:test';import assert from 'node:assert/strict';import {duplicatePairs,dealReview} from '../public/duplicate-deals.js';import {createGame} from '../public/engine.js';
 const rng=seed=>()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return ((t^t>>>14)>>>0)/4294967296;};
 test('duplicates mean identical animal/rank pairs, excluding jokers and different animals',()=>{assert.equal(duplicatePairs([{suit:'fox',rank:3},{suit:'hare',rank:3},{suit:'fox',rank:3},{suit:'joker',joker:true},{suit:'joker',joker:true}]),1);});
+test('duplicate dealing defaults to a maximum of two identical pairs while re-deal is off',()=>{const options=createGame(['A','B']).options;assert.equal(options.dealDuplicateLimit,3);assert.equal(options.redealDuplicateLimit,0);});
 for(const limit of [3,4])test('the '+limit+' pair limit rejects the threshold itself and conserves every card',()=>{
- const names=['A','B','C','D','E','F'];let seed=1;while(seed<10000&&!createGame(names,{},rng(seed)).hands.some(h=>duplicatePairs(h)>=limit))seed++;assert.ok(seed<10000);
+ const names=['A','B','C','D','E','F'];let seed=1;while(seed<10000&&!createGame(names,{dealDuplicateLimit:0},rng(seed)).hands.some(h=>duplicatePairs(h)>=limit))seed++;assert.ok(seed<10000);
  let calls=0,random=rng(seed);const state=createGame(names,{dealDuplicateLimit:limit},()=>{calls++;return random();});assert.ok(calls>107);assert.ok(state.hands.every(h=>duplicatePairs(h)<limit));const ids=[...state.hands.flat(),...state.stock,state.cutCard].map(c=>c.id);assert.equal(ids.length,108);assert.equal(new Set(ids).size,108);
 });
 test('redeal choices queue only qualifying humans in dealing order',()=>{const pair=n=>Array.from({length:n},(_,rank)=>[{suit:'fox',rank},{suit:'fox',rank}]).flat();const state={first:1,hands:[pair(4),pair(3),pair(4)]},players=[{type:'human'},{type:'human'},{type:'bot'}];assert.deepEqual(dealReview(state,players,3).pending,[1,0]);assert.deepEqual(dealReview(state,players,4).pending,[0]);assert.deepEqual(dealReview(state,players,0).pending,[]);});
