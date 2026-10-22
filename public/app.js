@@ -146,7 +146,7 @@ async function action(a){
   const hand=room.state.hands[playerIndex()],sets=a.type==='open'?a.groups:[a.ids],assignments={};
   for(const ids of sets){const choices=meldChoices(ids.map(id=>hand.find(c=>c.id===id)),{opening:a.type!=='meld',rules:room.options});
    let choice=choices[0];if(choices.length>1){choice=await chooseJokerRun(choices);if(!choice)return;}
-   for(const c of choice?.cards||[])if(c.joker)assignments[c.id]=c.as;
+   for(const c of choice?.cards||[])if(c.joker&&c.as)assignments[c.id]=c.as;
   }a={...a,assignments};
  }
  const next=await api('action',{action:a,revision});if(next.state.fieldNotice){if(a.ids)rememberReturns(next,a.ids,playerIndex());notice(next.state.fieldNotice);}selection.clear();if(room?.code===next.code&&room.revision>=next.revision)render();else accept(next);

@@ -21,3 +21,12 @@ test('selected opening threshold and fixed joker placements are respected',()=>{
  let s=ready();s.options.opening=31;s=stage(s,cards.slice(3,6).map(c=>c.id));assert.equal(s.opened[0],false);s=stage(s,cards.slice(0,3).map(c=>c.id));assert.equal(s.opened[0],true);
  const joker={id:'joker-0',rank:0,suit:'joker',joker:true};s=ready();s.hands[0]=[c(5),c(6),joker,c(12,'owl')];s=play(s,0,{type:'stage-open',ids:[c(5).id,c(6).id,joker.id],assignments:{[joker.id]:{rank:7,suit:'fox'}}});assert.equal(s.openingAttempt[0].assignments[joker.id].rank,7);
 });
+test('opening auto-accepts an undeclared joker in a three-card set',()=>{
+ const joker={id:'joker-0',rank:0,suit:'joker',joker:true};
+ const hand=[c(6,'fox'),c(6,'toad'),c(6,'hare'),c(5,'toad'),c(5,'owl'),joker,c(1,'owl'),c(1,'hare'),c(1,'fox'),c(2,'toad')];
+ let s=ready();s.options.opening=51;s.hands[0]=structuredClone(hand);
+ for(const ids of [[...hand.slice(0,3)],[...hand.slice(3,6)],[...hand.slice(6,9)]].map(group=>group.map(card=>card.id)))s=play(s,0,{type:'field-stage',ids});
+ assert.equal(s.opened[0],true);assert.equal(s.fieldNotice,null);assert.equal(s.fieldGroups.length,0);assert.equal(s.melds.length,3);
+ assert.equal(s.melds.find(m=>m.cards.some(card=>card.joker)).cards.find(card=>card.joker).as,undefined);
+ assert.equal(s.hands[0].length,1);assert.equal(s.hands[0][0].id,'toad2');
+});

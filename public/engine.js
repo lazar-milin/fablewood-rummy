@@ -121,7 +121,7 @@ export function play(state,player,action,random=Math.random){
   if(s.opened[player])throw new PlayerError('You are already open.');
   const prior=s.openingAttempt||[],used=prior.flatMap(g=>g.ids),cards=pick(action.ids);if(cards.some(c=>used.includes(c.id)))throw new PlayerError('That card is already in the opening attempt.');
   reserve(pick([...used,...action.ids]));const declared=declaredCards(cards,action.assignments),meld=resolveMeld(declared,{opening:true,rules});if(!meld)throw new PlayerError('Drop a complete meld with at most one joker to try opening.');
-  s.openingAttempt=[...prior,{ids:cards.map(c=>c.id),assignments:Object.fromEntries(meld.cards.filter(c=>c.joker).map(c=>[c.id,c.as]))}];
+  s.openingAttempt=[...prior,{ids:cards.map(c=>c.id),assignments:Object.fromEntries(meld.cards.filter(c=>c.joker&&c.as).map(c=>[c.id,c.as]))}];
   const groups=s.openingAttempt.map(g=>g.ids),assignments=Object.assign({},...s.openingAttempt.map(g=>g.assignments)),sum=s.openingAttempt.reduce((n,g)=>n+resolveMeld(declaredCards(pick(g.ids),g.assignments),{opening:true,rules}).points,0);
   const finishBypass=rules.handEnabled&&!rules.handRequiresOpening&&groups.flat().length===hand.length-1&&(rules.handJokers||!hand.some(c=>c.joker));
   if(sum>=rules.opening||finishBypass){s.openingAttempt=[];return play(s,player,{type:'open',groups,assignments},random);}return s;

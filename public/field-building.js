@@ -44,14 +44,14 @@ export function fieldAction(s,player,action,{play,resolveMeld,PlayerError},rando
    const valid=s.fieldGroups.map(g=>({group:g,meld:resolved(g)})).filter(g=>g.meld),sum=valid.reduce((n,g)=>n+g.meld.points,0),ids=valid.flatMap(g=>g.group.ids);
    const finish=rules.handEnabled&&!rules.handRequiresOpening&&ids.length===s.hands[player].length-1&&(rules.handJokers||!s.hands[player].some(c=>c.joker));
    if(!valid.length||sum<(rules.opening||51)&&!finish)return s;
-   const keep=s.fieldGroups.filter(g=>!valid.some(v=>v.group===g)),assignments=Object.fromEntries(valid.flatMap(v=>v.meld.cards.filter(c=>c.joker).map(c=>[c.id,c.as])));
+   const keep=s.fieldGroups.filter(g=>!valid.some(v=>v.group===g)),assignments=Object.fromEntries(valid.flatMap(v=>v.meld.cards.filter(c=>c.joker&&c.as).map(c=>[c.id,c.as])));
    s.fieldGroups=[];
    try{s=play(s,player,{type:'open',groups:valid.map(v=>v.group.ids),assignments},random);}catch(error){if(!(error instanceof PlayerError))throw error;s.fieldNotice=error.message;}
    s.fieldGroups=keep;return s;
   }
   for(const g of [...s.fieldGroups]){
    const m=resolved(g);if(!m)continue;
-   const keep=s.fieldGroups.filter(candidate=>candidate!==g),assignments=Object.fromEntries(m.cards.filter(c=>c.joker).map(c=>[c.id,c.as]));s.fieldGroups=[];
+   const keep=s.fieldGroups.filter(candidate=>candidate!==g),assignments=Object.fromEntries(m.cards.filter(c=>c.joker&&c.as).map(c=>[c.id,c.as]));s.fieldGroups=[];
    try{s=play(s,player,{type:'meld',ids:g.ids,assignments},random);}catch(error){if(!(error instanceof PlayerError))throw error;s.fieldNotice=error.message;}
    s.fieldGroups=keep;
   }return s;
