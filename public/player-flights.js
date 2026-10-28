@@ -57,12 +57,12 @@ export function flyCards(moves){
 }
 export function flyArise(events){
  if(!events?.length||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
- for(const [index,event]of events.entries()){
-  const handCard=document.querySelector(`.hand [data-card="${CSS.escape(event.card.id)}"]`),from=handCard||nodeFor({zone:'player',index:event.player}),target=document.querySelector(`[data-hunt-discard="${event.pile||0}"]`),start=event.sourceRect||from?.getBoundingClientRect(),end=target?.getBoundingClientRect();if(!start?.width||!end?.width)continue;
+ for(const event of events){
+  const handCard=document.querySelector(`.hand [data-card="${CSS.escape(event.card.id)}"]`),playerNode=nodeFor({zone:'player',index:event.player}),returnNode=handCard||playerNode,target=document.querySelector(`[data-hunt-discard="${event.pile||0}"]`),returnRect=returnNode?.getBoundingClientRect(),start=event.sourceRect||returnRect,end=target?.getBoundingClientRect();if(!start?.width||!end?.width||!returnRect?.width)continue;
   const visibility=handCard?.style.visibility;if(handCard)handCard.style.visibility='hidden';
   const ghost=document.createElement('div');ghost.className='card player-card-flight arise-effect-glow arise-flying-card';ghost.setAttribute('aria-hidden','true');ghost.innerHTML=cardMarkup(event.card);ghost.style.left=start.left+'px';ghost.style.top=start.top+'px';ghost.style.width=start.width+'px';ghost.style.height=start.height+'px';document.body.append(ghost);
-  const dx=end.left-start.left,dy=end.top-start.top,sx=end.width/start.width,sy=end.height/start.height,travel=`translate(${dx}px,${dy}px) scale(${sx},${sy})`,options={duration:460,easing:'cubic-bezier(.2,.75,.2,1)',fill:'both'};
-  const fly=async()=>{if(index)await new Promise(resolve=>setTimeout(resolve,index*260));try{await ghost.animate([{transform:'translate(0,0) scale(1)'},{transform:travel}],options).finished;await new Promise(resolve=>setTimeout(resolve,1000));await ghost.animate([{transform:travel},{transform:'translate(0,0) scale(1)'}],options).finished;}catch{}ghost.remove();if(handCard?.isConnected)handCard.style.visibility=visibility||'';};fly();
+  const dx=end.left-start.left,dy=end.top-start.top,sx=end.width/start.width,sy=end.height/start.height,travel=`translate(${dx}px,${dy}px) scale(${sx},${sy})`,backX=returnRect.left-end.left,backY=returnRect.top-end.top,backSx=returnRect.width/end.width,backSy=returnRect.height/end.height,back=`translate(${backX}px,${backY}px) scale(${backSx},${backSy})`,options={duration:460,easing:'cubic-bezier(.2,.75,.2,1)',fill:'both'};
+  const fly=async()=>{try{await ghost.animate([{transform:'translate(0,0) scale(1)'},{transform:travel}],options).finished;await new Promise(resolve=>setTimeout(resolve,1000));await ghost.animate([{transform:travel},{transform:back}],options).finished;}catch{}ghost.remove();if(handCard?.isConnected)handCard.style.visibility=visibility||'';};fly();
  }
 }
 if(typeof window!=='undefined')for(const event of ['scroll','resize'])window.addEventListener(event,()=>{if(active.size&&!refreshFrame)refreshFrame=requestAnimationFrame(()=>{refreshFrame=0;refreshFlights();});},{passive:true,capture:true});

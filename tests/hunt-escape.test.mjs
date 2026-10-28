@@ -53,6 +53,8 @@ test('dragging the first discard puts it in the pile immediately and resolves ef
 test('Hunt sets and Escape runs enforce their role, suit-family and minimum-size rules',()=>{
  const pair=[c(7,'fox'),c(7,'owl')],triple=[...pair,c(7,'fox',1)],run=[c(4,'hare'),c(5,'hare'),c(6,'hare')];
  assert.ok(resolveHuntEscapeMeld(pair,{role:'hunt'}));assert.equal(resolveHuntEscapeMeld(pair,{role:'escape'}),null);assert.equal(resolveHuntEscapeMeld(run,{role:'hunt'}),null);assert.ok(resolveHuntEscapeMeld(run,{role:'escape'}));assert.equal(resolveHuntEscapeMeld([c(4,'hare'),c(5,'toad'),c(6,'hare')],{role:'escape'}),null);
+ const sameAnimalPair=[c(7,'owl',0),c(7,'owl',1)],sameAnimalTriple=[...sameAnimalPair,c(7,'owl',2)];
+ assert.ok(resolveHuntEscapeMeld(sameAnimalPair,{role:'hunt'}));assert.ok(resolveHuntEscapeMeld(sameAnimalTriple,{role:'hunt'}));assert.ok(resolveHuntEscapeMeld([c(7,'owl',0),c(7,'fox',0)],{role:'hunt'}));assert.equal(resolveHuntEscapeMeld([c(7,'owl',0),c(8,'owl',1)],{role:'hunt'}),null);
  assert.ok(resolveMeld(triple,{rules:{variant:'hunt-escape',hunterSuits:['fox','owl'],preySuits:['hare','toad'],deckCount:4},role:'hunt'}));
 });
 
