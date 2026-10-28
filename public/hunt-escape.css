@@ -1,7 +1,7 @@
 .game-screen .playing.movement-game.hunt-escape-game>.board{grid-template-columns:300px minmax(0,1fr)!important;min-height:260px}
 #header-players .player{position:relative;overflow:visible}
-/* The horizontal player strip clips vertical overflow; reserve its top half for the spirit badge inside the existing header height. */
-#header-players{padding:14px 2px 0!important}
+/* The horizontal player strip clips vertical overflow; split the same header height evenly so the spirit badge above and the PLAYING badge below both fit. */
+#header-players{padding:7px 2px!important}
 #header-players .player .spirit-indicator{position:absolute;top:0;left:50%;z-index:3;transform:translate(-50%,-50%);display:inline-flex;align-items:center;justify-content:center;min-height:14px;padding:2px 6px;border:1px solid currentColor;border-radius:3px;font-family:Woodland,monospace;font-size:7px;line-height:1;white-space:nowrap;pointer-events:none}
 #header-players .player .spirit-hunt{color:#ff9a9b;background:#48212c;box-shadow:0 0 8px #db47524d}
 #header-players .player .spirit-escape{color:#a9d1ff;background:#1e304b;box-shadow:0 0 8px #579ce34d}
@@ -75,6 +75,9 @@
 .hunt-escape-game .path-meld .hunt-meld-type{color:#b6d3f1;background:#243550c4}
 .hunt-escape-game .hunt-meld-signature{color:#ead5f0;background:#291936d9}
 .hunt-escape-game .hunt-stalked-tag{color:#e6baff;background:#542774d9;box-shadow:0 0 9px #bd6bffb3}
+.hunt-escape-game .hunt-meld-type.hunt-fleeing-tag{color:#ff7d7d;background:#4a1820d9;box-shadow:0 0 9px #ff4d5a66}
+.hunt-escape-game .card-origin-effect.origin-blazed{color:#ffd09c;text-shadow:0 0 5px #ff9b50}
+.drag-ghost.drop-blocked{opacity:.55;filter:grayscale(.45)}
 .hunt-escape-game .hunt-meld .meld-cards{display:flex;align-items:center;justify-content:center}
 .hunt-escape-game .hunt-meld .meld-cards .mini-card{width:70px;height:140px}
 .hunt-escape-game .hunt-meld .table-meld-controls{position:relative;z-index:4}

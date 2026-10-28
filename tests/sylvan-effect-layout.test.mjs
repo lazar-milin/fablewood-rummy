@@ -46,3 +46,7 @@ test('turn announcements overlay the table without capturing pointers or taking 
  assert.match(css, /\.turn-announcement-row\{[^}]*justify-content:center/);
  assert.doesNotMatch(css, /\.turn-announcement\{[^}]*background/);
 });
+
+test('the player strip splits its height so the spirit and PLAYING badges both stay inside it', () => {
+ assert.match(css, /#header-players\{padding:7px 2px!important\}/);
+});
