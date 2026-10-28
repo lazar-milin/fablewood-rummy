@@ -1,6 +1,7 @@
 import {SUITS,points} from './engine.js';
 
 export const HUNT_ESCAPE_RULES={variant:'hunt-escape',handSize:9,opening:0,deckCount:4,jokerCount:8,hunterSuits:['fox','owl'],preySuits:['hare','toad']};
+export const QUENCH_CLEANSES=4;
 const otherRole=role=>role==='hunt'?'escape':'hunt';
 const family=(card,rules)=>card.joker?null:rules.hunterSuits.includes(card.suit)?'hunt':'escape';
 
@@ -30,11 +31,14 @@ export function createHuntEscape(names,options={},random=Math.random){
  const rules={...HUNT_ESCAPE_RULES,...options},deck=Array.from({length:rules.deckCount},(_,copy)=>SUITS.flatMap(suit=>Array.from({length:13},(_,i)=>({id:`${copy}-${suit}-${i+1}`,suit,rank:i+1})))).flat();deck.push(...Array.from({length:rules.jokerCount},(_,i)=>({id:`joker-${i}`,suit:'joker',rank:0,joker:true})));
  for(let i=deck.length-1;i>0;i--){const j=Math.floor(random()*(i+1));[deck[i],deck[j]]=[deck[j],deck[i]];}
  const count=rules.handSize??9,hands=names.map(()=>deck.splice(0,count));
- return {names,hands,stock:deck,discard:[],discardPiles:[[],[]],cleanseIndicators:[[],[]],drawState:null,pendingDiscard:null,melds:[],fieldGroups:[],openingAttempt:[],turn:options.first??0,first:options.first??0,stage:'first-discard',turns:0,roles:names.map(()=>null),opened:names.map(()=>false),stalkTracks:names.map(()=>0),discardSurges:names.map(()=>0),quenchCount:0,hurryDraw:names.map(()=>0),discardRequired:2,skipDiscard:false,pendingTurnEnd:false,winner:null,scores:names.map(()=>0),turnStarted:Date.now(),options:rules,mustOpen:false,mustHand:false,fromCut:false,handUsedJokers:false,openedThisTurn:false,laidOffThisTurn:false,pendingJokers:[],meldedThisTurn:false,pendingEffect:null,log:['Sylvan Trail: each player starts with nine cards and chooses a spirit with the first discard.']};
+ return {names,hands,stock:deck,discard:[],discardPiles:[[],[]],cleanseIndicators:[[],[]],drawState:null,pendingDiscard:null,melds:[],fieldGroups:[],openingAttempt:[],turn:options.first??0,first:options.first??0,stage:'first-discard',turns:0,roles:names.map(()=>null),opened:names.map(()=>false),stalkTracks:names.map(()=>0),discardSurges:names.map(()=>0),hurryDraw:names.map(()=>0),discardRequired:2,skipDiscard:false,pendingTurnEnd:false,winner:null,scores:names.map(()=>0),turnStarted:Date.now(),options:rules,mustOpen:false,mustHand:false,fromCut:false,handUsedJokers:false,openedThisTurn:false,laidOffThisTurn:false,pendingJokers:[],meldedThisTurn:false,pendingEffect:null,log:['Sylvan Trail: each player starts with nine cards and chooses a spirit with the first discard.']};
 }
 
 function hurryCount(s,player){const value=s.hurryDraw?.[player];return value===true?1:Math.max(0,Number(value)||0);}
-function drawTarget(s,player){const hurried=hurryCount(s,player);return hurried?Math.max(0,2-hurried):s.hands[player].length<7?7-s.hands[player].length:2;}
+// A Quenched player always draws enough to make the four mandatory cleanses.
+function quenchShortfall(s,player){const required=s.discardRequired||2;return required>2?Math.max(0,required-s.hands[player].length):0;}
+function drawTarget(s,player){const hurried=hurryCount(s,player),base=hurried?Math.max(0,2-hurried):s.hands[player].length<7?7-s.hands[player].length:2;return Math.max(base,quenchShortfall(s,player));}
+export function huntEscapeDrawTarget(s,player=s.turn){return drawTarget(s,player);}
 
 function scoreState(s,winner){s.winner=winner;s.scores=s.hands.map((hand,i)=>i===winner?0:(s.opened[i]?hand.reduce((n,c)=>n+points(c),0):100));s.log.push(`${s.names[winner]} wins by ${s.roles[winner]==='hunt'?'Hunt':'Escape'}!`);}
 function qualifies(s,player){
@@ -70,8 +74,16 @@ function applyDiscardSpirit(s,player,discarded){
  if(next!==before){s.roles[player]=next;s.log.push(`${s.names[player]} ${before?'changed':'chose'} their spirit to ${next==='hunt'?'Hunt':'Escape'}.`);}
  return jokers.length>0&&before==='hunt'&&next==='escape';
 }
+// Turn-end announcements name who the next-player effects hit and which self effects the mover triggered.
+const NEXT_EFFECTS=['Quenched','Hurried'],SELF_EFFECTS=['Evoked','Arisen','Blazed'];
+function noteTurnEffect(s,player,effect){if(!s.turnEffects||s.turnEffects.player!==player)s.turnEffects={player,effects:[]};if(!s.turnEffects.effects.includes(effect))s.turnEffects.effects.push(effect);}
+function announceTurnEffects(s,player){
+ const effects=s.turnEffects?.player===player?s.turnEffects.effects:[];delete s.turnEffects;
+ const next=(player+1)%s.names.length,nextEffects=NEXT_EFFECTS.filter(effect=>effects.includes(effect)),selfEffects=SELF_EFFECTS.filter(effect=>effects.includes(effect));
+ if(nextEffects.length||selfEffects.length)s.turnAnnouncement={sequence:(Number(s.turnAnnouncement?.sequence)||0)+1,player,next,nextEffects,selfEffects};
+}
 function finishTurn(s,player){
- s.meldedThisTurn=false;s.pendingEffect=null;s.pendingTurnEnd=false;s.drawState=null;s.discardPicked=false;s.hurryDraw||=s.names.map(()=>0);s.hurryDraw[player]=0;s.turn=(s.turn+1)%s.names.length;s.turns++;s.stage=s.turns<s.names.length?'first-discard':'draw';s.discardSurges||=s.names.map(()=>0);s.discardRequired=Math.min(7,2+(s.discardSurges[s.turn]||0));s.discardSurges[s.turn]=0;s.skipDiscard=false;for(const meld of s.melds)if(meld.stalkedUntilTurn&&s.turns>=meld.stalkedUntilTurn){delete meld.stalkedUntilTurn;delete meld.stalkedFrom;}s.turnStarted=Date.now();
+ announceTurnEffects(s,player);s.meldedThisTurn=false;s.pendingEffect=null;s.pendingTurnEnd=false;s.drawState=null;s.discardPicked=false;s.hurryDraw||=s.names.map(()=>0);s.hurryDraw[player]=0;s.turn=(s.turn+1)%s.names.length;s.turns++;s.stage=s.turns<s.names.length?'first-discard':'draw';s.discardSurges||=s.names.map(()=>0);s.discardRequired=s.discardSurges[s.turn]?QUENCH_CLEANSES:2;s.discardSurges[s.turn]=0;s.skipDiscard=false;for(const meld of s.melds)if(meld.stalkedUntilTurn&&s.turns>=meld.stalkedUntilTurn){delete meld.stalkedUntilTurn;delete meld.stalkedFrom;}s.turnStarted=Date.now();
  if(qualifies(s,player))scoreState(s,player);
 }
 
@@ -88,7 +100,8 @@ function addDiscard(s,pileIndex,card,suppressHurry=false){
  if(card.joker||[10,12,13].includes(card.rank)){card.protected=true;card.protectedByEffect=true;}
  s.discardPiles[pileIndex].push(card);
 }
-function resetPileProtection(s){for(const pile of s.discardPiles||[])for(const card of pile){delete card.protected;delete card.protectedByEffect;delete card.protectedByExposure;}}
+// Protection is recalculated only for piles that receive part of the new cleanse.
+function resetPileProtection(s,pileIndexes){for(const index of new Set(pileIndexes))for(const card of s.discardPiles?.[index]||[]){delete card.protected;delete card.protectedByEffect;delete card.protectedByExposure;}}
 function keepProtectingCardsOnTop(s){for(const pile of s.discardPiles||[]){const index=pile.findLastIndex(card=>card.protectedByEffect);if(index>=0&&index<pile.length-1)pile.push(...pile.splice(index,1));}}
 function cleanseEffect(card,{suppressHurry=false,suppressArise=false}={}){
  if(card.joker)return 'Spirit';if(card.rank===1&&!suppressArise)return 'Arise';return card.rank===10&&suppressHurry?null:{10:'Hurry',11:'Blaze',12:'Quench',13:'Evoke'}[card.rank]||null;
@@ -105,22 +118,22 @@ function publishAriseEvent(s,player,cards){const arisen=cards.filter(card=>card.
 function commitDiscard(s,player,entries,random,suppressHurry,fail){
  const hand=s.hands[player],cards=entries.map(entry=>entry.card),discardedIds=new Set(cards.map(card=>card.id)),remaining=hand.filter(card=>!discardedIds.has(card.id)),returnedAces=cards.some(card=>card.rank===1&&!card.joker);
  if(!remaining.length&&!returnedAces&&s.stock.length===0)fail('Keep cards in hand while the draw pool is empty.');
- applyDiscardSpirit(s,player,cards);s.cleanseIndicators=[[],[]];resetPileProtection(s);const mandatoryQuench=(s.discardRequired||2)>2;
+ applyDiscardSpirit(s,player,cards);s.cleanseIndicators=[[],[]];resetPileProtection(s,entries.map(entry=>entry.pileIndex));const mandatoryQuench=(s.discardRequired||2)>2;
  for(const entry of entries){let card=entry.card;if(entry.staged){const pile=s.discardPiles[entry.pileIndex]||[],index=pile.findIndex(discard=>discard.id===card.id);if(index<0)throw new Error('A staged discard is missing from its pile.');card=pile.splice(index,1)[0];delete card.pendingDiscard;}else hand.splice(hand.findIndex(item=>item.id===card.id),1);
   recordCleanseIndicator(s,player,card,entry.pileIndex,{suppressHurry,suppressArise:mandatoryQuench});
-  if(card.rank===1&&!card.joker&&!mandatoryQuench){returnAriseAce(card,hand,entry.pileIndex);s.log.push(`${s.names[player]}’s Arise returned the Ace to hand.`);}else addDiscard(s,entry.pileIndex,card,suppressHurry);
+  if(card.rank===1&&!card.joker&&!mandatoryQuench){returnAriseAce(card,hand,entry.pileIndex);noteTurnEffect(s,player,'Arisen');s.log.push(`${s.names[player]}’s Arise returned the Ace to hand.`);}else addDiscard(s,entry.pileIndex,card,suppressHurry);
  }
- s.pendingDiscard=null;s.discardPicked=false;s.skipDiscard=false;s.log.push(cards.length?`${s.names[player]} discarded ${cards.length} card${cards.length===1?'':'s'}.`:`${s.names[player]} ended the turn without discarding.`);
+ if(mandatoryQuench)s.discardRequired=2;s.pendingDiscard=null;s.discardPicked=false;s.skipDiscard=false;s.log.push(cards.length?`${s.names[player]} discarded ${cards.length} card${cards.length===1?'':'s'}.`:`${s.names[player]} ended the turn without discarding.`);
  keepProtectingCardsOnTop(s);publishAriseEvent(s,player,hand.filter(card=>discardedIds.has(card.id)&&card.effectGlow==='arise'));const effect=applyDiscardEffects(s,player,cards,random,true,suppressHurry);if(effect.shouldEndTurn&&!effect.pending)finishTurn(s,player);return s;
 }
 function drawFromStock(s,count,random){if(!replenishStock(s,count,random))return [];return Array.from({length:count},()=>s.stock.pop());}
 function applyDiscardEffects(s,player,cards,random,endsTurn=true,suppressHurry=false){
  const next=(player+1)%s.names.length,blazes=cards.some(card=>!card.joker&&card.rank===11),quenches=cards.filter(card=>!card.joker&&card.rank===12).length,hurries=suppressHurry?0:cards.filter(card=>!card.joker&&card.rank===10).length,evokes=cards.filter(card=>!card.joker&&card.rank===13).length,shouldEndTurn=endsTurn||blazes;
  s.discardSurges||=s.names.map(()=>0);s.hurryDraw||=s.names.map(()=>0);
- if(quenches){s.quenchCount=(s.quenchCount||0)+quenches;s.discardSurges[next]=s.quenchCount;s.log.push(`${s.names[player]}’s Quench makes ${s.names[next]} discard ${Math.min(7,2+s.quenchCount)} cards next turn (${s.quenchCount} Q${s.quenchCount===1?'':'s'} discarded this game).`);}
- if(hurries){s.hurryDraw[next]=hurries;const reduced=Math.min(2,hurries);s.log.push(`${s.names[player]}’s Hurry (${hurries} H${hurries===1?'':'s'} discarded together) reduces ${s.names[next]}’s next draw by ${reduced}, to ${2-reduced} card${2-reduced===1?'':'s'}.`);}
- if(blazes){const drawn=drawFromStock(s,1,random);s.hands[player].push(...drawn);s.log.push(drawn.length?`${s.names[player]}’s Blaze drew one card; their turn ends immediately.`:`${s.names[player]}’s Blaze found no card in the pool; their turn ends immediately.`);}
- if(evokes){const available=s.melds.filter(m=>m.kind==='set'&&!m.closed).length;if(available){s.pendingEffect={type:'evoke',actor:player,remaining:Math.min(evokes,available)};s.pendingTurnEnd=shouldEndTurn;s.log.push(`${s.names[player]}’s Evoke can close ${s.pendingEffect.remaining} Pack${s.pendingEffect.remaining===1?'':'s'}.`);return {pending:true,shouldEndTurn};}s.log.push(`${s.names[player]}’s Evoke found no face-up Pack.`);}
+ if(quenches){s.discardSurges[next]=QUENCH_CLEANSES-2;noteTurnEffect(s,player,'Quenched');s.log.push(`${s.names[player]}’s Quench makes ${s.names[next]} cleanse exactly ${QUENCH_CLEANSES} cards next turn; Aces among them are lost.`);}
+ if(hurries){noteTurnEffect(s,player,'Hurried');s.hurryDraw[next]=hurries;const reduced=Math.min(2,hurries);s.log.push(`${s.names[player]}’s Hurry (${hurries} H${hurries===1?'':'s'} discarded together) reduces ${s.names[next]}’s next draw by ${reduced}, to ${2-reduced} card${2-reduced===1?'':'s'}.`);}
+ if(blazes){noteTurnEffect(s,player,'Blazed');const drawn=drawFromStock(s,1,random);s.hands[player].push(...drawn);s.log.push(drawn.length?`${s.names[player]}’s Blaze drew one card; their turn ends immediately.`:`${s.names[player]}’s Blaze found no card in the pool; their turn ends immediately.`);}
+ if(evokes){noteTurnEffect(s,player,'Evoked');const available=s.melds.filter(m=>m.kind==='set'&&!m.closed).length;if(available){s.pendingEffect={type:'evoke',actor:player,remaining:Math.min(evokes,available)};s.pendingTurnEnd=shouldEndTurn;s.log.push(`${s.names[player]}’s Evoke can close ${s.pendingEffect.remaining} Pack${s.pendingEffect.remaining===1?'':'s'}.`);return {pending:true,shouldEndTurn};}s.log.push(`${s.names[player]}’s Evoke found no face-up Pack.`);}
  return {pending:false,shouldEndTurn};
 }
 
@@ -168,12 +181,12 @@ export function playHuntEscape(state,player,action,{PlayerError,play,fieldAction
    const top=stack.pop();delete top.protected;delete top.protectedByEffect;delete top.protectedByExposure;delete top.discardEffect;delete top.discardEffectUntilTurn;hand.push(top);drawing.piles.push(index);drawing.drawn++;
    const newlyExposed=stack.at(-1);if(newlyExposed){newlyExposed.protected=true;newlyExposed.protectedByExposure=true;}
    s.discardPicked=true;s.log.push(`${s.names[player]} picked a discard${hurry?' for Hurry':''}.`);
-   if(drawing.secondTurn){drawing.target=1;drawing.drawn=1;}
+   if(drawing.secondTurn){drawing.drawn=1;drawing.target=1+quenchShortfall(s,player);}
   }else fail('Choose a draw pile.');
   if(drawing.drawn>=drawing.target){s.skipDiscard=hand.length<(s.discardRequired||2);s.stage='meld';s.meldedThisTurn=false;s.discardPicked=false;s.drawState=null;s.bonusDiscard=0;}return s;
  }
  if(action.type==='skip-hurry-draw'){
-  if(s.stage!=='draw'||hurryCount(s,player)<2||s.drawState?.drawn)fail('You may skip drawing only when Hurry reduces your draw to zero.');s.drawState=null;s.skipDiscard=hand.length<(s.discardRequired||2);s.stage='meld';s.meldedThisTurn=false;s.discardPicked=false;s.log.push(`${s.names[player]}’s Hurry reduced their draw to zero; they continue without drawing.`);return s;
+  if(s.stage!=='draw'||hurryCount(s,player)<2||drawTarget(s,player)>0||s.drawState?.drawn)fail('You may skip drawing only when Hurry reduces your draw to zero.');s.drawState=null;s.skipDiscard=hand.length<(s.discardRequired||2);s.stage='meld';s.meldedThisTurn=false;s.discardPicked=false;s.log.push(`${s.names[player]}’s Hurry reduced their draw to zero; they continue without drawing.`);return s;
  }
  if(action.type==='stage-discard'){
   if(s.pendingEffect||s.bonusDiscard)fail('Resolve the special move before discarding.');if(s.stage!=='meld'&&s.stage!=='first-discard')fail('You cannot discard at this point in the turn.');const required=s.skipDiscard?0:(s.discardRequired||2),cards=find(action.ids);if(required===0)fail('No discard is required this turn.');if(!cards.length)fail('Choose cards to discard.');const pending=s.pendingDiscard||{player,ids:[],piles:[]};if(pending.ids.length+cards.length>required)fail(`Discard exactly ${required} cards this turn.`);if(s.fieldGroups?.length)s.fieldGroups=[];const firstPile=Number(action.pileIndex)===1?1:0;
@@ -191,7 +204,7 @@ export function playHuntEscape(state,player,action,{PlayerError,play,fieldAction
   if(!s.roles[player])fail('Choose your Hunt or Escape spirit before melding.');if(s.meldedThisTurn)fail('You may meld only once per turn.');const old=s.melds[action.index],cards=find(action.ids),ownerCanAdd=old&&!old.closed&&(old.kind==='set'?s.roles[player]==='hunt':s.roles[player]==='escape'&&old.owner===player),oldSize=old?.cards.length,merged=old&&resolve([...old.cards,...cards],false);if(!s.opened[player]||!old||!ownerCanAdd||old.stalkedUntilTurn&&s.turns<old.stalkedUntilTurn||!merged||hand.length-cards.length<discardKeep)fail('Hunt can add to any face-up Party; Escape can add only to your own Path.');old.cards=merged.cards;for(const c of cards)hand.splice(hand.findIndex(x=>x.id===c.id),1);s.meldedThisTurn=true;s.log.push(`${s.names[player]} extended a ${old.kind==='set'?'Party':'Path'}.`);if(old.kind==='set'&&old.owner===player&&oldSize<merged.cards.length)afterExposure(s,player,old);if(old.kind==='run'&&old.owner===player)afterExposure(s,player,old);if(!s.pendingEffect&&qualifies(s,player))scoreState(s,player);return s;
  }
  if(action.type==='bonus-discard'){
-  if(s.bonusDiscard!==1)fail('There is no Diversion discard pending.');const cards=find(action.ids);if(cards.length!==1)fail('Choose one card to discard for the Diversion.');applyDiscardSpirit(s,player,cards);s.cleanseIndicators=[[],[]];resetPileProtection(s);recordCleanseIndicator(s,player,cards[0],0);hand.splice(hand.findIndex(c=>c.id===cards[0].id),1);if(cards[0].rank===1&&!cards[0].joker){returnAriseAce(cards[0],hand,0);s.log.push(`${s.names[player]}’s Arise returned the Ace to hand.`);}else addDiscard(s,0,cards[0]);publishAriseEvent(s,player,hand.filter(card=>card.id===cards[0].id&&card.effectGlow==='arise'));s.bonusDiscard=0;s.log.push(`${s.names[player]} discarded one card for the Diversion.`);const effect=applyDiscardEffects(s,player,cards,random,false);if(effect.shouldEndTurn&&!effect.pending)finishTurn(s,player);return s;
+  if(s.bonusDiscard!==1)fail('There is no Diversion discard pending.');const cards=find(action.ids);if(cards.length!==1)fail('Choose one card to discard for the Diversion.');applyDiscardSpirit(s,player,cards);s.cleanseIndicators=[[],[]];resetPileProtection(s,[0]);recordCleanseIndicator(s,player,cards[0],0);hand.splice(hand.findIndex(c=>c.id===cards[0].id),1);if(cards[0].rank===1&&!cards[0].joker){returnAriseAce(cards[0],hand,0);noteTurnEffect(s,player,'Arisen');s.log.push(`${s.names[player]}’s Arise returned the Ace to hand.`);}else addDiscard(s,0,cards[0]);publishAriseEvent(s,player,hand.filter(card=>card.id===cards[0].id&&card.effectGlow==='arise'));s.bonusDiscard=0;s.log.push(`${s.names[player]} discarded one card for the Diversion.`);const effect=applyDiscardEffects(s,player,cards,random,false);if(effect.shouldEndTurn&&!effect.pending)finishTurn(s,player);return s;
  }
  if(action.type==='discard'){
   if(s.pendingEffect||s.bonusDiscard)fail('Resolve the special move before ending your turn.');const newCards=find(action.ids),required=s.skipDiscard?0:(s.discardRequired||2),pending=s.pendingDiscard?.player===player?s.pendingDiscard:{ids:[],piles:[]};if(pending.ids.length+newCards.length!==required)fail(required?`Choose ${Math.max(0,required-pending.ids.length)} more cards to discard.`:'No discard is required this turn.');if(s.fieldGroups?.length)s.fieldGroups=[];const entries=pending.ids.map((id,index)=>({card:s.discardPiles[pending.piles[index]]?.find(card=>card.id===id),pileIndex:pending.piles[index],staged:true}));let nextPile=pending.piles.length?1-pending.piles.at(-1):0;for(let i=0;i<newCards.length;i++)entries.push({card:newCards[i],pileIndex:(nextPile+i)%2,staged:false});if(entries.some(entry=>!entry.card))fail('A staged discard is missing from its pile.');return commitDiscard(s,player,entries,random,s.stage==='first-discard',fail);
@@ -208,7 +221,7 @@ export function huntEscapeBotAction(s){
  if(s.pendingEffect?.type==='stalk')return s.pendingEffect.targetIds.length?{type:'stalk',meldId:s.pendingEffect.targetIds[0]}:{type:'stalk-pass'};
  if(s.pendingEffect?.type==='diversion'){const target=s.melds.find(m=>m.owner===p&&m.stalkedUntilTurn);return target?{type:'diversion',choice:'clear',meldId:target.id}:{type:'diversion',choice:'draw'};}
  if(s.bonusDiscard)return {type:'bonus-discard',ids:discardCandidates(hand,s).slice(0,1).map(c=>c.id)};
- if(s.stage==='draw'){const hurries=hurryCount(s,p);if(hurries>=2)return {type:'skip-hurry-draw'};if(hurries){const pile=(s.discardPiles||[]).findIndex(stack=>stack?.at(-1)&&!stack.at(-1).protected);if(pile>=0)return {type:'draw',source:`discard-${pile}`};}return {type:'draw',source:'stock'};}
+ if(s.stage==='draw'){const hurries=hurryCount(s,p);if(hurries>=2&&!s.drawState?.drawn&&drawTarget(s,p)===0)return {type:'skip-hurry-draw'};if(hurries){const pile=(s.discardPiles||[]).findIndex(stack=>stack?.at(-1)&&!stack.at(-1).protected);if(pile>=0)return {type:'draw',source:`discard-${pile}`};}return {type:'draw',source:'stock'};}
  if(!s.meldedThisTurn&&s.roles[p]){const role=s.roles[p],candidates=[],keep=s.skipDiscard?0:(s.discardRequired||2);
   for(let rank=1;rank<=13;rank++){const cards=hand.filter(c=>s.options.hunterSuits.includes(c.suit)&&c.rank===rank);for(let i=0;i<cards.length;i++)for(let j=i+1;j<cards.length;j++)candidates.push([cards[i],cards[j]]);}
   for(const suit of s.options.preySuits)for(let start=1;start<=11;start++){const group=Array.from({length:3},(_,i)=>hand.find(c=>c.suit===suit&&c.rank===start+i));if(group.every(Boolean))candidates.push(group);}

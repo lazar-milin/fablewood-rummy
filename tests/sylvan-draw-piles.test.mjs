@@ -51,3 +51,30 @@ test('the second-turn discard option remains a one-card no-pool choice',()=>{
  const next=play(state,0,{type:'draw',source:'discard-0'});
  assert.equal(next.stage,'meld');assert.equal(next.hands[0].length,8);assert.equal(next.stock.length,pool);
 });
+
+test('Joker, H, Q and E protect their pile from single and grouped cleanses',()=>{
+ for(const protector of [{id:'joker-x',joker:true,suit:'joker',rank:0},card('h',10),card('q',12),card('e',13)]){
+  const single=ready();single.stage='meld';single.bonusDiscard=1;single.hands[0]=[protector,card('spare',2,'hare'),card('spare-b',3,'hare')];
+  const afterSingle=play(single,0,{type:'bonus-discard',ids:[protector.id]});
+  assert.equal(afterSingle.discardPiles[0].at(-1).id,protector.id,`${protector.id} tops its pile`);assert.equal(afterSingle.discardPiles[0].at(-1).protected,true,`${protector.id} protects a single cleanse`);
+  for(const position of [0,1,2]){
+   const grouped=ready();grouped.stage='meld';grouped.discardRequired=3;const plain=[card('plain-a',2,'hare'),card('plain-b',3,'hare')],cards=[...plain];cards.splice(position,0,protector);grouped.hands[0]=[...cards,card('keep',9,'toad')];
+   const next=play(grouped,0,{type:'discard',ids:cards.map(item=>item.id)}),pile=next.discardPiles.find(stack=>stack.some(item=>item.id===protector.id));
+   assert.equal(pile.at(-1).id,protector.id,`${protector.id} at position ${position} moves to the top`);assert.equal(pile.at(-1).protected,true);
+   const taker=structuredClone(next);taker.stage='draw';taker.opened[1]=true;taker.turns=6;const index=next.discardPiles.indexOf(pile);
+   assert.throws(()=>play(taker,1,{type:'draw',source:`discard-${index}`}),/protected/);
+  }
+ }
+});
+
+test('protection lasts until its own pile receives a new cleanse',()=>{
+ const state=ready();state.stage='meld';state.hands[0]=[card('q',12),card('e',13,'owl'),card('keep',9,'toad')];
+ let next=play(state,0,{type:'discard',ids:['q','e']});assert.ok(next.discardPiles.every(pile=>pile.at(-1).protected));
+ // A Diversion cleanse reaches only the first pile, so the second keeps its E protection.
+ next.turn=1;next.stage='meld';next.bonusDiscard=1;next.hands[1]=[card('plain',4,'hare'),card('x',5,'hare'),card('y',6,'hare')];
+ next=play(next,1,{type:'bonus-discard',ids:['plain']});
+ assert.equal(next.discardPiles[0].at(-1).id,'plain');assert.notEqual(next.discardPiles[0].at(-1).protected,true);assert.notEqual(next.discardPiles[0].find(item=>item.id==='q').protected,true);
+ assert.equal(next.discardPiles[1].at(-1).id,'e');assert.equal(next.discardPiles[1].at(-1).protected,true);
+ // Ending a turn without cleansing leaves both piles as they were.
+ next.skipDiscard=true;next=play(next,1,{type:'discard',ids:[]});assert.equal(next.discardPiles[1].at(-1).protected,true);
+});
