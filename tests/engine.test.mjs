@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';
+import {test} from 'vitest';import assert from 'node:assert/strict';
 import {resolveMeld,validMeld,createGame,play,botAction,findOpening,points} from '../public/engine.js';
 const c=(rank,suit='fox',d=0)=>({id:`${d}-${suit}-${rank}`,rank,suit});const j=(i=0)=>({id:'joker-'+i,rank:0,suit:'joker',joker:true});
 const ready=()=>{const s=createGame(['A','B']);s.turns=2;s.stage='meld';return s;};

@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';import {prepareFlights,flyCards,refreshFlights,rememberDragDiscards} from '../public/player-flights.js';
+import {test} from 'vitest';import assert from 'node:assert/strict';import {prepareFlights,flyCards,refreshFlights,rememberDragDiscards} from '../public/player-flights.js';
 import {setSimpleCards} from '../public/card-art.js?v=hivis-official-3';
 function fixture(){
  let groupEnabled=false;const flags=new Set(),unit={classList:{add:value=>flags.add(value),remove:value=>flags.delete(value)}};

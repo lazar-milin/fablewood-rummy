@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';import {createGame,play} from '../public/engine.js';
+import {test} from 'vitest';import assert from 'node:assert/strict';import {createGame,play} from '../public/engine.js';
 const c=(rank,suit='fox')=>({id:suit+rank,suit,rank});
 const cards=[c(6),c(7),c(8),c(10),c(10,'hare'),c(10,'owl'),c(2,'toad')];
 const ready=()=>({...createGame(['A','B']),turns:2,stage:'meld',hands:[structuredClone(cards),[]]});

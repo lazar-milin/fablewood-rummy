@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';
+import {test} from 'vitest';import assert from 'node:assert/strict';
 import {updateNewCards,acknowledgeCards,markReturnedCards} from '../public/new-cards.js';
 test('the deal is not new, but a drawn or reclaimed card is marked once',()=>{
  let state=updateNewCards(null,['a','b']);assert.deepEqual(state.fresh,[]);

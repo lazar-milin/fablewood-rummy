@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';
+import {test} from 'vitest';import assert from 'node:assert/strict';
 import {rateLimiter,expireTables} from '../limits.mjs';
 test('each address may send a fixed number of requests per window',()=>{
  const limiter=rateLimiter(3,1000);

@@ -2,10 +2,10 @@
 
 ## Commands and structure
 
-Use Node.js 22.9 or newer. There are no runtime packages or build step.
+Use Node.js 22.12 or newer. There are no runtime packages or build step. Vitest is the only development dependency; run `npm install` before testing.
 
 - `npm start` loads `.env` if present and runs `server.mjs`, serving `public/` and the room API on `HOST` (default 127.0.0.1 locally, 0.0.0.0 when `RENDER=true`) and `PORT` (default 3010). Explicit `HOST` values take precedence. Startup logs show the actual binding and assigned port. `.env.example` lists the settings.
-- `npm test` runs `node --test tests/*.test.mjs`. The HTTP tests use temporary ports 3011, 3013, 3015, 3017, 3019, 3021, 3023, 3031, and 3033; these must be free and localhost sockets must be allowed.
+- `npm test` runs Vitest (`vitest run`) over `tests/*.test.mjs`. Tests import `test` and hooks from `vitest` and assert with `node:assert/strict`; `vitest.config.mjs` raises the timeouts for the long-poll server tests. The HTTP tests use temporary ports 3011, 3013, 3015, 3017, 3019, 3021, 3023, 3031, and 3033; these must be free and localhost sockets must be allowed.
 - GitHub Actions runs the same suite on pushes and pull requests.
 
 Keep changes focused. Run the relevant tests, and run the complete suite before publishing a change. Check responsive UI work in a browser at phone and desktop widths. Do not restart an existing local server unnecessarily: room state lives in memory.

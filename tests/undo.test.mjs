@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';import {spawn} from 'node:child_process';import {once} from 'node:events';
+import {test} from 'vitest';import assert from 'node:assert/strict';import {spawn} from 'node:child_process';import {once} from 'node:events';
 test('undo stays inside your own turn and never reveals the stock',async()=>{
  const child=spawn(process.execPath,['server.mjs'],{cwd:new URL('..',import.meta.url),env:{...process.env,PORT:'3015'},stdio:['ignore','pipe','pipe']});
  try{await Promise.race([once(child.stdout,'data'),new Promise((_,reject)=>setTimeout(()=>reject(Error('Server startup timeout')),7000).unref())]);

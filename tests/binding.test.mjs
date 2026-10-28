@@ -1,4 +1,4 @@
-import test from 'node:test';
+import {test} from 'vitest';
 import assert from 'node:assert/strict';
 import {spawn} from 'node:child_process';
 import {once} from 'node:events';
@@ -7,7 +7,7 @@ import {networkInterfaces} from 'node:os';
 async function start(t,settings){
  const env={...process.env,PORT:'0'};delete env.HOST;delete env.RENDER;Object.assign(env,settings);
  const child=spawn(process.execPath,['server.mjs'],{cwd:new URL('..',import.meta.url),env,stdio:['ignore','pipe','pipe']});
- t.after(async()=>{if(child.exitCode===null){const exited=once(child,'exit');child.kill();await exited;}});
+ t.onTestFinished(async()=>{if(child.exitCode===null){const exited=once(child,'exit');child.kill();await exited;}});
  let output='',errors='';child.stderr.on('data',data=>{errors+=data;});
  return new Promise((resolve,reject)=>{
   const timer=setTimeout(()=>reject(Error('Startup timed out: '+errors)),7000);

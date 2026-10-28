@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';
+import {test} from 'vitest';import assert from 'node:assert/strict';
 import {createGame,play} from '../public/engine.js';
 const id=(rank,suit='fox')=>`0-${suit}-${rank}`;
 const fixture=[id(6),id(7),id(8),id(10),id(10,'hare'),id(10,'owl'),id(2,'toad')];

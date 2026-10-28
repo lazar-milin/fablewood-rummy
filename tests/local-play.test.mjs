@@ -1,4 +1,4 @@
-import test from 'node:test';
+import {test} from 'vitest';
 import assert from 'node:assert/strict';
 import {sharedLocalHands,localPlayer,needsLocalPass} from '../public/local-play.js';
 const room=(seatTypes,turn=0)=>({mode:'local',you:0,seatTypes,state:{turn,winner:null},dealDecision:null});

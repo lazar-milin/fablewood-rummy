@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';
+import {test} from 'vitest';import assert from 'node:assert/strict';
 import {createGame,play,resolveMeld,botAction} from '../public/engine.js';
 import {resetRummikubTable} from '../public/rummikub.js';
 const card=(suit,rank,copy=0)=>({id:`${copy}-${suit}-${rank}`,suit,rank});

@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';import {spawn} from 'node:child_process';import {once} from 'node:events';
+import {test} from 'vitest';import assert from 'node:assert/strict';import {spawn} from 'node:child_process';import {once} from 'node:events';
 test('long polling wakes on changes, rejects stale moves, protects views and releases closed requests',async()=>{
  const child=spawn(process.execPath,['server.mjs'],{cwd:new URL('..',import.meta.url),env:{...process.env,PORT:'3023'},stdio:['ignore','pipe','pipe']});
  try{

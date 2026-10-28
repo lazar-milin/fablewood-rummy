@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';
+import {test} from 'vitest';import assert from 'node:assert/strict';
 import {captureHand,animateHand,layoutRect} from '../public/movement-animation.js';
 const unit=(id,left,width=80)=>{const flags=new Set();return {flags,classList:{add:name=>flags.add(name),remove:name=>flags.delete(name)},offsetWidth:80,translation:'none',rect:{left,top:100,right:left+width,bottom:260,width,height:160},calls:[],cancelled:0,querySelector:()=>null,querySelectorAll:()=>[{dataset:{card:id}}],getBoundingClientRect(){return this.rect;},getAnimations(){return [{cancel:()=>this.cancelled++}];},animate(frames,options){this.calls.push({frames,options});return {finished:new Promise(resolve=>{this.complete=resolve;})};}};};
 
@@ -17,3 +17,4 @@ test('reduced-motion preference skips movement animation',()=>{
 });
 
 test('packing keeps remove controls gated until its animation completes',async()=>{globalThis.matchMedia=()=>({matches:false});const a=unit('a',0),root={querySelectorAll:()=>[a]},before=captureHand(root);a.rect={...a.rect,left:100,right:180};animateHand(before,root);assert.ok(a.flags.has('unit-moving'));a.complete();await Promise.resolve();await Promise.resolve();await Promise.resolve();assert.equal(a.flags.has('unit-moving'),false);});
+test('field drafts animate across every container in a list',()=>{globalThis.matchMedia=()=>({matches:false});const a=unit('a',0),b=unit('b',200),roots=[{querySelectorAll:()=>[a]},{querySelectorAll:()=>[b]}],before=captureHand(roots);a.rect={...a.rect,left:100,right:180};b.rect={...b.rect,left:300,right:380};animateHand(before,roots);assert.equal(a.calls[0].frames[0].translate,'-100px 0px');assert.equal(b.calls[0].frames[0].translate,'-100px 0px');});

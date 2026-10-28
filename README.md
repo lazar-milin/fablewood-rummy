@@ -16,7 +16,7 @@ After opening, drop additions on table melds, exact exchange cards on jokers, an
 
 ## Run locally
 
-Use Node.js 22.9 or newer. There are no runtime dependencies or build step.
+Use Node.js 22.12 or newer. There are no runtime dependencies or build step.
 
 ```sh
 npm start
@@ -99,10 +99,11 @@ The landing page's **Card Atelier** opens the complete deck and artwork collecti
 ## Development
 
 ```sh
+npm install
 npm test
 ```
 
-Tests cover the engine, rules, bots, hand packing, room privacy, undo, static serving, and artwork links. Server tests start temporary localhost services on ports 3011, 3013, 3015, 3017, 3019, and 3021. The same suite runs in GitHub Actions. See [CLAUDE.md](CLAUDE.md) for architecture and contribution conventions.
+Tests run on Vitest and cover the engine, rules, bots, hand packing, room privacy, undo, static serving, and artwork links. Server tests start temporary localhost services on ports 3011, 3013, 3015, 3017, 3019, and 3021. The same suite runs in GitHub Actions. See [CLAUDE.md](CLAUDE.md) for architecture and contribution conventions.
 
 ## Artwork and licence
 
