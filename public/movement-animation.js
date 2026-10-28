@@ -1,6 +1,6 @@
 function moving(unit,animation){unit.classList.add('unit-moving');animation.finished.catch(()=>{}).finally(()=>{if(!unit.getAnimations().some(a=>a.playState==='running')&&!unit.querySelector('.hand-card-shell')?.getAnimations().some(a=>a.playState==='running'))unit.classList.remove('unit-moving');});}
 // FLIP keeps wrapped rows moving from their visible positions into new slots.
-const captureRoots=root=>!root?[...document.querySelectorAll('.movement-game .hand-cards')]:root.nodeType===1?[root]:[...root];
+const captureRoots=root=>!root?[...document.querySelectorAll('.movement-game .hand-cards')]:root.querySelectorAll?[root]:[...root];
 export function captureHand(root){
  const out=new Map();
  for(const container of captureRoots(root))for(const unit of container.querySelectorAll('[data-unit]:not(.being-held):not(.just-dropped),[data-field-group]:not(.being-held):not(.just-dropped)')){
