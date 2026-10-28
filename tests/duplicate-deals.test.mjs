@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';import {duplicatePairs,dealReview} from '../public/duplicate-deals.js';import {createGame} from '../public/engine.js';
+import {test} from 'vitest';import assert from 'node:assert/strict';import {duplicatePairs,dealReview} from '../public/duplicate-deals.js';import {createGame} from '../public/engine.js';
 const rng=seed=>()=>{seed|=0;seed=seed+0x6D2B79F5|0;let t=Math.imul(seed^seed>>>15,1|seed);t=t+Math.imul(t^t>>>7,61|t)^t;return ((t^t>>>14)>>>0)/4294967296;};
 test('duplicates mean identical animal/rank pairs, excluding jokers and different animals',()=>{assert.equal(duplicatePairs([{suit:'fox',rank:3},{suit:'hare',rank:3},{suit:'fox',rank:3},{suit:'joker',joker:true},{suit:'joker',joker:true}]),1);});
 test('duplicate dealing defaults to a maximum of two identical pairs while re-deal is off',()=>{const options=createGame(['A','B']).options;assert.equal(options.dealDuplicateLimit,3);assert.equal(options.redealDuplicateLimit,0);});

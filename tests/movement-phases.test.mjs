@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';
+import {test} from 'vitest';import assert from 'node:assert/strict';
 import {createBotScheduler} from '../bot-scheduler.mjs';import {describeMove,unseenMoves} from '../public/move-events.js';import {mergeUnits} from '../public/movement-hand.js';import {capsuleGlyphs} from '../public/group-glyphs.js';
 test('bot phases wait two seconds, publish separately, and cannot acquire duplicate timers',()=>{
  const room={bot:true},timers=new Map();let serial=0,now=0,events=[];

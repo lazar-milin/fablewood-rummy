@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';
+import {test} from 'vitest';import assert from 'node:assert/strict';
 import {resolveMeld,createGame,play,findOpening} from '../public/engine.js';
 import {possibleGroup,chooseCard,tidyGroups,openingInfo,groupAdditions,finishDraft,selectedOpeningInfo,sortLooseCards} from '../public/packing.js';
 import {forestName,FOREST_NAMES} from '../public/names.js';

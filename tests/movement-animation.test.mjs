@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';
+import {test} from 'vitest';import assert from 'node:assert/strict';
 import {captureHand,animateHand,layoutRect} from '../public/movement-animation.js';
 const unit=(id,left,width=80)=>{const flags=new Set();return {flags,classList:{add:name=>flags.add(name),remove:name=>flags.delete(name)},offsetWidth:80,translation:'none',rect:{left,top:100,right:left+width,bottom:260,width,height:160},calls:[],cancelled:0,querySelector:()=>null,querySelectorAll:()=>[{dataset:{card:id}}],getBoundingClientRect(){return this.rect;},getAnimations(){return [{cancel:()=>this.cancelled++}];},animate(frames,options){this.calls.push({frames,options});return {finished:new Promise(resolve=>{this.complete=resolve;})};}};};
 

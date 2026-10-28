@@ -1,4 +1,4 @@
-import test from 'node:test';
+import {test} from 'vitest';
 import assert from 'node:assert/strict';
 import {createGame,play,resolveMeld,meldChoices,botAction} from '../public/engine.js';
 import {resolveRummikub} from '../public/rummikub.js';

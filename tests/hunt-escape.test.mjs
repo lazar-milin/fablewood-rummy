@@ -1,4 +1,4 @@
-import test from 'node:test';
+import {test} from 'vitest';
 import assert from 'node:assert/strict';
 import {createGame,play,resolveMeld,botAction} from '../public/engine.js';
 import {resolveHuntEscapeMeld} from '../public/hunt-escape.js';

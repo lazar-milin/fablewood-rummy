@@ -1,2 +1,2 @@
-import test from "node:test";import assert from "node:assert/strict";import {createGame} from "../public/engine.js";
+import {test} from "vitest";import assert from "node:assert/strict";import {createGame} from "../public/engine.js";
 test("Classic joker counts",()=>{for(const jokerCount of [4,8]){const s=createGame(["A","B"],{jokerCount}),cards=[...s.hands.flat(),...s.stock,s.cutCard];assert.equal(cards.length,104+jokerCount);assert.equal(new Set(cards.map(c=>c.id)).size,cards.length);assert.equal(cards.filter(c=>c.joker).length,jokerCount);}assert.equal(createGame(["A","B"]).options.jokerCount,4);assert.throws(()=>createGame(["A","B"],{jokerCount:6}));});

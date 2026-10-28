@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';import {readFile,mkdtemp,writeFile,rm} from 'node:fs/promises';import {tmpdir} from 'node:os';import {join} from 'node:path';import {spawn} from 'node:child_process';import {once} from 'node:events';
+import {test} from 'vitest';import assert from 'node:assert/strict';import {readFile,mkdtemp,writeFile,rm} from 'node:fs/promises';import {tmpdir} from 'node:os';import {join} from 'node:path';import {spawn} from 'node:child_process';import {once} from 'node:events';
 test('duplicate decisions pause play, protect hands, authorize one player, and redeal within the same round',async()=>{
  const dir=await mkdtemp(join(tmpdir(),'fablewood-duplicates-')),root=new URL('../',import.meta.url);let child;
  try{let source=await readFile(new URL('../server.mjs',import.meta.url),'utf8');source=source.replace(/from '(\.\/[^']+)'/g,(_,p)=>`from '${new URL(p,root).href}'`).replace("new URL('./public/',import.meta.url)",`new URL('${new URL('public/',root).href}')`);

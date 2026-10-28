@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';
+import {test} from 'vitest';import assert from 'node:assert/strict';
 import {createGame,play,botAction,botDiscard} from '../public/engine.js';
 const c=(rank,suit='fox',d=0)=>({id:`${d}-${suit}-${rank}`,rank,suit}),j=(i=0)=>({id:'joker-'+i,rank:0,suit:'joker',joker:true});
 // Small seeded generator so a failing random game can be replayed.

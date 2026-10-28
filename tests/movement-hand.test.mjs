@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';
+import {test} from 'vitest';import assert from 'node:assert/strict';
 import {reconcileLayout,selectUnit,moveUnit,mergeUnits,ungroupUnit,ungroupCards,sortLayout} from '../public/movement-hand.js';
 const c=(id,rank,suit='fox')=>({id,rank,suit});
 test('ejecting one card leaves the rest grouped and returns only that card as a loose unit',()=>{

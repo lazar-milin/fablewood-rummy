@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';
+import {test} from 'vitest';import assert from 'node:assert/strict';
 import {DEFAULT_WIN_RULES,awardRound,cupWinners,hasVictory,resetMatch} from '../public/win-conditions.js';import {victoryMarkup} from '../public/victory.js';
 const room=(mode='none',target=301)=>({code:'test',round:1,you:0,host:0,options:{...DEFAULT_WIN_RULES,winEnabled:mode!=='none',winMode:mode,winTarget:target},state:{winner:0,names:['Fox','Hare'],scores:[-40,100]},totals:[0,0],scored:false,completedGames:0});
 function next(r,scores,winner=0){r.round++;r.state={...r.state,winner,scores};r.scored=false;awardRound(r,2000);}
