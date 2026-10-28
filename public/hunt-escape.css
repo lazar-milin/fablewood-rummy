@@ -28,10 +28,10 @@
 .hunt-escape-game .hunt-pile .special-discard-quench{--effect-glow:#77dfff;--effect-halo:#42c8ff66;color:#a9eaff}
 .hunt-escape-game .hunt-pile .special-discard-hurry{--effect-glow:#ffe17a;--effect-halo:#f5c84266;color:#fff0a9}
 .hunt-escape-game .hunt-pile .special-discard-evoke{--effect-glow:#d79aff;--effect-halo:#ba67ff66;color:#e9c4ff}
-.player .sylvan-score-indicators{display:inline-flex;align-items:center;gap:3px;margin-left:3px;vertical-align:middle;font-family:Woodland,monospace;font-size:13px;line-height:1}
+.player .sylvan-score-indicators{display:inline-flex;align-items:center;gap:2px;margin-left:3px;vertical-align:middle;font-family:Woodland,monospace;font-size:13px;line-height:1}
 .player .sylvan-party-mark{display:inline-flex;align-items:center;color:#ff9f43}
 .player .sylvan-pack-triangle{display:block;width:14px;height:12px;filter:drop-shadow(0 0 3px #ff9f4366)}
-.player .sylvan-track-mark{color:#8fdb8b;text-shadow:0 0 4px #75d47766}
+.player .sylvan-track-mark{color:#7db9ff;font-size:10px;letter-spacing:-.08em;white-space:nowrap;text-shadow:0 0 4px #4f9dff88}
 .hunt-escape-game .hunt-piles .card,.hunt-escape-game .hunt-piles #draw-stock,.hunt-escape-game .hunt-discard-card{width:96px;height:192px;max-width:96px;flex:0 0 192px;padding:0;overflow:hidden}
 .hunt-escape-game .hunt-discard-card{position:relative;display:block;border:0;background:transparent!important;box-shadow:none}
 .hunt-escape-game .hunt-discard-card>.forest-card{position:absolute;inset:0;width:100%;height:100%}

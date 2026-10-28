@@ -45,3 +45,25 @@ test('public Arise events animate for clients whose view hides the acting player
  assert.deepEqual(newlyArisenCards(before,after),[ace]);
  assert.deepEqual(newlyArisenCards(after,{...after,hands:[[{hidden:true}],[]]}),[]);
 });
+
+test('every Ace in a staged Quenched cleanse is lost, counts toward four, and drops any old Arise glow',()=>{
+ const state=createGame(['A','B'],{variant:'hunt-escape'},()=>0.37);
+ state.turn=0;state.turns=4;state.stage='meld';state.roles[0]='hunt';state.discardRequired=4;
+ const old={...card('ace',1,'hare'),effectGlow:'arise',effectGlowUntil:Date.now()+9000,effectGlowPile:1};
+ state.hands[0]=[old,card('ace-b',1,'toad'),card('two',2,'hare'),card('three',3,'hare'),card('keep',9)];
+ let next=play(state,0,{type:'stage-discard',ids:['ace']});
+ next=play(next,0,{type:'stage-discard',ids:['ace-b','two','three']});
+ assert.equal(next.turn,1,'the Aces count toward the four');
+ assert.deepEqual(next.hands[0].map(item=>item.id),['keep']);
+ const lost=next.discardPiles.flat().filter(item=>item.rank===1);
+ assert.equal(lost.length,2);assert.ok(lost.every(item=>item.effectGlow===undefined&&item.effectGlowUntil===undefined));
+ assert.equal(next.ariseEvent,undefined);assert.ok(next.log.some(line=>line.includes('Quenched cleanse lost 2 Aces')));
+});
+
+test('an Ace cleansed for a Diversion during a Quenched turn still Arises',()=>{
+ const state=createGame(['A','B'],{variant:'hunt-escape'},()=>0.37);
+ state.turn=0;state.turns=4;state.stage='meld';state.roles[0]='hunt';state.discardRequired=4;state.bonusDiscard=1;
+ state.hands[0]=[card('ace',1,'hare'),card('a',2,'hare'),card('b',3,'hare'),card('c',4,'hare'),card('d',5,'hare')];
+ const next=play(state,0,{type:'bonus-discard',ids:['ace']});
+ assert.ok(next.hands[0].some(item=>item.id==='ace'&&item.effectGlow==='arise'));assert.equal(next.discardRequired,4);
+});
