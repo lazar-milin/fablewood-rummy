@@ -1,6 +1,6 @@
 import {captureHand,animateHand,layoutRect,captureGroupCards,animateGroupCards} from './movement-animation.js';
 // Pointer capture separates a click (selection) from a pull (movement).
-export function installCardMovement({context,drop}){
+export function installCardMovement({context,drop,allow=()=>true}){
  let held=null,ghost=null,over=null,suppressUntil=0,slot=null,handRoot=null,handMinHeight=null,previewKey=null,mergeHover=null;
  const clearMerge=()=>{if(!mergeHover)return;clearTimeout(mergeHover.timer);const root=mergeHover.unit.closest('[data-field-drafts]')||handRoot,before=captureHand(root),cards=captureGroupCards(mergeHover.unit);mergeHover.slot?.remove();animateHand(before,root);animateGroupCards(mergeHover.unit,cards);mergeHover=null;};
  const clear=()=>{const wasDragging=!!held?.active;clearMerge();const before=captureHand(handRoot);held?.element.classList.remove('being-held');slot?.remove();slot=null;if(handRoot)handRoot.style.minHeight=handMinHeight;animateHand(before,handRoot);handRoot=null;previewKey=null;ghost?.remove();ghost=null;over?.classList.remove('drop-hover');over=null;document.body.classList.remove('moving-cards');held=null;if(wasDragging)document.dispatchEvent(new Event('card-movement-end'));};
@@ -32,6 +32,8 @@ export function installCardMovement({context,drop}){
   const eject=e.target.closest('.eject-card'),single=eject?.closest('.hand-card-shell')?.querySelector('[data-card]')?.dataset.card,dragElement=single?eject.closest('.hand-card-shell'):element,rect=dragElement.getBoundingClientRect();held={element:dragElement,ownerElement:element,single,cssWidth:dragElement.offsetWidth,id:e.pointerId,x:e.clientX,y:e.clientY,dx:e.clientX-rect.left,dy:e.clientY-rect.top,rect,unit:element.dataset.unit===undefined?null:Number(element.dataset.unit),stage:element.dataset.stage===undefined?null:Number(element.dataset.stage),field:element.dataset.fieldGroup===undefined?null:Number(element.dataset.fieldGroup),context:ctx,active:false};
 
  });
+ // A target the rules would reject is treated as no target: no highlight, no preview slot and no drop.
+ const allowed=target=>!target||!held||allow({unit:held.unit,stage:held.stage,field:held.field,single:held.single},target);
  const locate=(x,y)=>{
   const element=document.elementFromPoint(x,y);if(!element)return null;
   const discard=element.closest('[data-drop-discard]');if(discard){const pileCard=element.closest('[data-hunt-discard]'),piles=[...discard.querySelectorAll('.hunt-pile')],nearest=pileCard?Number(pileCard.dataset.huntDiscard):piles.length?piles.reduce((best,pile,index)=>{const r=pile.getBoundingClientRect(),distance=Math.abs(x-(r.left+r.width/2));return distance<best.distance?{index,distance}:best;},{index:0,distance:Infinity}).index:0;return {type:'discard',element:discard,pileIndex:Number.isFinite(nearest)?nearest:0};}
@@ -55,7 +57,7 @@ export function installCardMovement({context,drop}){
   if(!held.active){const before=captureHand();document.getElementById('app').setPointerCapture(e.pointerId);held.active=true;document.dispatchEvent(new Event('card-movement-start'));document.body.classList.add('moving-cards');ghost=document.createElement('div');ghost.className='drag-ghost hand';ghost.style.width=held.rect.width+'px';ghost.innerHTML=(held.single?'<div class="hand-unit loose-unit">'+held.element.outerHTML+'</div>':held.element.outerHTML).replace(/(id|href)="(#?)(sigil-[^"]+|curve-joker-[^"]+)"/g,(_,a,hash,id)=>a+'="'+hash+id+'-held"');const faces=[...held.element.querySelectorAll('.card')],first=faces[0]?.getBoundingClientRect(),second=faces[1]?.getBoundingClientRect();if(first){ghost.style.setProperty('--held-card-width',first.width+'px');ghost.style.setProperty('--held-card-height',first.height+'px');if(second)ghost.style.setProperty('--held-overlap',(second.left-first.right)+'px');}document.body.append(ghost);handRoot=held.ownerElement.closest('[data-drop-hand]')?.querySelector('.hand-cards')||document.querySelector('.movement-game .hand-cards');if(handRoot){handMinHeight=handRoot.style.minHeight;const scale=handRoot.getBoundingClientRect().width/handRoot.offsetWidth||1;handRoot.style.setProperty('min-height',(handRoot.getBoundingClientRect().height/scale)+'px','important');slot=document.createElement('div');slot.className='drop-slot';slot.style.width=held.element.offsetWidth+'px';slot.style.height=held.element.offsetHeight+'px';slot.dataset.before=String(held.unit??Infinity);if(held.unit!==null&&!held.single){held.element.before(slot);previewKey='slot:'+held.unit;}}
   held.element.classList.add('being-held');animateHand(before,handRoot);}
   e.preventDefault();ghost.style.transform=`translate(${e.clientX-held.dx}px,${e.clientY-held.dy}px)`;
-  const target=locate(e.clientX,e.clientY);over?.classList.remove('drop-hover');over=['merge','field-merge','layoff','replace','discard'].includes(target?.type)?target.element:null;if(over!==held.element)over?.classList.add('drop-hover');preview(target,e.clientX,e.clientY);hoverMerge(target,e.clientX,e.clientY);
+  const found=locate(e.clientX,e.clientY),target=allowed(found)?found:null;ghost.classList.toggle('drop-blocked',!!found&&!target);over?.classList.remove('drop-hover');over=['merge','field-merge','layoff','replace','discard'].includes(target?.type)?target.element:null;if(over!==held.element)over?.classList.add('drop-hover');preview(target,e.clientX,e.clientY);hoverMerge(target,e.clientX,e.clientY);
   const hand=document.elementFromPoint(e.clientX,e.clientY)?.closest('[data-drop-hand]')?.querySelector('.hand-cards')||handRoot;if(hand){const r=hand.getBoundingClientRect();if(e.clientY>=r.top&&e.clientY<=r.bottom){if(e.clientX<r.left+30)hand.scrollLeft-=16;else if(e.clientX>r.right-30)hand.scrollLeft+=16;}}
   if(e.clientY>innerHeight-45)window.scrollBy(0,14);else if(e.clientY<45)window.scrollBy(0,-14);
  },{passive:false});
@@ -64,6 +66,7 @@ export function installCardMovement({context,drop}){
   if(!held.active){clear();return;}
   e.preventDefault();suppressUntil=Date.now()+500;
   const source={unit:held.unit,stage:held.stage,field:held.field,single:held.single,context:held.context,dropRects:Object.fromEntries([...ghost.querySelectorAll('[data-card]')].map(card=>[card.dataset.card,card.getBoundingClientRect()]))},target=locate(e.clientX,e.clientY),original=held.element,pendingGhost=target?.type==='discard'?ghost:null;
+  if(!allowed(target)){clear();return;}
   if(source.single&&target?.element===held.ownerElement){clear();return;}
   if(pendingGhost){ghost=null;pendingGhost.classList.add('awaiting-drop');}
   clear();original.classList.add('just-dropped');if(pendingGhost)original.classList.add('awaiting-discard');

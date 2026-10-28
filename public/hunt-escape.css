@@ -1,7 +1,7 @@
 .game-screen .playing.movement-game.hunt-escape-game>.board{grid-template-columns:300px minmax(0,1fr)!important;min-height:260px}
 #header-players .player{position:relative;overflow:visible}
-/* The horizontal player strip clips vertical overflow; reserve its top half for the spirit badge inside the existing header height. */
-#header-players{padding:14px 2px 0!important}
+/* The horizontal player strip clips vertical overflow; split the same header height evenly so the spirit badge above and the PLAYING badge below both fit. */
+#header-players{padding:7px 2px!important}
 #header-players .player .spirit-indicator{position:absolute;top:0;left:50%;z-index:3;transform:translate(-50%,-50%);display:inline-flex;align-items:center;justify-content:center;min-height:14px;padding:2px 6px;border:1px solid currentColor;border-radius:3px;font-family:Woodland,monospace;font-size:7px;line-height:1;white-space:nowrap;pointer-events:none}
 #header-players .player .spirit-hunt{color:#ff9a9b;background:#48212c;box-shadow:0 0 8px #db47524d}
 #header-players .player .spirit-escape{color:#a9d1ff;background:#1e304b;box-shadow:0 0 8px #579ce34d}
@@ -28,9 +28,10 @@
 .hunt-escape-game .hunt-pile .special-discard-quench{--effect-glow:#77dfff;--effect-halo:#42c8ff66;color:#a9eaff}
 .hunt-escape-game .hunt-pile .special-discard-hurry{--effect-glow:#ffe17a;--effect-halo:#f5c84266;color:#fff0a9}
 .hunt-escape-game .hunt-pile .special-discard-evoke{--effect-glow:#d79aff;--effect-halo:#ba67ff66;color:#e9c4ff}
-.player .sylvan-score-indicators{display:inline-flex;align-items:center;gap:3px;margin-left:3px;vertical-align:middle;font-family:Woodland,monospace;font-size:13px;line-height:1}
-.player .sylvan-party-mark{color:#f16c78;text-shadow:0 0 4px #ed637766}
-.player .sylvan-track-mark{color:#8fdb8b;text-shadow:0 0 4px #75d47766}
+.player .sylvan-score-indicators{display:inline-flex;align-items:center;gap:2px;margin-left:3px;vertical-align:middle;font-family:Woodland,monospace;font-size:13px;line-height:1}
+.player .sylvan-party-mark{display:inline-flex;align-items:center;color:#ff9f43}
+.player .sylvan-pack-triangle{display:block;width:14px;height:12px;filter:drop-shadow(0 0 3px #ff9f4366)}
+.player .sylvan-track-mark{color:#7db9ff;font-size:10px;letter-spacing:-.08em;white-space:nowrap;text-shadow:0 0 4px #4f9dff88}
 .hunt-escape-game .hunt-piles .card,.hunt-escape-game .hunt-piles #draw-stock,.hunt-escape-game .hunt-discard-card{width:96px;height:192px;max-width:96px;flex:0 0 192px;padding:0;overflow:hidden}
 .hunt-escape-game .hunt-discard-card{position:relative;display:block;border:0;background:transparent!important;box-shadow:none}
 .hunt-escape-game .hunt-discard-card>.forest-card{position:absolute;inset:0;width:100%;height:100%}
@@ -53,7 +54,7 @@
 .hunt-escape-game .hand{position:relative}
 .hunt-escape-game .sylvan-turn-banners{position:absolute;top:-12px;left:50%;z-index:5;transform:translateX(-50%);display:flex;flex-wrap:wrap;justify-content:center;gap:5px;max-width:calc(100% - 18px);pointer-events:none}
 .hunt-escape-game .sylvan-quench-banner,.hunt-escape-game .sylvan-hurry-banner{max-width:100%;padding:4px 10px;border:1px dashed currentColor;border-radius:4px;font-family:Woodland,monospace;font-size:10px;line-height:1.25;text-align:center;white-space:normal}
-.hunt-escape-game .sylvan-quench-banner{background:#361b31;color:#ffb5c1;box-shadow:0 0 10px #cd637344}
+.hunt-escape-game .sylvan-quench-banner{background:#361b31;color:#ffb5c1;box-shadow:0 0 10px #cd637344;white-space:nowrap}
 .hunt-escape-game .sylvan-hurry-banner{background:#332b16;color:#fff0a9;box-shadow:0 0 10px #f5c84244}
 .hunt-escape-game .meld-turn-note{align-self:center;color:#e5d5ed;font-size:11px}
 .hunt-escape-game .action-buttons .orange{background:#9a4a32;color:#fff0df}
@@ -74,6 +75,16 @@
 .hunt-escape-game .path-meld .hunt-meld-type{color:#b6d3f1;background:#243550c4}
 .hunt-escape-game .hunt-meld-signature{color:#ead5f0;background:#291936d9}
 .hunt-escape-game .hunt-stalked-tag{color:#e6baff;background:#542774d9;box-shadow:0 0 9px #bd6bffb3}
+.hunt-escape-game .hunt-meld-type.hunt-fleeing-tag{color:#ff7d7d;background:#4a1820d9;box-shadow:0 0 9px #ff4d5a66}
+.hunt-escape-game .card-origin-effect.origin-blazed{color:#ffd09c;text-shadow:0 0 5px #ff9b50}
+/* The light Returned box needs the Arise badge's own dark chip to keep the effect colour readable. */
+.hunt-escape-game .card-origin-effect.origin-arisen{display:inline-block;padding:0 4px;border-radius:2px;background:#183b2c;color:#c5ffd1;text-shadow:0 0 5px #68db8e}
+.hunt-escape-game .hunt-meld-type.meld-suit-fox{color:#f3dfc0;background:#5a2615d9;border-color:#e0794f}
+.hunt-escape-game .hunt-meld-type.meld-suit-owl{color:#ded2e7;background:#352a4ad9;border-color:#a58fd0}
+.hunt-escape-game .hunt-meld-type.meld-suit-hunter{color:#f6e2dc;background:linear-gradient(90deg,#5a2615d9 50%,#352a4ad9 50%);border-color:#d08f8a}
+.hunt-escape-game .path-meld .hunt-meld-type.meld-suit-hare{color:#d8e0b7;background:#2e3820d9;border-color:#93a86e}
+.hunt-escape-game .path-meld .hunt-meld-type.meld-suit-toad{color:#c0d9cb;background:#173a38d9;border-color:#5fa9a3}
+.drag-ghost.drop-blocked{opacity:.55;filter:grayscale(.45)}
 .hunt-escape-game .hunt-meld .meld-cards{display:flex;align-items:center;justify-content:center}
 .hunt-escape-game .hunt-meld .meld-cards .mini-card{width:70px;height:140px}
 .hunt-escape-game .hunt-meld .table-meld-controls{position:relative;z-index:4}
@@ -140,3 +151,20 @@
 .lobby .variant-choices [data-variant="hunt-escape"]{padding-top:14px}
 .hunt-escape-game .neutral-hand-side:before{content:'';display:block;flex:0 0 27.2px;height:27.2px}
 @media(max-width:650px){.hunt-escape-game .neutral-hand-side:before{flex-basis:22.4px;height:22.4px}}
+
+/* Turn-end effect announcements float over the table and card flights: no panel, no pointer capture and no layout impact. */
+.turn-announcement{position:fixed;inset:0;z-index:7100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:16px;pointer-events:none;text-align:center;font-family:Alagard,Woodland,monospace;user-select:none}
+.turn-announcement[hidden]{display:none}
+.turn-announcement.announcing{animation:turn-announcement 2.8s ease-in-out both}
+.turn-announcement-section{display:flex;flex-direction:column;align-items:center;gap:4px;max-width:100%}
+.turn-announcement-name{max-width:100%;overflow-wrap:anywhere;color:#fff4dc;font-size:clamp(24px,4.5vw,42px);line-height:1.1;text-shadow:0 0 6px #fff4dcaa,0 0 18px #b984dc,0 3px 0 #17112f}
+.turn-announcement-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:2px 24px}
+.turn-announcement-effect{color:var(--announce);font-size:clamp(34px,7vw,66px);line-height:1.05;text-shadow:0 0 8px var(--announce-glow),0 0 24px var(--announce-glow),0 3px 0 #17112f}
+.turn-announcement .effect-quenched{--announce:#a9eaff;--announce-glow:#77dfff}
+.turn-announcement .effect-hurried{--announce:#fff0a9;--announce-glow:#ffe17a}
+.turn-announcement .effect-evoked{--announce:#e9c4ff;--announce-glow:#d79aff}
+.turn-announcement .effect-arisen{--announce:#c5ffd1;--announce-glow:#68db8e}
+.turn-announcement .effect-blazed{--announce:#ffd09c;--announce-glow:#ff9b50}
+@keyframes turn-announcement{0%{opacity:0;transform:scale(.94)}12%{opacity:1;transform:scale(1)}78%{opacity:1;transform:scale(1)}100%{opacity:0;transform:scale(1.02)}}
+@keyframes turn-announcement-fade{0%{opacity:0}12%{opacity:1}78%{opacity:1}100%{opacity:0}}
+@media(prefers-reduced-motion:reduce){.turn-announcement.announcing{animation-name:turn-announcement-fade}}
