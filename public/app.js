@@ -163,7 +163,7 @@ const headerSizer=new ResizeObserver(requestHeaderFit);
 for(const el of [$('header'),$('header-players'),$('copy'),document.querySelector('.header-controls')])headerSizer.observe(el);
 window.addEventListener('resize',requestHeaderFit);
 window.addEventListener('resize',alignFloatingPanel);
-window.addEventListener('resize',syncFieldRowReserve);
+window.addEventListener('resize',()=>document.querySelectorAll('[data-field-drafts]').forEach(drafts=>syncFieldRowReserve(drafts)));
 document.addEventListener('dragstart',e=>{if(!e.target.closest('input,textarea,[contenteditable="true"]'))e.preventDefault();});
 // The gradient reaches full opacity exactly where the turn strip starts.
 function fitPassCover(){const cover=document.querySelector('.pass-screen'),turn=document.querySelector('.movement-game>.hand-heading');document.body.classList.toggle('passing-screen',!!cover);if(cover&&turn){const top=Math.max(0,Math.min(innerHeight,$('header').getBoundingClientRect().bottom));cover.style.setProperty('--pass-header-bottom',top+'px');cover.style.setProperty('--pass-opaque-top',Math.max(0,Math.min(innerHeight-top,turn.getBoundingClientRect().top-top))+'px');}}
