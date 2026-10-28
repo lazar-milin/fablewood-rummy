@@ -7,7 +7,7 @@ let simpleCards=false,cardVariant='remi51';const simpleFaces=new Map();
 const simplePalette={fox:['#F3DFC0','#2E1A14','#F08B3E'],hare:['#DBE1BA','#29231C','#CDB99A'],toad:['#C8DCD6','#222D26','#ADC493'],owl:['#CAD4E6','#20243D','#B3BCDF']};
 // Preserve the original image boxes; offset only their vertical position to share the hare baseline.
 const markerBounds={fox:[1536,1024,322,131,890,769],hare:[1356,1159,220,88,916,996],toad:[1536,1024,263,203,1011,645],owl:[1536,1024,322,160,893,750]};
-function refreshBack(){cardBackMarkup=simpleCards||cardVariant==='rummikub'?simpleCardBackMarkup:fullCardBackMarkup;}
+function refreshBack(){cardBackMarkup=simpleCards||cardVariant==='rummikub'||cardVariant==='hunt-escape'?simpleCardBackMarkup:fullCardBackMarkup;}
 export function setSimpleCards(enabled){simpleCards=!!enabled;refreshBack();}
 export function setCardVariant(variant='remi51'){cardVariant=variant;refreshBack();}
 function simpleMarkup(c,key){
@@ -19,4 +19,4 @@ function simpleMarkup(c,key){
  const character=c.joker?[...rank].map(letter=>`<span>${letter}</span>`).join(''):rank;
  const markup=`<span class="forest-card simple-card ${numeric?'numeric-card ':''}${c.joker?'simple-joker':'suit-'+c.suit}" aria-label="${label}" style="${style}"><img class="card-frame" src="/art/card-kit/assets/frames/${c.joker?'joker':c.suit}-capsule.svg" alt=""><span class="simple-face-fill" aria-hidden="true"></span>${marker}<span class="simple-rank" ${c.joker?'aria-hidden="true"':''}>${character}</span></span>`;simpleFaces.set(cacheKey,markup);return markup;
 }
-export function cardMarkup(c){const key=c.joker?'joker-'+Number(c.id.split('-').at(-1))%4:c.suit+'-'+c.rank;if(simpleCards||cardVariant==='rummikub')return simpleMarkup(c,key);return c.joker?faces[key].replace(/curve-joker-[a-z]+/g,id=>id+'-'+c.id):faces[key];}
+export function cardMarkup(c){const key=c.joker?'joker-'+Number(c.id.split('-').at(-1))%4:c.suit+'-'+c.rank;if(simpleCards||cardVariant==='rummikub'||cardVariant==='hunt-escape')return simpleMarkup(c,key);return c.joker?faces[key].replace(/curve-joker-[a-z]+/g,id=>id+'-'+c.id):faces[key];}

@@ -1,0 +1,132 @@
+.game-screen .playing.movement-game.hunt-escape-game>.board{grid-template-columns:268px minmax(0,1fr)!important;min-height:260px}
+#header-players .player{position:relative;overflow:visible}
+/* The horizontal player strip clips vertical overflow; reserve its top half for the spirit badge inside the existing header height. */
+#header-players{padding:14px 2px 0!important}
+#header-players .player .spirit-indicator{position:absolute;top:0;left:50%;z-index:3;transform:translate(-50%,-50%);display:inline-flex;align-items:center;justify-content:center;min-height:14px;padding:2px 6px;border:1px solid currentColor;border-radius:3px;font-family:Woodland,monospace;font-size:7px;line-height:1;white-space:nowrap;pointer-events:none}
+#header-players .player .spirit-hunt{color:#ff9a9b;background:#48212c;box-shadow:0 0 8px #db47524d}
+#header-players .player .spirit-escape{color:#a9d1ff;background:#1e304b;box-shadow:0 0 8px #579ce34d}
+.game-screen #header-players .player{transform:none}
+/* Match the spirit labels to the PLAYING badge without changing header geometry. */
+.game-screen #header-players .player{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:10px!important}
+.game-screen #header-players .player.active:after{top:auto;bottom:-1px;line-height:1.25;padding:3px 8px;border-width:2px}
+#header-players .player .spirit-indicator{min-height:0;padding:3px 8px;border-width:2px;font-size:12px;line-height:1.25}
+@media(max-width:650px){#header-players .player .spirit-indicator{font-size:10px;line-height:1.25}.game-screen #header-players .player.active:after{font-size:10px}}
+.hunt-escape-game .board .meld-area,.hunt-escape-game .board .meld-area>.melds{min-height:260px}
+.hunt-escape-game .hunt-piles{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:2px;min-width:0;padding:0 2px 0 0;border-right:2px dashed #a583b4;border-bottom:0}
+.hunt-escape-game .hunt-pile{display:flex;flex:0 0 auto;flex-direction:column;align-items:center;justify-content:flex-start;gap:7px;min-width:0;padding:0}
+.hunt-escape-game .hunt-pile small{position:static;max-width:100%;transform:none;color:#eee0f4;font-size:9px;white-space:nowrap;text-align:center}
+.hunt-escape-game .hunt-pile .protected-discard-label{color:#f1a1b1;text-shadow:0 0 5px #e96a8655}
+.hunt-escape-game .hunt-pile .special-discard-label{min-height:21px;padding:4px 9px;border:1px solid currentColor;border-radius:3px;background:#17112fdd;font-family:Woodland,monospace;font-size:10px;line-height:1.15;text-shadow:0 0 7px currentColor;box-shadow:0 0 8px var(--effect-halo)}
+.hunt-escape-game .hunt-pile .special-discard-blaze{--effect-glow:#ff9b50;--effect-halo:#ff8a3866;color:#ffd09c}
+.hunt-escape-game .hunt-pile .special-discard-quench{--effect-glow:#77dfff;--effect-halo:#42c8ff66;color:#a9eaff}
+.hunt-escape-game .hunt-pile .special-discard-hurry{--effect-glow:#ffe17a;--effect-halo:#f5c84266;color:#fff0a9}
+.hunt-escape-game .hunt-pile .special-discard-evoke{--effect-glow:#d79aff;--effect-halo:#ba67ff66;color:#e9c4ff}
+.player .sylvan-score-indicators{display:inline-flex;align-items:center;gap:3px;margin-left:3px;vertical-align:middle;font-family:Woodland,monospace;font-size:13px;line-height:1}
+.player .sylvan-party-mark{color:#f16c78;text-shadow:0 0 4px #ed637766}
+.player .sylvan-track-mark{color:#8fdb8b;text-shadow:0 0 4px #75d47766}
+.hunt-escape-game .hunt-piles .card,.hunt-escape-game .hunt-piles #draw-stock,.hunt-escape-game .hunt-discard-card{width:96px;height:192px;max-width:96px;flex:0 0 192px;padding:0;overflow:hidden}
+.hunt-escape-game .hunt-discard-card{position:relative;display:block;border:0;background:transparent!important;box-shadow:none}
+.hunt-escape-game .hunt-discard-card>.forest-card{position:absolute;inset:0;width:100%;height:100%}
+.hunt-escape-game .hunt-discard-card:disabled{opacity:1;filter:none}
+.hunt-escape-game .hunt-discard-card.special-discard>.forest-card{--effect-glow:#e7c7ff;--effect-halo:#bc78ff66;animation:sylvan-discard-glow 1.35s ease-in-out infinite alternate}
+.hunt-escape-game .hunt-discard-card.special-discard-blaze>.forest-card{--effect-glow:#ffab56;--effect-halo:#ff782f77}
+.hunt-escape-game .hunt-discard-card.special-discard-quench>.forest-card{--effect-glow:#75dcff;--effect-halo:#43c5ff77}
+.hunt-escape-game .hunt-discard-card.special-discard-hurry>.forest-card{--effect-glow:#ffe47d;--effect-halo:#f6c94377}
+.hunt-escape-game .hunt-discard-card.special-discard-evoke>.forest-card{--effect-glow:#d6a0ff;--effect-halo:#b76aff77}
+.hunt-escape-game .hunt-discard-card.hurry-draw-option>.forest-card{filter:drop-shadow(0 0 6px #ffe47d) drop-shadow(0 0 13px #f6c94399)}
+.hunt-escape-game .hunt-discard-card.hurry-draw-option:hover>.forest-card,.hunt-escape-game .hunt-discard-card.hurry-draw-option:focus-visible>.forest-card{filter:drop-shadow(0 0 9px #fff0a9) drop-shadow(0 0 20px #f6c943cc)}
+.hunt-escape-game .card.arise-effect-glow>.forest-card{--effect-glow:#a4f0b6;--effect-halo:#68db8e88;animation:sylvan-discard-glow 1.35s ease-in-out infinite alternate}
+.hunt-escape-game .arise-flying-card>.forest-card{--effect-glow:#a4f0b6;--effect-halo:#68db8eaa;animation:sylvan-discard-glow .45s ease-in-out infinite alternate}
+.hunt-escape-game .card-effect-badge{position:absolute;z-index:8;left:50%;top:calc(100% + 5px);bottom:auto;transform:translateX(-50%);padding:2px 5px;border:1px solid #a4f0b6;border-radius:3px;background:#183b2c;color:#c5ffd1;font-family:Woodland,monospace;font-size:7px;line-height:1;text-shadow:0 0 5px #68db8e}
+.hunt-escape-game .hand-card-shell:has(.card-effect-badge){z-index:7}
+@keyframes sylvan-discard-glow{from{filter:drop-shadow(0 0 3px var(--effect-glow)) drop-shadow(0 0 7px var(--effect-halo))}to{filter:drop-shadow(0 0 7px var(--effect-glow)) drop-shadow(0 0 15px var(--effect-halo))}}
+.hunt-escape-game .hunt-discard-card.empty-card{display:grid;place-items:center;border:2px dashed #a583b4;border-radius:50% / 25%;background:#121d3ab0!important;color:#e8d9f2;font-size:22px}
+.hunt-escape-game .hunt-discard-piles{display:flex;flex-direction:row;align-items:center;justify-content:center;gap:2px;min-width:0}
+.hunt-escape-game .hunt-discard-piles.drop-hover .hunt-discard-card{outline:3px dashed #dcb0fa!important;outline-offset:5px;border-radius:50% / 25%;filter:drop-shadow(0 0 9px #b984dc88)}
+.hunt-escape-game .hand{position:relative}
+.hunt-escape-game .sylvan-turn-banners{position:absolute;top:-12px;left:50%;z-index:5;transform:translateX(-50%);display:flex;flex-wrap:wrap;justify-content:center;gap:5px;max-width:calc(100% - 18px);pointer-events:none}
+.hunt-escape-game .sylvan-quench-banner,.hunt-escape-game .sylvan-hurry-banner{max-width:100%;padding:4px 10px;border:1px dashed currentColor;border-radius:4px;font-family:Woodland,monospace;font-size:10px;line-height:1.25;text-align:center;white-space:normal}
+.hunt-escape-game .sylvan-quench-banner{background:#361b31;color:#ffb5c1;box-shadow:0 0 10px #cd637344}
+.hunt-escape-game .sylvan-hurry-banner{background:#332b16;color:#fff0a9;box-shadow:0 0 10px #f5c84244}
+.hunt-escape-game .meld-turn-note{align-self:center;color:#e5d5ed;font-size:11px}
+.hunt-escape-game .action-buttons .orange{background:#9a4a32;color:#fff0df}
+.hunt-escape-game .action-buttons .gold{background:#95702e;color:#fff0c8}
+.hunt-escape-game .action-buttons .meld-turn-note{min-height:42px;display:flex;align-items:center}
+.hunt-escape-game .meld-area .melds{min-height:260px}
+.hunt-escape-game .meld-area .field-drop-caption{margin:9px auto 15px}
+.hunt-escape-game .table-meld-controls{flex-wrap:wrap}
+.hunt-escape-game .meld-area{position:relative;isolation:isolate}
+.hunt-escape-game .meld-area>.melds{position:relative;z-index:1}
+.hunt-escape-game .stalk-tracks{position:absolute;inset:0;z-index:2;width:100%;height:100%;overflow:visible;pointer-events:none}
+.hunt-escape-game .stalk-trail-glow{fill:none;stroke:#ba69ff;stroke-width:8;stroke-linecap:round;opacity:.55;filter:blur(5px)}
+.hunt-escape-game .stalk-trail{fill:none;stroke:#e6baff;stroke-width:3;stroke-linecap:round;stroke-dasharray:9 5;filter:drop-shadow(0 0 5px #c26bff)}
+.hunt-escape-game .hunt-meld{display:flex;flex-direction:column;align-items:center;gap:0;padding:8px 10px 10px;position:relative;z-index:3}
+.hunt-escape-game .hunt-meld-indicators{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:7px;pointer-events:none}
+.hunt-escape-game .hunt-meld-type,.hunt-escape-game .hunt-meld-signature,.hunt-escape-game .hunt-stalked-tag{display:inline-flex;align-items:center;min-height:22px;padding:3px 8px;border:1px dashed currentColor;border-radius:4px;font-family:Woodland,monospace;font-size:9px;line-height:1.2;white-space:nowrap}
+.hunt-escape-game .hunt-meld-type{color:#bce4a2;background:#24472db8}
+.hunt-escape-game .path-meld .hunt-meld-type{color:#b6d3f1;background:#243550c4}
+.hunt-escape-game .hunt-meld-signature{color:#ead5f0;background:#291936d9}
+.hunt-escape-game .hunt-stalked-tag{color:#e6baff;background:#542774d9;box-shadow:0 0 9px #bd6bffb3}
+.hunt-escape-game .hunt-meld .meld-cards{display:flex;align-items:center;justify-content:center}
+.hunt-escape-game .hunt-meld .meld-cards .mini-card{width:70px;height:140px}
+.hunt-escape-game .hunt-meld .table-meld-controls{position:relative;z-index:4}
+@media(max-width:900px){.game-screen .playing.movement-game.hunt-escape-game>.board{grid-template-columns:minmax(0,1fr)!important}.hunt-escape-game .hunt-piles{padding:0 0 14px;border-right:0;border-bottom:2px dashed #a583b4}}
+@media(max-width:650px){
+ .hunt-escape-game .hunt-piles{gap:4px;padding:0 0 14px}
+ .hunt-escape-game .hunt-discard-piles{gap:3px}
+ .game-screen .playing.movement-game.hunt-escape-game>.board{min-height:210px}
+ .hunt-escape-game .board .meld-area,.hunt-escape-game .board .meld-area>.melds{min-height:210px}
+ .hunt-escape-game .hunt-piles .card,.hunt-escape-game .hunt-piles #draw-stock,.hunt-escape-game .hunt-discard-card{width:72px;height:144px;max-width:72px;flex-basis:144px}
+ .hunt-escape-game .hunt-pile small{font-size:8px}
+ .hunt-escape-game .hunt-meld .meld-cards .mini-card{width:58px;height:116px}
+ .hunt-escape-game .hunt-meld-indicators{gap:4px}
+ .hunt-escape-game .hunt-meld-type,.hunt-escape-game .hunt-meld-signature,.hunt-escape-game .hunt-stalked-tag{min-height:19px;padding:2px 5px;font-size:8px}
+}
+
+/* The original Sylvan Trail variant gets a small badge that does not affect layout. */
+.lobby .variant-choices button{overflow:hidden}
+.lobby .variant-choices button.chosen::before{top:-50%;bottom:-50%;clip-path:none}
+.lobby .variant-choices .original-game-wrap{position:relative;min-width:0;width:100%}
+.lobby .variant-choices .original-game-indicator{position:absolute;z-index:2;top:0;left:50%;transform:translate(-50%,-50%);display:inline-flex;align-items:center;justify-content:center;padding:2px 7px;border:1px solid #c4a0d8;border-radius:3px;background:#4c2867;color:#ead8f5;font:10px/1 Woodland,monospace;white-space:nowrap;pointer-events:none}
+.lobby .variant-choices [data-variant="hunt-escape"]{padding-top:28px}
+
+/* Sylvan Trail's paired lanes keep each family visually distinct without adding a separator. */
+.hunt-escape-game .sylvan-hand-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:clamp(8px,2vw,22px);width:100%}
+.hunt-escape-game .sylvan-hand-side{min-width:0;display:flex;flex-direction:column;align-items:stretch}
+.hunt-escape-game .sylvan-hand-side>h3,.hunt-escape-game .hunt-field-lane>h3{margin:0 0 8px;text-align:center;font:16px/1.2 Woodland,monospace;letter-spacing:.04em;user-select:none}
+.hunt-escape-game .hunter-hand-side>h3,.hunt-escape-game .party-lane>h3{color:#ed777e;text-shadow:0 0 7px #e34f6255}
+.hunt-escape-game .prey-hand-side>h3,.hunt-escape-game .path-lane>h3{color:#b8d6ee}
+.sylvan-hunter-term{color:#ed777e;text-shadow:0 0 7px #e34f6255}
+.sylvan-prey-term{color:#b8d6ee}
+.hunt-escape-game .hunter-hand-side>h3,.hunt-escape-game .party-lane>h3{text-align:left}
+.hunt-escape-game .prey-hand-side>h3,.hunt-escape-game .path-lane>h3{text-align:right}
+.hunt-escape-game .sylvan-hand-side>.hand-cards{width:100%;min-width:0;min-height:170px!important;padding:8px!important;gap:30px 12px!important;align-content:flex-start;justify-content:flex-start;overflow:visible}
+.hunt-escape-game .hunter-hand-side>.hand-cards{justify-content:flex-start}
+.hunt-escape-game .prey-hand-side>.hand-cards{justify-content:flex-end}
+.hunt-escape-game .sylvan-hand-columns.has-neutral-cards{grid-template-columns:minmax(0,1fr) minmax(0,.8fr) minmax(0,1fr)}
+.hunt-escape-game .neutral-hand-side{min-width:0;align-items:stretch;justify-content:flex-end}
+.hunt-escape-game .neutral-hand-side>.hand-cards{justify-content:center;align-items:flex-end}
+.hunt-escape-game .sylvan-hand-side .hand-unit{flex:0 0 auto}
+.hunt-escape-game .melds{display:block}
+.hunt-escape-game .field-drafts.hand{display:block;flex:1 0 100%;min-height:0;width:100%;margin:0;padding:0!important;overflow:visible;background:transparent;border:0;box-shadow:none}
+.hunt-escape-game .hunt-field-lanes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:clamp(10px,2vw,24px);width:100%;min-height:240px}
+.hunt-escape-game .hunt-field-lane{display:flex;flex-direction:column;align-items:stretch;min-width:0;min-height:220px}
+.hunt-escape-game .hunt-lane-melds,.hunt-escape-game .hunt-lane-drafts{display:flex;flex-wrap:wrap;align-content:flex-start;align-items:flex-start;justify-content:center;gap:32px 10px;width:100%;min-width:0}
+.hunt-escape-game .party-lane .hunt-lane-melds,.hunt-escape-game .party-lane .hunt-lane-drafts{justify-content:flex-start}
+.hunt-escape-game .path-lane .hunt-lane-melds,.hunt-escape-game .path-lane .hunt-lane-drafts{justify-content:flex-end}
+.hunt-escape-game .hunt-lane-melds{min-height:50px}
+.hunt-escape-game .field-drafts.hand.hunt-lane-drafts{display:flex;flex:0 0 auto;position:relative;min-height:150px;width:100%;margin:0;padding:8px 0 30px!important;overflow:visible;background:transparent;border:0;box-shadow:none}
+.hunt-escape-game .hunt-lane-drafts .field-group{margin-bottom:30px}
+.hunt-escape-game .hunt-drop-preview{flex:0 0 auto;border:2px dashed #d6a9f1;border-radius:38px;background:#b778e527;box-shadow:0 0 15px #b15de544;pointer-events:none;opacity:.9}
+@media(max-width:650px){
+ .hunt-escape-game .sylvan-hand-columns,.hunt-escape-game .hunt-field-lanes{gap:6px}
+ .hunt-escape-game .sylvan-hand-side>h3,.hunt-escape-game .hunt-field-lane>h3{font-size:12px}
+ .hunt-escape-game .sylvan-hand-side>.hand-cards{padding:4px!important;gap:26px 6px!important;min-height:130px!important}
+ .hunt-escape-game .hunt-field-lane{min-height:180px}
+ .hunt-escape-game .hunt-lane-melds,.hunt-escape-game .hunt-lane-drafts{gap:26px 5px}
+}
+
+/* Keep the original-game badge from shifting the variant label; align neutral cards with the flanking rows. */
+.lobby .variant-choices [data-variant="hunt-escape"]{padding-top:14px}
+.hunt-escape-game .neutral-hand-side:before{content:'';display:block;flex:0 0 27.2px;height:27.2px}
+@media(max-width:650px){.hunt-escape-game .neutral-hand-side:before{flex-basis:22.4px;height:22.4px}}

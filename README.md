@@ -1,6 +1,8 @@
 # Fablewood Rummy
 
-A magical-forest card game for online tables and local play with humans and bots. Classic Rummy follows Serbian Remi 51 with configurable house rules. Rummikub is available beside Classic Rummy in the lobby.
+A magical-forest card game for online tables and local play with humans and bots. Classic Rummy follows Serbian Remi 51 with configurable house rules. Rummikub and Hunt & Escape are available beside Classic Rummy in the lobby.
+
+Hunt & Escape uses the simple animal cards and four decks with eight jokers. Foxes and Owls make Hunter sets; Hares and Toads make Prey runs. Each player chooses a spirit through their discard: one Hunter card switches them to Escape, one Prey card to Hunt, and a multi-card discard changes spirit only when every card is from the same family. Mixed discards leave the spirit unchanged; a joker always changes it. Players draw two cards (or enough to reach seven), expose at most one meld, then discard the required number of cards. Hurry can reduce that number and Quench can increase it. Hunt and Escape have different nine-card victory goals; Stalk and Diversion add tactical effects.
 
 ## Moving cards
 

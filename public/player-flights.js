@@ -6,10 +6,11 @@ function nodeFor(place,card){
  if(place.zone==='stock')return document.getElementById('draw-stock');
  if(place.zone==='cut')return document.getElementById('draw-cut');
  if(place.zone==='discard')return document.querySelector('#discard-pile>.card')||document.querySelector('[data-drop-discard] .empty-card');
+ if(place.zone==='hunt-discard')return document.querySelector(`[data-hunt-discard="${place.index}"]`);
  const parent=document.querySelector(place.zone==='draft'?`[data-field-group="${place.index}"]`:place.zone==='meld'?`[data-table-meld="${place.index}"]`:`[data-stage="${place.index}"]`);return parent?.querySelector(`[data-card="${card?.id}"]`)||parent;
 }
 export function rememberDragDiscards(rects={}){const entries=Object.entries(rects);for(const [id,rect]of entries)dragOrigins.set(id,rect);return ()=>{for(const [id,rect]of entries)if(dragOrigins.get(id)===rect)dragOrigins.delete(id);};}
-export function prepareFlights(moves){return moves.map(move=>{const drag=move.from.zone==='hand'&&move.to.zone==='discard'?dragOrigins.get(move.card?.id):null;return {...move,start:drag||nodeFor(move.from,move.card)?.getBoundingClientRect(),dragged:!!drag,previousDiscard:move.to.zone==='discard'?nodeFor({zone:'discard'})?.querySelector('.forest-card')?.outerHTML:null};});}
+export function prepareFlights(moves){return moves.map(move=>{const drag=move.from.zone==='hand'&&['discard','hunt-discard'].includes(move.to.zone)?dragOrigins.get(move.card?.id):null;return {...move,start:drag||nodeFor(move.from,move.card)?.getBoundingClientRect(),dragged:!!drag,previousDiscard:move.to.zone==='discard'?nodeFor({zone:'discard'})?.querySelector('.forest-card')?.outerHTML:null};});}
 function finish(record){
  if(!active.delete(record))return;record.ghost.remove();
  if(record.move.to.zone==='discard'&&record.move.card)underlayFace=cardMarkup(record.move.card);
@@ -29,7 +30,7 @@ function animateTo(record,end){
 export function refreshFlights(nextContext){
  if(nextContext!==undefined&&context!==nextContext){for(const record of active){record.animation?.cancel();record.ghost.remove();}active.clear();context=nextContext;}
  const targets=new Set();
- for(const record of active){if(record.started&&performance.now()>=record.deadline){finish(record);continue;}const target=nodeFor(record.move.to,record.move.card),end=target?.getBoundingClientRect();if(!end?.width)continue;if(record.move.to.zone!=='player')targets.add(target);animateTo(record,end);}
+ for(const record of active){if(record.started&&performance.now()>=record.deadline){finish(record);continue;}const target=nodeFor(record.move.to,record.move.card),end=target?.getBoundingClientRect();if(!end?.width)continue;if(record.move.to.zone!=='player'&&record.move.to.zone!=='hunt-discard')targets.add(target);animateTo(record,end);}
  const arriving=new Set([...targets].map(target=>target.closest('.hand-unit')).filter(Boolean));
  for(const unit of document.querySelectorAll('.hand-unit.flight-arriving'))if(!arriving.has(unit))unit.classList.remove('flight-arriving');
  for(const unit of arriving)unit.classList.add('flight-arriving');
@@ -53,5 +54,15 @@ export function flyCards(moves){
   const delay=Math.min(i,8)*85,duration=move.dragged?350:1250;active.add({move,start:move.start,ghost,delay,duration,deadline:now+delay+duration,started:false});
  }
  refreshFlights();
+}
+export function flyArise(events){
+ if(!events?.length||matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ for(const [index,event]of events.entries()){
+  const handCard=document.querySelector(`.hand [data-card="${CSS.escape(event.card.id)}"]`),from=handCard||nodeFor({zone:'player',index:event.player}),target=document.querySelector(`[data-hunt-discard="${event.pile||0}"]`),start=event.sourceRect||from?.getBoundingClientRect(),end=target?.getBoundingClientRect();if(!start?.width||!end?.width)continue;
+  const visibility=handCard?.style.visibility;if(handCard)handCard.style.visibility='hidden';
+  const ghost=document.createElement('div');ghost.className='card player-card-flight arise-effect-glow arise-flying-card';ghost.setAttribute('aria-hidden','true');ghost.innerHTML=cardMarkup(event.card);ghost.style.left=start.left+'px';ghost.style.top=start.top+'px';ghost.style.width=start.width+'px';ghost.style.height=start.height+'px';document.body.append(ghost);
+  const dx=end.left-start.left,dy=end.top-start.top,sx=end.width/start.width,sy=end.height/start.height,travel=`translate(${dx}px,${dy}px) scale(${sx},${sy})`,options={duration:460,easing:'cubic-bezier(.2,.75,.2,1)',fill:'both'};
+  const fly=async()=>{if(index)await new Promise(resolve=>setTimeout(resolve,index*260));try{await ghost.animate([{transform:'translate(0,0) scale(1)'},{transform:travel}],options).finished;await new Promise(resolve=>setTimeout(resolve,1000));await ghost.animate([{transform:travel},{transform:'translate(0,0) scale(1)'}],options).finished;}catch{}ghost.remove();if(handCard?.isConnected)handCard.style.visibility=visibility||'';};fly();
+ }
 }
 if(typeof window!=='undefined')for(const event of ['scroll','resize'])window.addEventListener(event,()=>{if(active.size&&!refreshFrame)refreshFrame=requestAnimationFrame(()=>{refreshFrame=0;refreshFlights();});},{passive:true,capture:true});

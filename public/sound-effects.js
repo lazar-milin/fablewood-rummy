@@ -1,7 +1,12 @@
 const cues={
  action:[{hz:660,at:0,duration:.12,level:.3}],
  turn:[{hz:523.25,at:0,duration:.2,level:.34},{hz:659.25,at:.11,duration:.22,level:.34},{hz:783.99,at:.22,duration:.34,level:.36}],
- draw:[{hz:440,at:0,duration:.1,level:.25},{hz:587.33,at:.07,duration:.14,level:.28}]
+ draw:[{hz:440,at:0,duration:.1,level:.25},{hz:587.33,at:.07,duration:.14,level:.28}],
+ blaze:[{hz:784,at:0,duration:.14,level:.34},{hz:988,at:.1,duration:.18,level:.38},{hz:587.33,at:.3,duration:.24,level:.34}],
+ quench:[{hz:698.46,at:0,duration:.15,level:.32},{hz:523.25,at:.12,duration:.17,level:.34},{hz:392,at:.25,duration:.26,level:.32}],
+ hurry:[{hz:880,at:0,duration:.09,level:.34},{hz:1174.66,at:.09,duration:.13,level:.38}],
+ evoke:[{hz:392,at:0,duration:.2,level:.34},{hz:293.66,at:.13,duration:.28,level:.38},{hz:220,at:.32,duration:.35,level:.34}],
+ arise:[{hz:440,at:0,duration:.13,level:.32},{hz:659.25,at:.1,duration:.16,level:.36},{hz:880,at:.23,duration:.25,level:.38}]
 };
 
 export function turnFinished(before,after){

@@ -24,7 +24,7 @@ export function fieldAction(s,player,action,{play,resolveMeld,PlayerError},rando
   try{cards(ids);return play(s,player,{...move,ids},random);}catch(error){if(!(error instanceof PlayerError))throw error;s.fieldNotice=error.message;return s;}
  }
  if(s.stage!=='meld')fail('Draw a card before building on the field.');
- if(s.turns<s.names.length)fail('No opening or melding during the first lap.');
+ if(rules.variant!=='hunt-escape'&&s.turns<s.names.length)fail('No opening or melding during the first lap.');
  if(s.openingAttempt?.length)fail('Reset the old opening attempt before building on the field.');
  if(action.type==='field-stage'){
   available(action.ids);const at=Number.isInteger(action.before)?Math.max(0,Math.min(s.fieldGroups.length,action.before)):s.fieldGroups.length;s.fieldGroups.splice(at,0,{owner:player,ids:[...action.ids]});
@@ -41,16 +41,15 @@ export function fieldAction(s,player,action,{play,resolveMeld,PlayerError},rando
  function settle(){
   const resolved=g=>resolveMeld(g.ids.map(id=>s.hands[player].find(c=>c.id===id)),{opening:!s.opened[player],rules});
   if(!s.opened[player]){
-   const valid=s.fieldGroups.map(g=>({group:g,meld:resolved(g)})).filter(g=>g.meld),sum=valid.reduce((n,g)=>n+g.meld.points,0),ids=valid.flatMap(g=>g.group.ids);
+   let valid=s.fieldGroups.map(g=>({group:g,meld:resolved(g)})).filter(g=>g.meld);if(rules.variant==='hunt-escape')valid=valid.slice(0,1);const sum=valid.reduce((n,g)=>n+g.meld.points,0),ids=valid.flatMap(g=>g.group.ids);
    const finish=rules.handEnabled&&!rules.handRequiresOpening&&ids.length===s.hands[player].length-1&&(rules.handJokers||!s.hands[player].some(c=>c.joker));
-   if(!valid.length||sum<(rules.opening||51)&&!finish)return s;
+   const threshold=rules.variant==='hunt-escape'?0:(rules.opening||51);if(!valid.length||sum<threshold&&!finish)return s;
    const keep=s.fieldGroups.filter(g=>!valid.some(v=>v.group===g)),assignments=Object.fromEntries(valid.flatMap(v=>v.meld.cards.filter(c=>c.joker&&c.as).map(c=>[c.id,c.as])));
    s.fieldGroups=[];
    try{s=play(s,player,{type:'open',groups:valid.map(v=>v.group.ids),assignments},random);}catch(error){if(!(error instanceof PlayerError))throw error;s.fieldNotice=error.message;}
    s.fieldGroups=keep;return s;
   }
-  for(const g of [...s.fieldGroups]){
-   const m=resolved(g);if(!m)continue;
+  const eligible=s.fieldGroups.map(g=>({group:g,meld:resolved(g)})).filter(x=>x.meld);for(const {group:g,meld:m} of (rules.variant==='hunt-escape'?eligible.slice(0,1):eligible)){
    const keep=s.fieldGroups.filter(candidate=>candidate!==g),assignments=Object.fromEntries(m.cards.filter(c=>c.joker&&c.as).map(c=>[c.id,c.as]));s.fieldGroups=[];
    try{s=play(s,player,{type:'meld',ids:g.ids,assignments},random);}catch(error){if(!(error instanceof PlayerError))throw error;s.fieldNotice=error.message;}
    s.fieldGroups=keep;

@@ -1,10 +1,11 @@
 import {resolveRummikub,createRummikub,playRummikub} from './rummikub.js';
 import {fieldAction} from './field-building.js';
 import {duplicatePairs} from './duplicate-deals.js';
+import {HUNT_ESCAPE_RULES,createHuntEscape,playHuntEscape,resolveHuntEscapeMeld,huntEscapeBotAction} from './hunt-escape.js';
 // Errors meant for players; the server hides every other error's message.
 export class PlayerError extends Error{}
 export const SUITS=['fox','hare','toad','owl'];
-export const RULESETS={remi51:{name:'Classic Rummy',opening:51},rummikub:{name:'Rummikub',opening:30}};
+export const RULESETS={remi51:{name:'Classic Rummy',opening:51},rummikub:{name:'Rummikub',opening:30},'hunt-escape':{name:'Sylvan Trail',opening:0}};
 export const DEFAULT_RULES={opening:51,jokerCount:4,aceMode:'both',aceSeriesValue:'ten',firstLapDiscard:'take-no-open',jokerEnds:true,handEnabled:true,handRequiresOpening:true,handJokers:true,handBonus:80,handDouble:true,cutEnabled:true,cutBonus:120,dealDuplicateLimit:3,redealDuplicateLimit:0,turnOver4Sets:false,publicDiscardPile:true};
 export const points=c=>c.joker?20:c.rank===1?10:Math.min(c.rank,10);
 const rankOf=c=>c.joker?c.as?.rank:c.rank;
@@ -12,6 +13,7 @@ const suitOf=c=>c.joker?c.as?.suit:c.suit;
 // Run jokers keep their declared positions. A set joker stays undeclared until
 // the remaining animals identify exactly which card it represents.
 export function resolveMeld(cards,{opening=false,kind=null,rules={}}={}){
+ if(rules.variant==='hunt-escape')return resolveHuntEscapeMeld(cards,{role:rules.role,rules});
  if(rules.variant==='rummikub')return resolveRummikub(cards);
  const options={...DEFAULT_RULES,...rules};
  if(cards.length<3||new Set(cards.map(c=>c.id)).size!==cards.length)return null;
@@ -49,6 +51,7 @@ export function resolveMeld(cards,{opening=false,kind=null,rules={}}={}){
 }
 export function meldChoices(cards,{opening=false,rules={}}={}){
  const results=[],seen=new Set(),add=m=>{if(!m)return;const key=m.kind+'|'+m.cards.map(c=>c.id+':'+(c.as?.rank||c.rank)).join('|');if(!seen.has(key)){seen.add(key);results.push(m);}};
+ if(rules.variant==='hunt-escape'){add(resolveMeld(cards,{opening,rules}));return results;}
  if(cards.filter(c=>c.joker).length>1)return results;
  add(resolveMeld(cards,{opening,rules}));
  const real=cards.filter(c=>!c.joker),wild=cards.filter(c=>c.joker);
@@ -69,6 +72,7 @@ function declaredCards(cards,assignments={}){
 export const validMeld=cards=>!!resolveMeld(cards);
 export function createGame(names,options={},random=Math.random){
  if(options.variant==='rummikub')return createRummikub(names,options,random,PlayerError);
+ if(options.variant==='hunt-escape')return createHuntEscape(names,{...HUNT_ESCAPE_RULES,...options},random);
  if(![4,8].includes(options.jokerCount??4))throw new PlayerError("Choose four or eight jokers.");
  for(let attempt=0;attempt<1000;attempt++){const state=dealGame(names,options,random);if(!options.dealDuplicateLimit||state.hands.every(hand=>duplicatePairs(hand)<options.dealDuplicateLimit))return state;}
  throw new PlayerError('Could not deal within the duplicate limit. Please try again.');
@@ -85,6 +89,7 @@ function dealGame(names,options={},random=Math.random){
 }
 export function play(state,player,action,random=Math.random){
  if(state.options.variant==='rummikub')return playRummikub(state,player,action,{PlayerError,candidateMelds},random);
+ if(state.options.variant==='hunt-escape')return playHuntEscape(state,player,action,{PlayerError,play,fieldAction},random);
  const s=structuredClone(state);s.fieldNotice=null;if(s.winner!==null)throw new PlayerError('The round has ended.');if(player!==s.turn)throw new PlayerError('It is not your turn.');
  if(action.type?.startsWith('field-'))return fieldAction(s,player,action,{play,resolveMeld,PlayerError},random);
  const hand=s.hands[player],firstLap=s.turns<s.names.length,rules={...DEFAULT_RULES,...s.options};
@@ -173,6 +178,7 @@ export function findOpening(hand,{finish=false,rules={}}={}){
 }
 export function botAction(s){
  if(s.options.variant==='rummikub')return {type:'rk-auto'};
+ if(s.options.variant==='hunt-escape')return huntEscapeBotAction(s);
  const p=s.turn,hand=s.hands[p],firstLap=s.turns<s.names.length;
  if(s.fieldGroups?.length)return {type:'field-return'};
  if(s.stage==='draw')return {type:'draw',source:'stock'};
@@ -188,6 +194,7 @@ export function botAction(s){
 // The least useful legal discard; also the server's fallback when any other automatic move is rejected.
 export function botDiscard(s){
  if(s.options.variant==='rummikub')return {type:'draw',source:'stock'};
+ if(s.options.variant==='hunt-escape')return huntEscapeBotAction({...s,stage:'meld',pendingEffect:null,bonusDiscard:0,meldedThisTurn:true});
  const hand=s.hands[s.turn],pending=hand.filter(c=>s.pendingJokers.includes(c.id));
  const potential=c=>hand.reduce((n,o)=>n+(o.id!==c.id&&!o.joker?(o.rank===c.rank?4:0)+(o.suit===c.suit&&Math.abs(o.rank-c.rank)<=2?2:0):0),0);
  const ordinary=hand.filter(c=>!c.joker).sort((a,b)=>potential(a)-potential(b)||points(b)-points(a));
