@@ -1,4 +1,4 @@
-import test from 'node:test';import assert from 'node:assert/strict';import {prepareFlights,flyCards,refreshFlights,rememberDragDiscards} from '../public/player-flights.js';
+import test from 'node:test';import assert from 'node:assert/strict';import {prepareFlights,flyCards,flyArise,refreshFlights,rememberDragDiscards} from '../public/player-flights.js';
 import {setSimpleCards} from '../public/card-art.js?v=hivis-official-3';
 function fixture(){
  let groupEnabled=false;const flags=new Set(),unit={classList:{add:value=>flags.add(value),remove:value=>flags.delete(value)}};
@@ -23,3 +23,15 @@ test('a render rebinds hidden targets and closing a table cleans up active fligh
 test('a manually discarded card settles from its release position instead of flying back from the hand',async()=>{const f=fixture(),rect={left:120,top:190,width:80,height:160},forget=rememberDragDiscards({a1:rect});try{const event={...move(),from:{zone:'hand',index:0}},prepared=prepareFlights([event]);assert.equal(prepared[0].start,rect);assert.equal(prepared[0].dragged,true);flyCards(prepared);assert.equal(f.animations[0].options.duration,350);f.animations[0].resolve();await settle();forget();assert.equal(prepareFlights([event])[0].dragged,false);}finally{forget();f.restore();}});
 
 test('group controls stay hidden until the final incoming card flight settles',async()=>{const f=fixture();try{f.enableGroup();const events=[move(1),move(2)].map(m=>({...m,to:{zone:'hand',index:0}}));flyCards(prepareFlights(events));assert.ok(f.flags.has('flight-arriving'));f.animations[0].resolve();await settle();assert.ok(f.flags.has('flight-arriving'));f.animations[1].resolve();await settle();assert.equal(f.flags.has('flight-arriving'),false);}finally{f.restore();}});
+
+test('Arise flies from the hand to the pile, pauses, then visibly returns to the hand',async()=>{
+ const saved={document:globalThis.document,matchMedia:globalThis.matchMedia,CSS:globalThis.CSS,setTimeout:globalThis.setTimeout},animations=[],hand={style:{visibility:''},isConnected:true,getBoundingClientRect:()=>({left:20,top:120,width:80,height:160})},pile={getBoundingClientRect:()=>({left:320,top:200,width:80,height:160})},player={getBoundingClientRect:()=>({left:800,top:10,width:90,height:48})};
+ globalThis.matchMedia=()=>({matches:false});globalThis.CSS={escape:value=>value};globalThis.setTimeout=callback=>{callback();return 0;};globalThis.document={querySelector:selector=>selector.includes('.hand [data-card=')?hand:selector.includes('[data-hunt-discard=')?pile:selector.includes('[data-player=')?player:null,createElement:()=>{const node={style:{},animate(frames,options){let resolve;const finished=new Promise(done=>resolve=done);animations.push({frames,options,resolve});return {finished};},setAttribute(){},remove(){this.removed=true;}};return node;},body:{append(){}}};
+ try{
+  flyArise([{card:{id:'ace',rank:1,suit:'hare'},player:0,pile:0,sourceRect:hand.getBoundingClientRect()}]);
+  assert.equal(hand.style.visibility,'hidden');assert.equal(animations.length,1);
+  animations[0].resolve();await Promise.resolve();await Promise.resolve();await Promise.resolve();
+  assert.equal(animations.length,2);assert.equal(animations[1].frames[0].transform,animations[0].frames[1].transform);assert.match(animations[1].frames[1].transform,/translate\(-300px,-80px\)/);
+  animations[1].resolve();await Promise.resolve();await Promise.resolve();assert.equal(hand.style.visibility,'');
+ }finally{for(const [key,value]of Object.entries(saved)){if(value===undefined)delete globalThis[key];else globalThis[key]=value;}}
+});

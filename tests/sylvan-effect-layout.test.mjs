@@ -8,10 +8,16 @@ const app = await readFile(new URL('../public/app.js', import.meta.url), 'utf8')
 test('Sylvan discard piles reserve fixed label and effect-stack space', () => {
  assert.match(css, /\.hunt-pile small\{[^}]*height:31px;[^}]*min-height:31px/s);
  assert.match(css, /\.hunt-pile \.hunt-effect-stack\{[^}]*height:88px;[^}]*min-height:88px/s);
- assert.match(app, /<div class="hunt-effect-stack" aria-hidden="true"><\/div>/);
+ assert.match(app, /<div class="hunt-effect-stack" aria-label=/);
 });
 
 test('Sylvan effect indicators compact after the fourth row without growing the reserved stack', () => {
  assert.match(css, /\.hunt-effect-stack:has\(>:nth-child\(5\)\)\{gap:1px\}/);
- assert.match(css, /\.hunt-effect-stack:has\(>:nth-child\(5\)\)>\*\{flex-basis:15px/);
+ assert.match(css, /\.hunt-effect-stack:has\(>:nth-child\(5\)\)>\*\{flex:1 1 0;min-height:10px/);
+});
+
+test('Sylvan pool keeps the deck and both discard piles in one non-wrapping row', () => {
+ assert.match(css, /\.hunt-piles\{[^}]*flex-direction:row;flex-wrap:nowrap/s);
+ assert.match(css, /\.hunt-discard-piles\{[^}]*flex-direction:row;flex-wrap:nowrap/s);
+ assert.match(css, /hunt-escape-game>\.board\{grid-template-columns:300px minmax\(0,1fr\)!important/s);
 });

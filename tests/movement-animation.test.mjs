@@ -17,3 +17,4 @@ test('reduced-motion preference skips movement animation',()=>{
 });
 
 test('packing keeps remove controls gated until its animation completes',async()=>{globalThis.matchMedia=()=>({matches:false});const a=unit('a',0),root={querySelectorAll:()=>[a]},before=captureHand(root);a.rect={...a.rect,left:100,right:180};animateHand(before,root);assert.ok(a.flags.has('unit-moving'));a.complete();await Promise.resolve();await Promise.resolve();await Promise.resolve();assert.equal(a.flags.has('unit-moving'),false);});
+test('field drafts animate across every container in a list',()=>{globalThis.matchMedia=()=>({matches:false});const a=unit('a',0),b=unit('b',200),roots=[{querySelectorAll:()=>[a]},{querySelectorAll:()=>[b]}],before=captureHand(roots);a.rect={...a.rect,left:100,right:180};b.rect={...b.rect,left:300,right:380};animateHand(before,roots);assert.equal(a.calls[0].frames[0].translate,'-100px 0px');assert.equal(b.calls[0].frames[0].translate,'-100px 0px');});
