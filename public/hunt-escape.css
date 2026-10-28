@@ -98,6 +98,9 @@
 .hunt-escape-game .prey-hand-side>h3,.hunt-escape-game .path-lane>h3{color:#b8d6ee}
 .sylvan-hunter-term{color:#ed777e;text-shadow:0 0 7px #e34f6255}
 .sylvan-prey-term{color:#b8d6ee}
+.hunt-escape-game .hand-title h2{height:auto;min-height:36px;white-space:normal;flex-wrap:wrap;line-height:1.35}
+.hunt-escape-game .hand-title h2 small.spirit-hand-count{flex:1 1 230px;min-width:0;white-space:normal;line-height:1.45}
+.hunt-escape-game .spirit-hand-detail{white-space:normal}
 .hunt-escape-game .hunter-hand-side>h3,.hunt-escape-game .party-lane>h3{text-align:left}
 .hunt-escape-game .prey-hand-side>h3,.hunt-escape-game .path-lane>h3{text-align:right}
 .hunt-escape-game .sylvan-hand-side>.hand-cards{width:100%;min-width:0;min-height:170px!important;padding:8px!important;gap:30px 12px!important;align-content:flex-start;justify-content:flex-start;overflow:visible}
