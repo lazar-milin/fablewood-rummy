@@ -77,6 +77,13 @@
 .hunt-escape-game .hunt-stalked-tag{color:#e6baff;background:#542774d9;box-shadow:0 0 9px #bd6bffb3}
 .hunt-escape-game .hunt-meld-type.hunt-fleeing-tag{color:#ff7d7d;background:#4a1820d9;box-shadow:0 0 9px #ff4d5a66}
 .hunt-escape-game .card-origin-effect.origin-blazed{color:#ffd09c;text-shadow:0 0 5px #ff9b50}
+/* The light Returned box needs the Arise badge's own dark chip to keep the effect colour readable. */
+.hunt-escape-game .card-origin-effect.origin-arisen{display:inline-block;padding:0 4px;border-radius:2px;background:#183b2c;color:#c5ffd1;text-shadow:0 0 5px #68db8e}
+.hunt-escape-game .hunt-meld-type.meld-suit-fox{color:#f3dfc0;background:#5a2615d9;border-color:#e0794f}
+.hunt-escape-game .hunt-meld-type.meld-suit-owl{color:#ded2e7;background:#352a4ad9;border-color:#a58fd0}
+.hunt-escape-game .hunt-meld-type.meld-suit-hunter{color:#f6e2dc;background:linear-gradient(90deg,#5a2615d9 50%,#352a4ad9 50%);border-color:#d08f8a}
+.hunt-escape-game .path-meld .hunt-meld-type.meld-suit-hare{color:#d8e0b7;background:#2e3820d9;border-color:#93a86e}
+.hunt-escape-game .path-meld .hunt-meld-type.meld-suit-toad{color:#c0d9cb;background:#173a38d9;border-color:#5fa9a3}
 .drag-ghost.drop-blocked{opacity:.55;filter:grayscale(.45)}
 .hunt-escape-game .hunt-meld .meld-cards{display:flex;align-items:center;justify-content:center}
 .hunt-escape-game .hunt-meld .meld-cards .mini-card{width:70px;height:140px}

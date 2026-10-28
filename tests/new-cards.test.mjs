@@ -19,3 +19,11 @@ test('returned replaces new, survives refresh and clears on hover, click or move
  let state=updateNewCards(updateNewCards(null,['a']),['a','b']);state=markReturnedCards(state,['b']);assert.deepEqual(state.fresh,[]);assert.deepEqual(state.returned,['b']);
  state=updateNewCards(JSON.parse(JSON.stringify(state)),['a','b']);assert.deepEqual(state.returned,['b']);state=acknowledgeCards(state,['b']);assert.deepEqual(state.returned,[]);
 });
+test('an Arisen return keeps the Returned badge with its origin until acknowledged or returned another way',()=>{
+ let state=updateNewCards(null,['a','ace']);state=markReturnedCards(state,['ace'],{arisen:true});
+ assert.deepEqual(state.returned,['ace']);assert.deepEqual(state.arisen,['ace']);
+ state=updateNewCards(JSON.parse(JSON.stringify(state)),['a','ace']);assert.deepEqual(state.arisen,['ace']);
+ assert.deepEqual(markReturnedCards(state,['ace']).arisen,[],'a field return is plain Returned');
+ assert.deepEqual(acknowledgeCards(state,['ace']).arisen,[]);
+ assert.deepEqual(updateNewCards(state,['a']).arisen,[],'leaving the hand clears the origin');
+});
