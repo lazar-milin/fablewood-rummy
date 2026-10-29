@@ -19,7 +19,7 @@
 .hunt-escape-game .hunt-pile .special-discard-label{font-family:Woodland,monospace}
 /* Keep room for four indicators beneath each pile from the first render. */
 .hunt-escape-game .hunt-pile .hunt-effect-stack{display:flex;flex:0 0 88px;flex-direction:column;align-items:center;justify-content:flex-start;gap:3px;width:100%;height:88px;min-height:88px;box-sizing:border-box;overflow:hidden;pointer-events:none}
-.hunt-escape-game .hunt-pile .hunt-effect-stack>*{display:flex;flex:0 0 19px;align-items:center;justify-content:center;max-width:100%;overflow:hidden;box-sizing:border-box;padding:1px 5px;border:1px dashed currentColor;border-radius:3px;background:#17112fdd;font:9px/1 Woodland,monospace;white-space:nowrap;text-shadow:0 0 6px currentColor}
+.hunt-escape-game .hunt-pile .hunt-effect-stack>*{display:flex;flex:0 0 19px;align-items:center;justify-content:center;max-width:100%;overflow:hidden;box-sizing:border-box;padding:1px 5px;border:1px solid currentColor;border-radius:3px;background:#17112fdd;font:9px/1 Woodland,monospace;white-space:nowrap;text-shadow:0 0 6px currentColor}
 .hunt-escape-game .hunt-pile .hunt-effect-stack:has(>:nth-child(5)){gap:1px}
 .hunt-escape-game .hunt-pile .hunt-effect-stack:has(>:nth-child(5))>*{flex:1 1 0;min-height:10px;font-size:8px;line-height:1}
 .hunt-escape-game .hunt-pile .cleanse-discard-label{color:#eee0f4}
