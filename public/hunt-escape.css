@@ -16,19 +16,21 @@
 .hunt-escape-game .hunt-pile{display:flex;flex:0 0 auto;flex-direction:column;align-items:center;justify-content:flex-start;gap:7px;min-width:0;padding:0}
 .hunt-escape-game .hunt-pile small{position:static;display:flex;flex:0 0 31px;align-items:center;justify-content:center;box-sizing:border-box;width:100%;height:31px;min-height:31px;max-width:100%;transform:none;color:#eee0f4;font-size:9px;white-space:nowrap;text-align:center}
 .hunt-escape-game .hunt-pile .protected-discard-label{color:#f1a1b1;text-shadow:0 0 5px #e96a8655}
-.hunt-escape-game .hunt-pile .special-discard-label{padding:0 9px;border:1px solid currentColor;border-radius:3px;background:#17112fdd;font-family:Woodland,monospace;font-size:10px;line-height:1.15;text-shadow:0 0 7px currentColor;box-shadow:0 0 8px var(--effect-halo)}
+.hunt-escape-game .hunt-pile .special-discard-label{font-family:Woodland,monospace}
 /* Keep room for four indicators beneath each pile from the first render. */
 .hunt-escape-game .hunt-pile .hunt-effect-stack{display:flex;flex:0 0 88px;flex-direction:column;align-items:center;justify-content:flex-start;gap:3px;width:100%;height:88px;min-height:88px;box-sizing:border-box;overflow:hidden;pointer-events:none}
 .hunt-escape-game .hunt-pile .hunt-effect-stack>*{display:flex;flex:0 0 19px;align-items:center;justify-content:center;max-width:100%;overflow:hidden;box-sizing:border-box;padding:1px 5px;border:1px dashed currentColor;border-radius:3px;background:#17112fdd;font:9px/1 Woodland,monospace;white-space:nowrap;text-shadow:0 0 6px currentColor}
 .hunt-escape-game .hunt-pile .hunt-effect-stack:has(>:nth-child(5)){gap:1px}
 .hunt-escape-game .hunt-pile .hunt-effect-stack:has(>:nth-child(5))>*{flex:1 1 0;min-height:10px;font-size:8px;line-height:1}
 .hunt-escape-game .hunt-pile .cleanse-discard-label{color:#eee0f4}
-.hunt-escape-game .hunt-pile :is(.protected-discard-label,.cleanse-discard-label){align-self:center;flex:0 0 22px;width:auto;height:22px;min-height:22px;margin-block:4.5px;padding:2px 6px;border:1px dashed currentColor;border-radius:3px;box-sizing:border-box;background:#17112fbb;font-size:8px;line-height:1}
 .hunt-escape-game .hunt-effect-indicator.effect-self{border-style:solid;filter:saturate(.85)}
 .hunt-escape-game .hunt-pile .special-discard-blaze{--effect-glow:#ff9b50;--effect-halo:#ff8a3866;color:#ffd09c}
 .hunt-escape-game .hunt-pile .special-discard-quench{--effect-glow:#77dfff;--effect-halo:#42c8ff66;color:#a9eaff}
 .hunt-escape-game .hunt-pile .special-discard-hurry{--effect-glow:#ffe17a;--effect-halo:#f5c84266;color:#fff0a9}
 .hunt-escape-game .hunt-pile .special-discard-evoke{--effect-glow:#d79aff;--effect-halo:#ba67ff66;color:#e9c4ff}
+.hunt-escape-game .hunt-pile .protected-discard-label.special-discard-label{color:#f1a1b1}
+.hunt-escape-game .hunt-pile .cleanse-discard-label.special-discard-label{color:#eee0f4}
+.hunt-escape-game .hunt-pile .protected-discard-label:is(.special-discard-quench,.special-discard-evoke){align-self:center;flex:0 0 22px;width:auto;height:22px;min-height:22px;margin-block:4.5px;padding:2px 6px;border:1px dashed #c994ef;border-radius:3px;box-sizing:border-box;background:#24163ddd;color:#e6c5fa;font-size:8px;line-height:1;text-shadow:none;box-shadow:0 0 6px #a957c055}
 .player .sylvan-score-indicators{display:inline-flex;align-items:center;gap:2px;margin-left:3px;vertical-align:middle;font-family:Woodland,monospace;font-size:13px;line-height:1}
 .player .sylvan-party-mark{display:inline-flex;align-items:center;color:#ff9f43}
 .player .sylvan-pack-triangle{display:block;width:14px;height:12px;filter:drop-shadow(0 0 3px #ff9f4366)}
