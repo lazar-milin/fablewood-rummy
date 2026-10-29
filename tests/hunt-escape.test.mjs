@@ -82,6 +82,18 @@ test('a Path exposed through an opposing Pack triggers a Diversion choice',()=>{
  let next=play0(s,'meld',{ids:s.hands[0].slice(0,3).map(card=>card.id)});assert.equal(next.pendingEffect.type,'diversion');const handSize=next.hands[0].length;next=play(next,0,{type:'diversion',choice:'draw'});assert.equal(next.hands[0].length,handSize+2);assert.equal(next.bonusDiscard,1);assert.equal(next.pendingEffect,null);
 });
 
+test('Diversion uses normal pool refill from older cleanse cards',()=>{
+ const s=ready();s.roles[0]='escape';s.hands[0]=[c(4,'hare'),c(5,'hare'),c(6,'hare'),c(2,'toad'),c(3,'toad')];s.melds=[{id:'pack',owner:1,kind:'set',rank:5,closed:false,cards:[c(5,'fox',2),c(5,'owl',2)]}];
+ const olderA={...c(2,'hare',8),protected:true,discardEffect:'Quench'},olderB={...c(3,'toad',8),protected:true,discardEffect:'Hurry'},topA={...c(8,'owl',8),protected:true},topB={...c(9,'fox',8),protected:true},stock=c(7,'hare',8);
+ s.stock=[stock];s.discardPiles=[[olderA,topA],[olderB,topB]];
+ let next=play0(s,'meld',{ids:s.hands[0].slice(0,3).map(card=>card.id)});assert.equal(next.pendingEffect.type,'diversion');
+ const handSize=next.hands[0].length;next=play(next,0,{type:'diversion',choice:'draw'});
+ assert.equal(next.hands[0].length,handSize+2);assert.equal(next.stock.length,1);
+ assert.deepEqual(next.discardPiles.map(pile=>pile.map(card=>card.id)),[[topA.id],[topB.id]],'each pile keeps its top card');
+ const recycled=[...next.stock,...next.hands.flat()].filter(card=>[olderA.id,olderB.id].includes(card.id));
+ assert.equal(recycled.length,2);assert.ok(recycled.every(card=>!card.protected&&!card.discardEffect),'recycled cards lose discard-only markers');
+});
+ 
 test('bot recognizes a zero-card Hurry and continues without drawing',()=>{
  const s=ready();s.turn=1;s.stage='draw';s.hurryDraw[1]=2;assert.deepEqual(botAction(s),{type:'skip-hurry-draw'});
 });

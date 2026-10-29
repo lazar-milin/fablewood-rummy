@@ -132,6 +132,7 @@ function recycleFleeingPacks(s,player,random){
  s.melds=s.melds.filter(m=>!fleeing.includes(m));s.stock.push(...cards);shuffleStock(s,random);
  s.log.push(`${fleeing.length===1?'A Fleeing Pack':fleeing.length+' Fleeing Packs'} returned ${cards.length} cards to the pool, which was shuffled.`);
 }
+export function huntEscapeCanDraw(s,count){const recyclable=(s.discardPiles||[]).reduce((total,pile)=>total+Math.max(0,pile.length-1),0);return s.stock.length+recyclable>=count;}
 function replenishStock(s,count,random){
  if(s.stock.length>=count)return true;
  const recycled=(s.discardPiles||[]).flatMap(pile=>pile.slice(0,-1));for(const card of recycled){delete card.protected;delete card.protectedByEffect;delete card.protectedByExposure;delete card.discardEffect;delete card.discardEffectUntilTurn;}
@@ -210,7 +211,7 @@ export function playHuntEscape(state,player,action,{PlayerError,play,fieldAction
    if(s.pendingEffect.type!=='diversion'||!['clear','draw'].includes(action.choice))fail('Choose a Diversion.');
    if(action.choice==='clear'){
     const target=s.melds.find(m=>m.id===action.meldId&&m.owner===player&&m.kind==='run'&&m.stalkedUntilTurn);if(!target)fail('Choose one of your Stalked runs.');delete target.stalkedUntilTurn;delete target.stalkedFrom;s.pendingEffect=null;s.log.push(`${s.names[player]} cleared Stalk from a run.`);
-   }else{if(s.stock.length<2)fail('There are not two cards left for a Diversion.');hand.push(s.stock.pop(),s.stock.pop());s.bonusDiscard=1;s.pendingEffect=null;s.log.push(`${s.names[player]} took a two-card Diversion and must cleanse one card.`);}
+   }else{if(!replenishStock(s,2,random))fail('There are not two cards left for a Diversion.');hand.push(s.stock.pop(),s.stock.pop());s.bonusDiscard=1;s.pendingEffect=null;s.log.push(`${s.names[player]} took a two-card Diversion and must cleanse one card.`);}
    return s;
   }
   fail('Resolve the current special effect first.');
