@@ -23,6 +23,7 @@
 .hunt-escape-game .hunt-pile .hunt-effect-stack:has(>:nth-child(5)){gap:1px}
 .hunt-escape-game .hunt-pile .hunt-effect-stack:has(>:nth-child(5))>*{flex:1 1 0;min-height:10px;font-size:8px;line-height:1}
 .hunt-escape-game .hunt-pile .cleanse-discard-label{color:#eee0f4}
+.hunt-escape-game .hunt-pile :is(.protected-discard-label,.cleanse-discard-label){align-self:center;flex:0 0 22px;width:auto;height:22px;min-height:22px;margin-block:4.5px;padding:2px 6px;border:1px dashed currentColor;border-radius:3px;box-sizing:border-box;background:#17112fbb;font-size:8px;line-height:1}
 .hunt-escape-game .hunt-effect-indicator.effect-self{border-style:solid;filter:saturate(.85)}
 .hunt-escape-game .hunt-pile .special-discard-blaze{--effect-glow:#ff9b50;--effect-halo:#ff8a3866;color:#ffd09c}
 .hunt-escape-game .hunt-pile .special-discard-quench{--effect-glow:#77dfff;--effect-halo:#42c8ff66;color:#a9eaff}
@@ -84,6 +85,7 @@
 .hunt-escape-game .hunt-meld-type.meld-suit-hunter{color:#f6e2dc;background:linear-gradient(90deg,#5a2615d9 50%,#352a4ad9 50%);border-color:#d08f8a}
 .hunt-escape-game .path-meld .hunt-meld-type.meld-suit-hare{color:#d8e0b7;background:#2e3820d9;border-color:#93a86e}
 .hunt-escape-game .path-meld .hunt-meld-type.meld-suit-toad{color:#c0d9cb;background:#173a38d9;border-color:#5fa9a3}
+.hunt-escape-game .party-meld .hunt-meld-type:not(.hunt-fleeing-tag){color:#ed777e;background:#48212ccc;border-color:currentColor}
 .drag-ghost.drop-blocked{opacity:.55;filter:grayscale(.45)}
 .hunt-escape-game .hunt-meld .meld-cards{display:flex;align-items:center;justify-content:center}
 .hunt-escape-game .hunt-meld .meld-cards .mini-card{width:70px;height:140px}
