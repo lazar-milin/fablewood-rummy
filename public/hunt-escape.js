@@ -143,7 +143,7 @@ function replenishStock(s,count,random){
 function addDiscard(s,pileIndex,card,suppressHurry=false){
  delete card.pendingDiscard;delete card.discardEffect;delete card.discardEffectUntilTurn;delete card.effectGlow;delete card.effectGlowUntil;delete card.effectGlowPile;delete card.gainedBy;
  if(!card.joker){const effect=card.rank===10&&suppressHurry?null:{10:'Hurry',11:'Blaze',12:'Quench',13:'Evoke'}[card.rank];if(effect){card.discardEffect=effect;card.discardEffectUntilTurn=s.turns+2;}}
- if(card.joker||[10,12,13].includes(card.rank)){card.protected=true;card.protectedByEffect=true;}
+ if(card.joker||[10,11,12,13].includes(card.rank)){card.protected=true;card.protectedByEffect=true;}
  s.discardPiles[pileIndex].push(card);
 }
 // Protection is recalculated only for piles that receive part of the new cleanse.

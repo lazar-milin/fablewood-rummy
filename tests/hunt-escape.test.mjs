@@ -63,7 +63,7 @@ test('Quench gives the next player exactly four cleanses however many Qs were cl
 });
 
 test('Blaze draws one immediately and ends the turn; Arise returns its Ace',()=>{
- const blaze=ready();blaze.hands[0]=[c(11,'fox'),c(4,'owl'),c(5,'hare'),c(6,'toad')];const stock=blaze.stock.length;let next=play0(blaze,'discard',{ids:[c(11,'fox').id,c(4,'owl').id]});assert.equal(next.turn,1);assert.equal(next.hands[0].length,3);assert.equal(next.stock.length,stock-1);assert.equal(next.discardPiles[0].at(-1).discardEffect,'Blaze');
+ const blaze=ready();blaze.hands[0]=[c(11,'fox'),c(4,'owl'),c(5,'hare'),c(6,'toad')];const stock=blaze.stock.length;let next=play0(blaze,'discard',{ids:[c(11,'fox').id,c(4,'owl').id]});assert.equal(next.turn,1);assert.equal(next.hands[0].length,3);assert.equal(next.stock.length,stock-1);assert.equal(next.discardPiles[0].at(-1).discardEffect,'Blaze');assert.equal(next.discardPiles[0].at(-1).protected,true,'Blaze is protected like other face cards');next.opened[1]=true;assert.throws(()=>play(next,1,{type:'draw',source:'discard-0'}),/protected/);
  const arise=ready();arise.hands[0]=[c(1,'fox'),c(4,'owl'),c(5,'hare'),c(6,'toad')];next=play0(arise,'discard',{ids:[c(1,'fox').id,c(4,'owl').id]});assert.ok(next.hands[0].some(card=>card.id===c(1,'fox').id&&card.effectGlow==='arise'));assert.equal(next.discardPiles.flat().some(card=>card.id===c(1,'fox').id),false);
 });
 
