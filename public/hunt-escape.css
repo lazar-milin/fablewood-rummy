@@ -30,7 +30,7 @@
 .hunt-escape-game .hunt-pile .special-discard-evoke{--effect-glow:#d79aff;--effect-halo:#ba67ff66;color:#e9c4ff}
 .hunt-escape-game .hunt-pile .protected-discard-label.special-discard-label{color:#f1a1b1}
 .hunt-escape-game .hunt-pile .cleanse-discard-label.special-discard-label{color:#eee0f4}
-.hunt-escape-game .hunt-pile :is(.protected-discard-label,.cleanse-discard-label):is(.special-discard-blaze,.special-discard-quench,.special-discard-evoke){align-self:center;flex:0 0 22px;width:auto;height:22px;min-height:22px;margin-block:4.5px;padding:2px 6px;border:1px dashed #c994ef;border-radius:3px;box-sizing:border-box;background:#24163ddd;color:#e6c5fa;font-size:8px;line-height:1;text-shadow:none;box-shadow:0 0 6px #a957c055}
+.hunt-escape-game .hunt-pile .face-protected-label{align-self:center;flex:0 0 22px;width:auto;height:22px;min-height:22px;margin-block:4.5px;padding:2px 6px;border:1px dashed #c994ef;border-radius:3px;box-sizing:border-box;background:#24163ddd;color:#e6c5fa;font:8px/1 Woodland,monospace;text-shadow:none;box-shadow:0 0 6px #a957c055}
 .player .sylvan-score-indicators{display:inline-flex;align-items:center;gap:2px;margin-left:3px;vertical-align:middle;font-family:Woodland,monospace;font-size:13px;line-height:1}
 .player .sylvan-party-mark{display:inline-flex;align-items:center;color:#ff9f43}
 .player .sylvan-pack-triangle{display:block;width:14px;height:12px;filter:drop-shadow(0 0 3px #ff9f4366)}
